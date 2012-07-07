@@ -118,7 +118,7 @@ exports.init = function(page, cb) {
         var chart = w.nv.models.bulletChart();
         v.each(modules, function(module) {
             v.each(module.tests, function(test) {
-                bean.add(qwery('#' + test.id)[0], 'click', function() {
+                bean.add(qwery('#' + test.id)[0].parentNode.parentNode, 'click', function() {
                     page.go('/test/' + module.name + '/' + test.name);
                 });
             });

@@ -13,3 +13,6 @@
 .app-b {
     text-align: right !important;
 }
+.app-clickablerow {
+    cursor: pointer;
+}
