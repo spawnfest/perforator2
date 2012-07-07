@@ -17,7 +17,9 @@ start(_, _) ->
                 {directory, {priv_dir, perforator_ci, [<<"www">>]}},
                 {mimetypes, [
                     {<<".css">>, [<<"text/css">>]},
-                    {<<".js">>, [<<"application/javascript">>]}]}
+                    {<<".js">>, [<<"application/javascript">>]},
+                    {<<".png">>, [<<"image/png">>]}
+                ]}
             ]},
             % /websocket
             {[<<"websocket">>], perforator_ci_ws, []},
