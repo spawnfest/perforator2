@@ -9,6 +9,8 @@
 
 -behaviour(gen_server).
 
+-include("perforator_ci.hrl").
+
 %% API
 -export([
     is_project_running/1,
@@ -25,11 +27,10 @@
     code_change/3
 ]).
 
-
 -record(state, {
     project_id :: perforator_ci_types:project_id(),
     repo :: binary(), % remote repo url
-    repo_backend=perforator_ci_git :: atom(), % maybe add CVS support one day
+    repo_backend :: atom(),
     polling=on_demand :: perforator_ci_types:polling_strategy(),
     last_build_id=0 :: perforator_ci_types:build_id(),
     last_commit_id= <<"undef">> :: perforator_ci_types:commit_id()
@@ -46,8 +47,31 @@
 -spec is_project_running(perforator_ci_types:project_id()) -> boolean().
 is_project_running(ProjectID) ->
     try
-        gproc:lookup_pid({n, l, ProjectID}),
-        true
+        % Register
+        true = gproc:lookup_pid({n, l, ProjectID}),
+
+        % Restore state data
+        #project{repo=Repo, repo_backend=RepoBackend, polling=Polling} =
+            perforator_ci_db:get_project(ProjectID),
+
+        State0 = #state{
+            project_id = ProjectID,
+            repo = Repo,
+            repo_backend = RepoBackend,
+            polling = Polling
+        },
+
+        State1 =
+            case perforator_ci_db:get_last_build(ProjectID) of
+                #project_build{id=BID, commit_id=CID} ->
+                    State0#state{
+                        last_build_id = BID,
+                        last_commit_id = CID
+                    };
+                undefined -> State0 % nothing has been built
+            end,
+
+        {ok, State1}
     catch
         error:badarg -> % shame on gproc #2
             false
