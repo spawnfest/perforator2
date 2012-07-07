@@ -15,6 +15,13 @@ exports.init = function(page, cb) {
                     {
                         name : 'bla_blabla',
                         series : {
+                            memutil : {
+                                previous : 100,
+                                mean : 90,
+                                current : 110,
+                                max : 200,
+                                min : 50
+                            },
                             time : {
                                 previous : 311,
                                 mean : 300,
@@ -26,6 +33,13 @@ exports.init = function(page, cb) {
                     }, {
                         name : 'what_ever',
                         series : {
+                            memutil : {
+                                previous : 150,
+                                mean : 90,
+                                current : 130,
+                                max : 200,
+                                min : 50
+                            },
                             time : {
                                 previous : 250,
                                 mean : 300,
@@ -42,6 +56,13 @@ exports.init = function(page, cb) {
                     {
                         name : 'foo_bar',
                         series : {
+                            memutil : {
+                                previous : 100,
+                                mean : 120,
+                                current : 130,
+                                max : 250,
+                                min : 100
+                            },
                             time : {
                                 previous : 211,
                                 mean : 300,
@@ -53,6 +74,13 @@ exports.init = function(page, cb) {
                     }, {
                         name : 'what_now',
                         series : {
+                            memutil : {
+                                previous : 120,
+                                mean : 140,
+                                current : 130,
+                                max : 190,
+                                min : 70
+                            },
                             time : {
                                 previous : 350,
                                 mean : 300,
@@ -70,44 +98,61 @@ exports.init = function(page, cb) {
                 test.id = 'test-' + module.name + '-' + test.name;
             });
         });
+        var series = [
+            {
+                name : 'Time',
+                key : 'time',
+                units : 'milliseconds',
+                higherBetter : false
+            }, {
+                name : 'Average Memory Utilization',
+                key : 'memutil',
+                units : 'bytes',
+                higherBetter : false
+            }, {
+                name : 'Average CPU Load',
+                key : 'load',
+                units : 'TODO',
+                higherBetter : false
+            }, {
+                name : 'Average CPU Utilization',
+                key : 'cpuutil',
+                units : 'TODO',
+                higherBetter : false
+            }
+        ];
+        var seriesMap = {};
+        v.each(series, function(series) {
+            seriesMap[series.key] = series;
+        });
         page.body.html(t.run.render({
             modules : modules,
-            series : [
-                {
-                    name : 'Time',
-                    key : 'time'
-                }, {
-                    name : 'Average Memory Utilization',
-                    key : 'memutil'
-                }, {
-                    name : 'Average CPU Load',
-                    key : 'load'
-                }, {
-                    name : 'Average CPU Utilization',
-                    key : 'cpuutil'
-                }
-            ],
+            series : series,
             run : {
                 id : 0
             }
         }));
         var select = bonzo(qwery('select'));
         bean.add(select[0], 'change', function() {
-            console.log('TODO', 'change series', select.val());
+            setSeries(select.val());
         });
         var chart = w.nv.models.bulletChart();
-        v.each(modules, function(module) {
-            v.each(module.tests, function(test) {
-                w.d3.select('#' + test.id).datum({
-                    "title":test.name,
-                    "subtitle":'milliseconds',
-                    "ranges":[test.series.time.min, test.series.time.mean, test.series.time.max],
-                    "measures":[test.series.time.current],
-                    "markers":[test.series.time.previous]
-                }).call(chart);
-                bonzo(qwery('#' + test.id + ' .measure')).css('fill', test.series.time.current > test.series.time.previous ? '#f00' : '#0f0');
+        var setSeries = function(key) {
+            v.each(modules, function(module) {
+                v.each(module.tests, function(test) {
+                    bonzo(qwery('#' + test.id)).empty();
+                    w.d3.select('#' + test.id).datum({
+                        "title":test.name,
+                        "subtitle":seriesMap[key].units,
+                        "ranges":[test.series[key].min, test.series[key].mean, test.series[key].max],
+                        "measures":[test.series[key].current],
+                        "markers":[test.series[key].previous]
+                    }).call(chart);
+                    bonzo(qwery('#' + test.id + ' .measure')).css('fill', test.series[key].current > test.series[key].previous ? (seriesMap[key].higherBetter ? '#0f0' : '#f00') : (seriesMap[key].higherBetter ? '#f00' : '#0f0'));
+                });
             });
-        });
+        };
+        setSeries('time');
     });
     cb();
 };
