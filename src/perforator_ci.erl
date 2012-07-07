@@ -1,6 +1,6 @@
 %% @author Martynas <martynas@numeris.lt>
 
--module(perforator_www).
+-module(perforator_ci).
 
 -export([start/0, init/0]).
 
@@ -13,7 +13,7 @@ start() ->
     application:start(sasl),
     application:start(inets),
     application:start(cowboy),
-    application:start(perforator_www).
+    application:start(perforator_ci).
 
 
 init() -> ok.

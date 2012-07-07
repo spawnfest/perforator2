@@ -1,3 +1,3 @@
 #!/bin/bash
 
-erl -sname perforator_www -pa ebin deps/*/ebin -config perforator_www.config -s perforator_www
+erl -sname perforator_ci -pa ebin deps/*/ebin -config perforator_ci.config -s perforator_ci

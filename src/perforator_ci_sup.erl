@@ -1,6 +1,6 @@
 %% @author Martynas <martynasp@gmail.com>
 
--module(perforator_www_sup).
+-module(perforator_ci_sup).
 -behaviour(supervisor).
 
 -export([start_link/0]).

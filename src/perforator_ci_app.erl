@@ -1,8 +1,6 @@
-%% @doc
-
 %% @author Martynas <martynas@numeris.lt>
 
--module(perforator_www_app).
+-module(perforator_ci_app).
 -behaviour(application).
 
 -export([start/2, stop/1]).
@@ -14,30 +12,29 @@ start(_, _) ->
         {'_', [
             % /
             {[], cowboy_http_static, [
-                {directory, {priv_dir, perforator_www, [<<"www">>]}},
+                {directory, {priv_dir, perforator_ci, [<<"www">>]}},
                 {file, <<"index.html">>},
                 {mimetypes, [{<<".html">>, [<<"text/html">>]}]}
             ]},
             % /static/
             {[<<"static">>, '...'], cowboy_http_static, [
-                {directory, {priv_dir, perforator_www, [<<"www">>]}},
+                {directory, {priv_dir, perforator_ci, [<<"www">>]}},
                 {mimetypes, [
                     {<<".css">>, [<<"text/css">>]},
                     {<<".js">>, [<<"application/javascript">>]}]}
             ]},
             % /*
-            {'_', perforator_www_handler, []}
+            {'_', perforator_ci_web_handler, []}
         ]}
     ],
 
-    {ok, Port} = application:get_env(perforator_www, http_port),
-    {ok, ListCount} = application:get_env(perforator_www, listener_count),
-    io:format("OMG STARTING: ~p~p~n", [Port, ListCount]),
-    cowboy:start_listener(perforator_www_listener, ListCount,
+    {ok, Port} = application:get_env(perforator_ci, http_port),
+    {ok, ListCount} = application:get_env(perforator_ci, listener_count),
+    cowboy:start_listener(perforator_ci_listener, ListCount,
         cowboy_tcp_transport, [{port, Port}],
         cowboy_http_protocol, [{dispatch, Dispatch}]
     ),
 
-    perforator_www_sup:start_link().
+    perforator_ci_sup:start_link().
 
 stop(_) -> ok.

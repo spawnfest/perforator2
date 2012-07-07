@@ -1,12 +1,12 @@
 %% @author Martynas <martynas@numeris.lt>
 
--module(perforator_www_handler).
+-module(perforator_ci_web_handler).
 
 -export([init/3, handle/2, terminate/2]).
 
 %% ===========================================================================
 
-init({tcp, http}, Req, Opts) ->
+init({tcp, http}, Req, _Opts) ->
     {ok, Req, undefined_state}.
 
 handle(Req, State) ->
@@ -16,7 +16,7 @@ handle(Req, State) ->
         Req),
     {ok, Req2, State}.
 
-terminate(Req, State) ->
+terminate(_Req, _State) ->
     ok.
 
 %% ============================================================================
