@@ -6,7 +6,7 @@
 -export([start/2, stop/1]).
 
 %% @todo move back after finishing with testing
--define(INDEX_HTML, 
+-define(INDEX_HTML,
     [
         {directory, {priv_dir, perforator_ci, [<<"www">>]}},
         {file, <<"index.html">>},
@@ -22,6 +22,7 @@ start(_, _) ->
             {[], cowboy_http_static, ?INDEX_HTML},
             {[<<"run">>, '...'], cowboy_http_static, ?INDEX_HTML},
             {[<<"test">>, '...'], cowboy_http_static, ?INDEX_HTML},
+            {[<<"compare">>, '...'], cowboy_http_static, ?INDEX_HTML},
             % /static/
             {[<<"static">>, '...'], cowboy_http_static, [
                 {directory, {priv_dir, perforator_ci, [<<"www">>]}},
