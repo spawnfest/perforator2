@@ -4,9 +4,13 @@
 
 -module(perforator_ci_utils).
 
+-include("perforator_ci.hrl").
+
 -export([
     timestamp/0,
-    get_env/3
+    get_env/3,
+    sh/1,
+    repo_path/1
 ]).
 
 %% ============================================================================
@@ -24,3 +28,36 @@ get_env(App, Key, Default) ->
         undefined -> Default;
         {ok, Val} -> Val
     end.
+
+%% @doc Exec given command.
+%% @throws {error_on_exec, Command, ErrCode, Output}.
+-spec sh(list()) -> list().
+sh(Command) ->
+    Port = open_port({spawn, Command}, [
+        exit_status, {line, 255}, stderr_to_stdout
+    ]),
+
+    case sh_receive_loop(Port, []) of
+        {ok, Data} -> Data;
+        {error, {ErrCode, Output}} ->
+            throw({error_on_exec, Command, ErrCode, Output})
+    end.
+
+sh_receive_loop(Port, Acc) ->
+    receive
+        {Port, {data, {eol, Line}}} ->
+            sh_receive_loop(Port, [Line ++ "\n"|Acc]);
+        {Port, {data, {noeol, Line}}} ->
+            sh_receive_loop(Port, [Line|Acc]);
+        {Port, {exit_status, 0}} ->
+            {ok, lists:flatten(lists:reverse(Acc))};
+        {Port, {exit_status, E}} ->
+            {error, {E, lists:flatten(lists:reverse(Acc))}}
+    end.
+
+%% @doc Returns project repository path
+repo_path(ProjectID) ->
+    filename:join(
+        perforator_ci_utils:get_env(perforator_ci, repos_path, ?REPOS_DIR),
+        integer_to_list(ProjectID)
+    ).

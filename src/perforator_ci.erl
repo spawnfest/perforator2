@@ -16,11 +16,13 @@
 %% ============================================================================
 
 %% @doc Creates project (in DB) and starts project handler process.
--spec create_and_start_project(perforator_ci_types:project_name(), binary(),
+-spec create_and_start_project(perforator_ci_types:project_name(), list(),
         perforator_ci_types:polling_strategy()) ->
         perforator_ci_types:project_id().
-create_and_start_project(Name, Repo, Polling) ->
-    ID = perforator_ci_db:create_project(Name, Repo, Polling),
+create_and_start_project(Name, RepoUrl, Polling) ->
+    ID = perforator_ci_db:create_project(Name, RepoUrl, Polling),
+    % @todo Fix this ugliness
+    perforator_ci_git:clone(RepoUrl, perforator_ci_utils:repo_path(ID)), 
 
     case perforator_ci_project:is_project_running(ID) of
         true -> ok; % do nothing, already started

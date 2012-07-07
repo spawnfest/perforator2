@@ -8,15 +8,29 @@
 
 -compile(export_all).
 
+-define(REPO, ".eunit/test.git").
+-define(REPOS, ".eunit/repos").
+
 %% ============================================================================
 
 project_test_() ->
     {foreach, 
         fun () ->
+            application:load(perforator_ci),
+            application:set_env(perforator_ci, repo_path, ?REPOS),
+
+            perforator_ci_utils:sh(?FMT("rm -rf ~p", [?REPO])),
+            perforator_ci_utils:sh(?FMT("rm -rf ~p", [?REPOS])),
+
+            perforator_ci_utils:sh(?FMT("git init ~p", [?REPO])),
+            perforator_ci_utils:sh(?FMT("mkdir ~p", [?REPOS])),
+
             perforator_ci:init(),
             perforator_ci:start()
         end,
-        fun (_) -> perforator_ci:stop() end,
+        fun (_) ->
+            perforator_ci:stop()
+        end,
         [
             {"Start project/recovery", fun test_start_project/0},
             {"Ping -> build", fun test_ping_and_build/0}
@@ -26,8 +40,8 @@ project_test_() ->
 %% ============================================================================
 
 test_start_project() ->
-    1 = perforator_ci:create_and_start_project(<<"a">>, <<"b">>, on_demand),
-    1 = perforator_ci:create_and_start_project(<<"a">>, <<"b">>, on_demand),
+    1 = perforator_ci:create_and_start_project(<<"a">>, ?REPO, on_demand),
+    1 = perforator_ci:create_and_start_project(<<"a">>, ?REPO, on_demand),
 
     ?assertMatch(
         [_], % exactly one child is started
@@ -57,7 +71,7 @@ test_ping_and_build() ->
     ok = meck:new(perforator_ci_builder, [no_link, passthrough]),
     ok = meck:expect(perforator_ci_builder, build, 3, ok),
 
-    1 = perforator_ci:create_and_start_project(<<"omg">>, <<"rep">>,
+    1 = perforator_ci:create_and_start_project(<<"omg">>, ?REPO,
         {time, 50}),
     timer:sleep(100),
 
