@@ -59,6 +59,5 @@ check_for_updates(RepoPath, Branch, CommitID) ->
         throw:{exec_error, {_, 128, _}} -> % 128 most likely git repo is empty
             undefined;
         throw:{exec_error, {_, 1, _}} -> % 1 most likely branch not found
-            % @todo rethrow
             undefined
     end.

@@ -5,6 +5,7 @@ deps
 ebin
 log
 *.swp
+*.swo
 Mnesia.*
 .eunit
 erl_crash.dump

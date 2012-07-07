@@ -122,17 +122,6 @@ handle_call({build_finished, BuildID, Info}, _, State) ->
 handle_call(_, _, State) ->
     {reply, ok, State}.
 
-handle_cast(build_now,
-        #state{project_id=ID, repo_backend=Mod, last_commit_id=CID}=State) ->
-    case Mod:check_for_updates(ID, CID) of
-        undefined ->
-            gen_server:cast({build, CID}); % rebuild old commit
-        NewCommitID when is_binary(NewCommitID) ->
-            gen_server:cast({build, NewCommitID})
-    end,
-
-    {noreply, State};
-
 handle_cast({build, CommitID}, #state{project_id=ID}=State) ->
     lager:info("Project (~p): request for build commit ~p~n",
         [ID, CommitID]),
@@ -150,8 +139,9 @@ handle_cast(_, State) ->
     {noreply, State}.
 
 handle_info(ping,
-        #state{project_id=ID, repo_backend=Mod, last_commit_id=CID}=State) ->
-    case Mod:check_for_updates(ID, CID) of
+        #state{project_id=ID, repo_backend=Mod, branch=B,
+            last_commit_id=CID}=State) ->
+    case Mod:check_for_updates(perforator_ci_utils:repo_path(ID), B, CID) of
         undefined -> ok; % do nothing
         NewCID when is_binary(NewCID) ->
             gen_server:cast(self(), {build, NewCID})
