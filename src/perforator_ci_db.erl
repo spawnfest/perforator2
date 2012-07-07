@@ -12,7 +12,8 @@
     create_project/1,
     get_project/1,
     get_projects/0,
-    create_build/4,
+
+    create_build/1,
     get_last_build/1,
     get_unfinished_builds/1,
     finish_build/2,
@@ -69,7 +70,12 @@ create_project({Name, RepoUrl, Branch, RepoBackend, Polling, BuildInstr,
         end).
 
 %% @doc Creates new build
-create_build(ProjectID, TS, CommitID, Info) ->
+-spec create_build({
+        perforator_ci_types:project_id(), perforator_ci_types:timestamp(),
+        perforator_ci_types:commit_id(), list()}) ->
+            {perforator_ci_types:build_id(),
+            perforator_ci_types:build_local_id()}.
+create_build({ProjectID, TS, CommitID, Info}) ->
     transaction(
         fun () ->
             case mnesia:index_read(project_build, CommitID,

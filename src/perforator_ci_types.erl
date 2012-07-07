@@ -13,6 +13,7 @@
     repo_backend/0,
 
     build_id/0,
+    build_local_id/0,
     commit_id/0,
     timestamp/0
 ]).
@@ -29,5 +30,6 @@
 -type repo_backend() :: git. % maybe CVS one day
 
 -type build_id() :: integer().
+-type build_local_id() :: integer().
 -type commit_id() :: binary().
 -type timestamp() :: integer().
