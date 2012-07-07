@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="span3">
+        {{#projects}}
+        <div class="row">
+            <div class="span2">
+                {{#opened}}
+                <p><button class="btn btn-small btn-inverse">{{title}}</button></p>
+                {{/opened}}
+                {{^opened}}
+                <p><button class="btn btn-small">{{title}}</button></p>
+                {{/opened}}
+            </div>
+            <div class="span1">
+                <p><button class="btn btn-mini">edit</button></p>
+            </div>
+        </div>
+        {{/projects}}
+        <p><button class="btn">add new</button></p>
+    </div>
+    <div class="span9">
+        <h2>Run history of {{project.title}}</h2>
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Started</th>
+                    <th>Duration delta</th>
+                    <th>Duration</th>
+                    <th>Modules</th>
+                    <th>Tests</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#runs}}
+                <tr>
+                    <td>{{id}}</td>
+                    <td>{{started}}</td>
+                    <td>{{durationDelta}}</td>
+                    <td>{{duration}}</td>
+                    <td>{{modules}}</td>
+                    <td>{{tests}}</td>
+                </tr>
+                {{/runs}}
+            </tbody>
+        </table>
+    </div>
+</div>
