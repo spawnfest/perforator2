@@ -12,6 +12,7 @@
     get_project/1,
     get_projects/0,
     create_build/4,
+    get_last_build/1,
 
     wait_for_db/0,
     init/0,
@@ -90,6 +91,19 @@ create_build(ProjectID, TS, CommitID, Info) ->
                         }),
 
                     {ID, LID}
+            end
+        end).
+
+%% @doc Returns last project build.
+-spec get_last_build(perforator_ci_types:project_id()) ->
+        #project_build{} | undefined.
+get_last_build(ProjectID) ->
+    transaction(
+        fun () ->
+            case mnesia:index_read(project_build, ProjectID,
+                    #project_build.project_id) of
+                [] -> undefined;
+                Bs -> lists:last(Bs)
             end
         end).
 

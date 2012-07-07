@@ -19,7 +19,6 @@ db_test_() ->
         fun (_) -> perforator_ci:stop() end,
         [
             {"Create project", fun test_create_project/0},
-            {"Get projects", fun test_get_projects/0},
             {"Create build", fun test_create_build/0}
         ]
     }.
@@ -43,12 +42,10 @@ test_create_project() ->
         #project{id=1, name= <<"omg">>, repo= <<"repo">>,
             polling=on_demand},
         perforator_ci_db:get_project(1)
-    ).
-
-test_get_projects() ->
-    1 = perforator_ci_db:create_project(<<"a">>, <<"b">>, on_demand),
-
-    ?assertMatch([#project{id=1}], perforator_ci_db:get_projects()).
+    ),
+    ?assertMatch(
+        [#project{id=1}, #project{id=2}],
+        perforator_ci_db:get_projects()).
 
 test_create_build() ->
     ?assertEqual(
@@ -65,4 +62,7 @@ test_create_build() ->
         perforator_ci_db:create_build(666, 123, <<"cid2">>, [])),
     ?assertEqual(
         {4, 2},
-        perforator_ci_db:create_build(666, 123, <<"cid3">>, [])).
+        perforator_ci_db:create_build(666, 123, <<"cid3">>, [])),
+    ?assertMatch(
+        #project_build{commit_id= <<"cid1">>},
+        perforator_ci_db:get_last_build(42)).
