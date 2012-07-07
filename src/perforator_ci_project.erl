@@ -14,7 +14,8 @@
 %% API
 -export([
     is_project_running/1,
-    start_link/1
+    start_link/1,
+    build_is_done/3
 ]).
 
 %% gen_server callbacks
@@ -65,6 +66,8 @@ start_link(ProjectID) ->
 
 get_pid(ProjectID) ->
     gproc:lookup_pid({n, l, ProjectID}).
+
+build_is_done(ProjectID, BuildID, Results) -> ok.
 
 %% =============================================================================
 %% gen_server callbacks
