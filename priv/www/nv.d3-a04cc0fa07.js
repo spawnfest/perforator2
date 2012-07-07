@@ -53,7 +53,7 @@ nv.render = function render(step) {
     render.queue.splice(0, i);
 
     if (render.queue.length) setTimeout(arguments.callee, 0);
-    else { 
+    else {
       nv.render.active = false;
       nv.dispatch.render_end();
     }
@@ -829,14 +829,14 @@ nv.models.bullet = function() {
           .attr('width', w0)
           .attr('height', availableHeight)
           .attr('x', reverse ? x0 : 0)
-          .on('mouseover', function(d,i) { 
+          .on('mouseover', function(d,i) {
               dispatch.elementMouseover({
                 value: d,
                 label: (i <= 0) ? 'Maximum' : (i > 1) ? 'Minimum' : 'Mean', //TODO: make these labels a variable
                 pos: [x1(d), availableHeight/2]
               })
           })
-          .on('mouseout', function(d,i) { 
+          .on('mouseout', function(d,i) {
               dispatch.elementMouseout({
                 value: d,
                 label: (i <= 0) ? 'Minimum' : (i >=1) ? 'Maximum' : 'Mean', //TODO: make these labels a variable
@@ -859,14 +859,14 @@ nv.models.bullet = function() {
           .attr('height', availableHeight / 3)
           .attr('x', reverse ? x0 : 0)
           .attr('y', availableHeight / 3)
-          .on('mouseover', function(d) { 
+          .on('mouseover', function(d) {
               dispatch.elementMouseover({
                 value: d,
                 label: 'Current', //TODO: make these labels a variable
                 pos: [x1(d), availableHeight/2]
               })
           })
-          .on('mouseout', function(d) { 
+          .on('mouseout', function(d) {
               dispatch.elementMouseout({
                 value: d,
                 label: 'Current' //TODO: make these labels a variable
@@ -890,14 +890,14 @@ nv.models.bullet = function() {
           .attr('class', 'markerTriangle')
           .attr('transform', function(d) { return 'translate(' + x0(d) + ',' + (availableHeight / 2) + ')' })
           .attr('d', 'M0,' + h3 + 'L' + h3 + ',' + (-h3) + ' ' + (-h3) + ',' + (-h3) + 'Z')
-          .on('mouseover', function(d,i) { 
+          .on('mouseover', function(d,i) {
               dispatch.elementMouseover({
                 value: d,
                 label: 'Previous',
                 pos: [x1(d), availableHeight/2]
               })
           })
-          .on('mouseout', function(d,i) { 
+          .on('mouseout', function(d,i) {
               dispatch.elementMouseout({
                 value: d,
                 label: 'Previous'
@@ -989,7 +989,7 @@ nv.models.bulletChart = function() {
       height = 55,
       tickFormat = null,
       tooltips = true,
-      tooltip = function(key, x, y, e, graph) { 
+      tooltip = function(key, x, y, e, graph) {
         return '<h3>' + e.label + '</h3>' +
                '<p>' +  e.value + '</p>'
       };
@@ -1260,13 +1260,13 @@ nv.models.bulletChart = function() {
 nv.models.cumulativeLineChart = function() {
   var margin = {top: 30, right: 20, bottom: 50, left: 60},
       color = d3.scale.category20().range(),
-      width = null, 
+      width = null,
       height = null,
       showLegend = true,
       tooltips = true,
       showRescaleToggle = false, //TODO: get rescale y functionality back (need to calculate exten of y for ALL possible re-zero points
       rescaleY = true;
-      tooltip = function(key, x, y, e, graph) { 
+      tooltip = function(key, x, y, e, graph) {
         return '<h3>' + key + '</h3>' +
                '<p>' +  y + ' at ' + x + '</p>'
       };
@@ -1442,7 +1442,7 @@ nv.models.cumulativeLineChart = function() {
           .call(yAxis);
 
 
-      controls.dispatch.on('legendClick', function(d,i) { 
+      controls.dispatch.on('legendClick', function(d,i) {
         d.disabled = !d.disabled;
         rescaleY = !d.disabled;
 
@@ -1452,7 +1452,7 @@ nv.models.cumulativeLineChart = function() {
       });
 
 
-      legend.dispatch.on('legendClick', function(d,i) { 
+      legend.dispatch.on('legendClick', function(d,i) {
         d.disabled = !d.disabled;
 
         if (!data.filter(function(d) { return !d.disabled }).length) {
@@ -1618,7 +1618,7 @@ nv.models.discreteBar = function() {
 
 
       var seriesData = (xDomain && yDomain) ? [] : // if we know xDomain and yDomain, no need to calculate
-            data.map(function(d) { 
+            data.map(function(d) {
               return d.values.map(function(d,i) {
                 return { x: getX(d,i), y: getY(d,i), y0: d.y0 }
               })
@@ -1677,7 +1677,7 @@ nv.models.discreteBar = function() {
 
       var barsEnter = bars.enter().append('g')
           .attr('transform', function(d,i,j) {
-              return 'translate(' + x(getX(d,i)) + ', ' + y(0) + ')' 
+              return 'translate(' + x(getX(d,i)) + ', ' + y(0) + ')'
           })
           .on('mouseover', function(d,i) { //TODO: figure out why j works above, but not here
             d3.select(this).classed('hover', true);
@@ -1748,14 +1748,14 @@ nv.models.discreteBar = function() {
           .attr('class', function(d,i) { return getY(d,i) < 0 ? 'bar negative' : 'bar positive'})
           //.attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; })
           .attr('transform', function(d,i) {
-              return 'translate(' + x(getX(d,i)) + ', ' + (getY(d,i) < 0 ? y0(0) : y0(getY(d,i))) + ')' 
+              return 'translate(' + x(getX(d,i)) + ', ' + (getY(d,i) < 0 ? y0(0) : y0(getY(d,i))) + ')'
           })
         .selectAll('rect')
           .attr('width', x.rangeBand() / data.length)
       d3.transition(bars)
         //.delay(function(d,i) { return i * 1200 / data[0].values.length })
           .attr('transform', function(d,i) {
-              return 'translate(' + x(getX(d,i)) + ', ' + (getY(d,i) < 0 ? y(0) : y(getY(d,i))) + ')' 
+              return 'translate(' + x(getX(d,i)) + ', ' + (getY(d,i) < 0 ? y(0) : y(getY(d,i))) + ')'
           })
         .selectAll('rect')
           //.attr('width', x.rangeBand() / data.length)
@@ -1879,7 +1879,7 @@ nv.models.discreteBarChart = function() {
       staggerLabels = false,
       rotateLabels = 0,
       tooltips = true,
-      tooltip = function(key, x, y, e, graph) { 
+      tooltip = function(key, x, y, e, graph) {
         return '<h3>' + x + '</h3>' +
                '<p>' +  y + '</p>'
       };
@@ -2849,11 +2849,11 @@ nv.models.indentedTree = function() {
 nv.models.lineChart = function() {
   var margin = {top: 30, right: 20, bottom: 50, left: 60},
       color = d3.scale.category20().range(),
-      width = null, 
+      width = null,
       height = null,
       showLegend = true,
       tooltips = true,
-      tooltip = function(key, x, y, e, graph) { 
+      tooltip = function(key, x, y, e, graph) {
         return '<h3>' + key + '</h3>' +
                '<p>' +  y + ' at ' + x + '</p>'
       };
@@ -2963,7 +2963,7 @@ nv.models.lineChart = function() {
 
 
 
-      legend.dispatch.on('legendClick', function(d,i) { 
+      legend.dispatch.on('legendClick', function(d,i) {
         d.disabled = !d.disabled;
 
         if (!data.filter(function(d) { return !d.disabled }).length) {
@@ -3077,7 +3077,7 @@ nv.models.linePlusBarChart = function() {
       color = d3.scale.category20().range(),
       showLegend = true,
       tooltips = true,
-      tooltip = function(key, x, y, e, graph) { 
+      tooltip = function(key, x, y, e, graph) {
         return '<h3>' + key + '</h3>' +
                '<p>' +  y + ' at ' + x + '</p>'
       };
@@ -3126,14 +3126,14 @@ nv.models.linePlusBarChart = function() {
       //TODO: try to remove x scale computation from this layer
 
       var series1 = data.filter(function(d) { return !d.disabled && d.bar })
-            .map(function(d) { 
+            .map(function(d) {
               return d.values.map(function(d,i) {
                 return { x: getX(d,i), y: getY(d,i) }
               })
             });
 
       var series2 = data.filter(function(d) { return !d.disabled && !d.bar })
-            .map(function(d) { 
+            .map(function(d) {
               return d.values.map(function(d,i) {
                 return { x: getX(d,i), y: getY(d,i) }
               })
@@ -3190,7 +3190,7 @@ nv.models.linePlusBarChart = function() {
         legend.width(availableWidth);
 
         g.select('.legendWrap')
-            .datum(data.map(function(series) { 
+            .datum(data.map(function(series) {
               series.key = series.key + (series.bar ? ' (left axis)' : ' (right axis)');
               return series;
             }))
@@ -3252,7 +3252,7 @@ nv.models.linePlusBarChart = function() {
 
 
 
-      legend.dispatch.on('legendClick', function(d,i) { 
+      legend.dispatch.on('legendClick', function(d,i) {
         d.disabled = !d.disabled;
 
         if (!data.filter(function(d) { return !d.disabled }).length) {
@@ -3380,12 +3380,12 @@ nv.models.lineWithFocusChart = function() {
   var margin = {top: 30, right: 20, bottom: 50, left: 60},
       margin2 = {top: 0, right: 20, bottom: 20, left: 60},
       color = d3.scale.category20().range(),
-      width = null, 
+      width = null,
       height = null,
       height2 = 100,
       showLegend = true,
       tooltips = true,
-      tooltip = function(key, x, y, e, graph) { 
+      tooltip = function(key, x, y, e, graph) {
         return '<h3>' + key + '</h3>' +
                '<p>' +  y + ' at ' + x + '</p>'
       };
@@ -3556,7 +3556,7 @@ nv.models.lineWithFocusChart = function() {
 
 
 
-      legend.dispatch.on('legendClick', function(d,i) { 
+      legend.dispatch.on('legendClick', function(d,i) {
         d.disabled = !d.disabled;
 
         if (!data.filter(function(d) { return !d.disabled }).length) {
@@ -3638,7 +3638,7 @@ nv.models.lineWithFocusChart = function() {
         //      If I limit the data for focusLines would want to include 1 point before and after the extent,
         //      Need to figure out an optimized way to accomplish this.
         //      ***One concern is to try not to make the assumption that all lines are of the same length, and
-        //         points with the same index have the same x value (while this is true in our test cases, may 
+        //         points with the same index have the same x value (while this is true in our test cases, may
         //         not always be)
 
         lines.xDomain(x.domain());
@@ -3767,7 +3767,7 @@ nv.models.multiBar = function() {
 
 
       var seriesData = (xDomain && yDomain) ? [] : // if we know xDomain and yDomain, no need to calculate
-            data.map(function(d) { 
+            data.map(function(d) {
               return d.values.map(function(d,i) {
                 return { x: getX(d,i), y: getY(d,i), y0: d.y0 }
               })
@@ -3919,7 +3919,7 @@ nv.models.multiBar = function() {
                 .attr('y', function(d,i) {
                   return getY(d,i) < 0 ?
                     y(0) :
-                    y(getY(d,i)) 
+                    y(getY(d,i))
                 })
                 .attr('height', function(d,i) {
                   return Math.abs(y(getY(d,i)) - y(0))
@@ -4047,7 +4047,7 @@ nv.models.multiBarChart = function() {
       showControls = true,
       showLegend = true,
       tooltips = true,
-      tooltip = function(key, x, y, e, graph) { 
+      tooltip = function(key, x, y, e, graph) {
         return '<h3>' + key + '</h3>' +
                '<p>' +  y + ' on ' + x + '</p>'
       };
@@ -4103,7 +4103,7 @@ nv.models.multiBarChart = function() {
             }, []);
       } else {
         seriesData = data.filter(function(d) { return !d.disabled })
-          .map(function(d) { 
+          .map(function(d) {
             return d.values.map(function(d,i) {
               return { x: multibar.x()(d,i), y: multibar.y()(d,i) }
             })
@@ -4228,7 +4228,7 @@ nv.models.multiBarChart = function() {
         selection.transition().call(chart);
       });
 
-      controls.dispatch.on('legendClick', function(d,i) { 
+      controls.dispatch.on('legendClick', function(d,i) {
         if (!d.disabled) return;
         controlsData = controlsData.map(function(s) {
           s.disabled = true;
@@ -4366,7 +4366,7 @@ nv.models.multiBarHorizontal = function() {
 
 
       var seriesData = (xDomain && yDomain) ? [] : // if we know xDomain and yDomain, no need to calculate
-            data.map(function(d) { 
+            data.map(function(d) {
               return d.values.map(function(d,i) {
                 return { x: getX(d,i), y: getY(d,i), y0: d.y0 }
               })
@@ -4516,7 +4516,7 @@ nv.models.multiBarHorizontal = function() {
           //.delay(function(d,i) { return i * delay / data[0].values.length })
             .attr('transform', function(d,i) {
               //TODO: stacked must be all positive or all negative, not both?
-              return 'translate(' + 
+              return 'translate(' +
               (getY(d,i) < 0 ? y(getY(d,i)) : y(0))
               + ',' +
               (d.series * x.rangeBand() / data.length
@@ -4700,7 +4700,7 @@ nv.models.multiBarHorizontalChart = function() {
       showControls = true,
       showLegend = true,
       tooltips = true,
-      tooltip = function(key, x, y, e, graph) { 
+      tooltip = function(key, x, y, e, graph) {
         return '<h3>' + x + '</h3>' +
                '<p>' +  y + '</p>'
       };
@@ -4860,7 +4860,7 @@ nv.models.multiBarHorizontalChart = function() {
         selection.transition().call(chart);
       });
 
-      controls.dispatch.on('legendClick', function(d,i) { 
+      controls.dispatch.on('legendClick', function(d,i) {
         if (!d.disabled) return;
         controlsData = controlsData.map(function(s) {
           s.disabled = true;
@@ -5106,9 +5106,9 @@ nv.models.pie = function() {
                  return 'translate(' + arc.centroid(d) + ')';
               })
               //.style('font', 'bold 12px Arial') // font style's should be set in css!
-              .text(function(d, i) { 
+              .text(function(d, i) {
                 var percent = (d.endAngle - d.startAngle) / (2 * Math.PI);
-                return (d.value && percent > labelThreshold) ? getX(d.data) : ''; 
+                return (d.value && percent > labelThreshold) ? getX(d.data) : '';
               });
         }
 
@@ -5227,7 +5227,7 @@ nv.models.pieChart = function() {
       showLegend = true,
       color = d3.scale.category20().range(),
       tooltips = true,
-      tooltip = function(key, y, e, graph) { 
+      tooltip = function(key, y, e, graph) {
         return '<h3>' + key + '</h3>' +
                '<p>' +  y + '</p>'
       };
@@ -5408,8 +5408,8 @@ nv.models.scatter = function() {
       getSize = function(d) { return d.size }, // accessor to get the point radius from a data point //TODO: consider renamig size to z
       getShape = function(d) { return d.shape || 'circle' },
       forceX = [], // List of numbers to Force into the X scale (ie. 0, or a max / min, etc.)
-      forceY = [], // List of numbers to Force into the Y scale 
-      forceSize = [], // List of numbers to Force into the Size scale 
+      forceY = [], // List of numbers to Force into the Y scale
+      forceSize = [], // List of numbers to Force into the Size scale
       interactive = true, // If true, plots a voronoi overlay for advanced point interection
       //removeZeroes = false, // If true, filters out points with y == 0 from being interactive //TODO: implement
       clipEdge = false, // if true, masks lines within x and y scale
@@ -5799,7 +5799,7 @@ nv.models.scatterChart = function() {
       tooltips = true,
       tooltipX = function(key, x, y) { return '<strong>' + x + '</strong>' },
       tooltipY = function(key, x, y) { return '<strong>' + y + '</strong>' },
-      tooltip = function(key, x, y, e, graph) { 
+      tooltip = function(key, x, y, e, graph) {
         return '<h3>' + key + '</h3>' +
                '<p>' +  y + ' at ' + x + '</p>'
       };
@@ -6001,7 +6001,7 @@ nv.models.scatterChart = function() {
 
 
 
-      controls.dispatch.on('legendClick', function(d,i) { 
+      controls.dispatch.on('legendClick', function(d,i) {
         d.disabled = !d.disabled;
 
         fisheye = d.disabled ? 0 : 2.5;
@@ -6370,7 +6370,7 @@ nv.models.sparklinePlus = function() {
 
 
 
-      function sparklineHover() { 
+      function sparklineHover() {
         var pos = d3.event.offsetX - margin.left;
 
         hoverLine
@@ -6753,7 +6753,7 @@ nv.models.stackedAreaChart = function() {
       showControls = true,
       showLegend = true,
       tooltips = true,
-      tooltip = function(key, x, y, e, graph) { 
+      tooltip = function(key, x, y, e, graph) {
         return '<h3>' + key + '</h3>' +
                '<p>' +  y + ' on ' + x + '</p>'
       };
@@ -6876,7 +6876,7 @@ nv.models.stackedAreaChart = function() {
       stacked.dispatch.on('areaClick.toggle', function(e) {
         if (data.filter(function(d) { return !d.disabled }).length === 1)
           data = data.map(function(d) {
-            d.disabled = false; 
+            d.disabled = false;
             return d
           });
         else
@@ -6888,7 +6888,7 @@ nv.models.stackedAreaChart = function() {
         selection.transition().call(chart);
       });
 
-      legend.dispatch.on('legendClick', function(d,i) { 
+      legend.dispatch.on('legendClick', function(d,i) {
         d.disabled = !d.disabled;
 
         if (!data.filter(function(d) { return !d.disabled }).length) {
@@ -6901,7 +6901,7 @@ nv.models.stackedAreaChart = function() {
         selection.transition().call(chart);
       });
 
-      controls.dispatch.on('legendClick', function(d,i) { 
+      controls.dispatch.on('legendClick', function(d,i) {
         if (!d.disabled) return;
 
         controlsData = controlsData.map(function(s) {
