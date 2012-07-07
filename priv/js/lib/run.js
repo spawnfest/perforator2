@@ -26,10 +26,7 @@ exports.init = function(page, cb) {
                             },
                             time : {
                                 previous : 311,
-                                mean : 300,
-                                current : 300,
-                                max : 400,
-                                min : 200
+                                current : 300
                             }
                         }
                     }, {
@@ -44,10 +41,7 @@ exports.init = function(page, cb) {
                             },
                             time : {
                                 previous : 250,
-                                mean : 300,
-                                current : 330,
-                                max : 400,
-                                min : 200
+                                current : 330
                             }
                         }
                     }
@@ -67,10 +61,7 @@ exports.init = function(page, cb) {
                             },
                             time : {
                                 previous : 211,
-                                mean : 300,
-                                current : 300,
-                                max : 400,
-                                min : 200
+                                current : 300
                             }
                         }
                     }, {
@@ -85,10 +76,7 @@ exports.init = function(page, cb) {
                             },
                             time : {
                                 previous : 350,
-                                mean : 300,
-                                current : 330,
-                                max : 400,
-                                min : 200
+                                current : 330
                             }
                         }
                     }
@@ -127,12 +115,19 @@ exports.init = function(page, cb) {
             v.each(modules, function(module) {
                 v.each(module.tests, function(test) {
                     bonzo(qwery('#' + test.id)).empty();
+                    var data = test.series[key];
+                    var ranges = [];
+                    ranges.push(typeof data.min === 'undefined' ? 0 : data.min);
+                    if(typeof data.mean !== 'undefined') {
+                        ranges.push(data.mean);
+                    }
+                    ranges.push(typeof data.max === 'undefined' ? Math.max(data.current, data.previous) : data.max);
                     w.d3.select('#' + test.id).datum({
-                        "title":test.name,
-                        "subtitle":seriesMap[key].units,
-                        "ranges":[test.series[key].min, test.series[key].mean, test.series[key].max],
-                        "measures":[test.series[key].current],
-                        "markers":[test.series[key].previous]
+                        title: test.name,
+                        subtitle: seriesMap[key].units,
+                        ranges: ranges,
+                        measures: [data.current],
+                        markers: [data.previous]
                     }).call(chart);
                     bonzo(qwery('#' + test.id + ' .measure')).css('fill', test.series[key].current > test.series[key].previous ? (seriesMap[key].higherBetter ? '#0f0' : '#f00') : (seriesMap[key].higherBetter ? '#f00' : '#0f0'));
                 });
