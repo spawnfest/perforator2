@@ -67,8 +67,8 @@ test_ping_and_build() ->
     ok = meck:new(perforator_ci_git, [no_link, passthrough]),
     meck:expect(perforator_ci_git, check_for_updates,
         fun
-            (_, <<"random_commit_id">>) -> undefined;
-            (_, _) -> <<"random_commit_id">>
+            (_, _, <<"random_commit_id">>) -> undefined;
+            (_, _, _) -> <<"random_commit_id">>
         end),
     ok = meck:new(perforator_ci_builder, [no_link, passthrough]),
     ok = meck:expect(perforator_ci_builder, build, 3, ok),
