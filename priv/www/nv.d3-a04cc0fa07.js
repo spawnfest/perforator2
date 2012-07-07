@@ -1000,7 +1000,7 @@ nv.models.bulletChart = function() {
 
 
   var showTooltip = function(e, offsetElement) {
-    var offsetElement = document.getElementById("chart"),
+    var //offsetElement = document.getElementById("chart"),
         left = e.pos[0] + offsetElement.offsetLeft + margin.left,
         top = e.pos[1] + offsetElement.offsetTop + margin.top;
 
