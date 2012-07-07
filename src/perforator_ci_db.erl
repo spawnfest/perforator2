@@ -1,0 +1,101 @@
+%% @doc Wrapper for mnesia.
+
+%% @author Martynas <martynas@numeris.lt>
+
+-module(perforator_ci_db).
+
+-include("perforator_ci.hrl").
+
+%% API
+-export([
+    create_project/3,
+
+    init/0,
+    create_tables/0
+]).
+
+%% ============================================================================
+%% API
+%% ============================================================================
+
+%% @doc Initializes a new project. Should be called before starting project
+%% worker.
+%%
+%% Returns generated project id. If project with given project name exists,
+%% will return already generated id.
+-spec create_project(perforator_ci_types:project_name(), binary(),
+        perforator_ci_types:polling_strategy()) ->
+        perforator_ci_types:project_id().
+create_project(Name, Repo, Polling) ->
+    transaction(
+        fun () ->
+            case mnesia:index_read(project, Name, #project.name) of
+                [#project{id=ID}] -> ID;
+                [] ->
+                    % Get next id
+                    ID =
+                        case mnesia:last(project) of
+                            '$end_of_table' -> 1;
+                            N when is_integer(N) -> N+1
+                        end,
+                    % Write teh project data
+                    ok = mnesia:write(
+                        #project{
+                            id = ID,
+                            name = Name,
+                            repo = Repo,
+                            polling = Polling
+                        }),
+
+                    ID
+            end
+        end).
+
+%% ============================================================================
+%% DB Init
+%% ============================================================================ %%
+%% @doc Creates mnesia schema and tables.
+%% WARNING: destroys all data!!!
+init() ->
+    % Schema
+    mnesia:delete_schema([node()]),
+    mnesia:create_schema([node()]),
+
+    ok = mnesia:start(),
+
+    create_tables().
+
+create_tables() ->
+    mnesia:delete_table(project),
+    {atomic, ok} = mnesia:create_table(project, [
+        {type, ordered_set},
+        {attributes, record_info(fields, project)},
+        {index, [#project.name]},
+        {disc_copies, [node()]}
+    ]),
+
+    mnesia:delete_table(project_build),
+    {atomic, ok} = mnesia:create_table(project_build, [
+        {type, ordered_set},
+        {attributes, record_info(fields, project_build)},
+        {disc_copies, [node()]}
+    ]),
+
+    ok.
+
+%% ============================================================================
+%% Helpers
+%% ============================================================================
+
+%% @doc Executes transaction with given funs or fun.
+%% @throws {aborted_transaction, term()}.
+-spec transaction([fun()] | fun()) -> term().
+transaction(Funs) when is_list(Funs) ->
+    Fun = fun () -> [F() || F <- Funs] end,
+    transaction(Fun);
+
+transaction(Fun) ->
+    case mnesia:transaction(Fun) of
+        {atomic, Return} -> Return;
+        {aborted, Reason} -> throw({aborted_transaction, Reason})
+    end.
