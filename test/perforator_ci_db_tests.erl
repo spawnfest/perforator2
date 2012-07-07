@@ -28,19 +28,23 @@ db_test_() ->
 test_create_project() ->
     ?assertEqual(
         1,
-        perforator_ci_db:create_project(<<"omg">>, <<"repo">>, on_demand)
+        perforator_ci_db:create_project({
+            <<"1">>, "r", "b", git, on_demand, [], []})
     ),
     ?assertEqual(
         1,
-        perforator_ci_db:create_project(<<"omg">>, <<"repo">>, on_demand)
+        perforator_ci_db:create_project({
+            <<"1">>, "r", "b", git, on_demand, [], []})
     ),
     ?assertEqual(
         2,
-        perforator_ci_db:create_project(<<"gmo">>, <<"repo">>, on_demand)
+        perforator_ci_db:create_project({
+            <<"2">>, "r", "b", git, on_demand, [], []})
     ),
     ?assertMatch(
-        #project{id=1, name= <<"omg">>, repo= <<"repo">>,
-            polling=on_demand},
+        #project{id=1, name= <<"1">>,
+            repo_url="r", branch="b", repo_backend=git,
+            polling=on_demand, build_instructions=[], info=[]},
         perforator_ci_db:get_project(1)
     ),
     ?assertMatch(

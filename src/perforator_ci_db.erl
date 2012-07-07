@@ -9,7 +9,7 @@
 
 %% API
 -export([
-    create_project/3,
+    create_project/1,
     get_project/1,
     get_projects/0,
     create_build/4,
@@ -32,10 +32,14 @@
 %%
 %% Returns generated project id. If project with given project name exists,
 %% will return already generated id.
--spec create_project(perforator_ci_types:project_name(), binary(),
-        perforator_ci_types:polling_strategy()) ->
-        perforator_ci_types:project_id().
-create_project(Name, Repo, Polling) ->
+-spec create_project({
+        perforator_ci_types:project_name(), perforator_ci_types:repo_url(),
+        perforator_ci_types:branch(), perforator_ci_types:repo_backend(),
+        perforator_ci_types:polling_strategy(),
+        perforator_ci_types:build_instructions(), list()}) ->
+            perforator_ci_types:project_id().
+create_project({Name, RepoUrl, Branch, RepoBackend, Polling, BuildInstr,
+        Info}) ->
     transaction(
         fun () ->
             case mnesia:index_read(project, Name, #project.name) of
@@ -52,8 +56,12 @@ create_project(Name, Repo, Polling) ->
                         #project{
                             id = ID,
                             name = Name,
-                            repo = Repo,
-                            polling = Polling
+                            repo_url = RepoUrl,
+                            branch = Branch,
+                            repo_backend = RepoBackend,
+                            polling = Polling,
+                            build_instructions = BuildInstr,
+                            info = Info
                         }),
 
                     ID

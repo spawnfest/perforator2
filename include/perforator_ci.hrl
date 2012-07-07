@@ -3,19 +3,27 @@
 %% ============================================================================
 
 -record(project, {
-    id=0 :: perforator_ci_types:project_id(),
-    name :: perorator_ci_types:project_name(),
-    repo :: binary(),
-    repo_backend=perforator_ci_git :: atom(),
-    polling=on_demand :: perforator_ci_types:polling_strategy()
+    id=0 :: perforator_ci_types:project_id(), % unique
+    name :: perorator_ci_types:project_name(), % unique
+
+    repo_url :: perforator_ci_types:repo_url(),
+    branch :: perforator_ci_types:branch(),
+    repo_backend=git :: perforator_ci_types:repo_backend(),
+
+    polling=on_demand :: perforator_ci_types:polling_strategy(),
+    build_instructions=[] :: list(),
+
+    info=[] :: list() % random information
 }).
 
 -record(project_build, {
-    id=0 :: perforator_ci_types:build_id(), % global id
+    id=0 :: perforator_ci_types:build_id(), % global id, unique
     local_id=0 :: perforator_ci_types:build_id(), % local (in project) id
     project_id=0 :: perforator_ci_types:project_id(),
+
     timestamp :: perforator_ci_types:timestamp(),
-    commit_id :: perorator_ci_types:commit_id(),
+    commit_id :: perorator_ci_types:commit_id(), % most likely unique
+
     info=[] :: list(), % @todo specify
     finished=false :: boolean()
 }).

@@ -29,9 +29,13 @@
 
 -record(state, {
     project_id :: perforator_ci_types:project_id(),
-    repo :: binary(), % remote repo url
-    repo_backend :: atom(),
+
+    repo_url :: perforator_ci_types:repo_url(),
+    branch :: perforator_ci_types:branch(),
+    repo_backend :: perforator_ci_types:repo_backend(),
+
     polling=on_demand :: perforator_ci_types:polling_strategy(),
+
     last_build_id=0 :: perforator_ci_types:build_id(),
     last_commit_id= <<"undef">> :: perforator_ci_types:commit_id()
 }).
@@ -73,12 +77,13 @@ init([ProjectID]) ->
         true = gproc:reg({n, l, ProjectID}),
 
         % Restore state data
-        #project{repo=Repo, repo_backend=RepoBackend, polling=Polling} =
-            perforator_ci_db:get_project(ProjectID),
+        #project{repo_url=RepoUrl, branch=Branch, repo_backend=RepoBackend,
+            polling=Polling} = perforator_ci_db:get_project(ProjectID),
 
         State0 = #state{
             project_id = ProjectID,
-            repo = Repo,
+            repo_url = RepoUrl,
+            branch = Branch,
             repo_backend = RepoBackend,
             polling = Polling
         },
