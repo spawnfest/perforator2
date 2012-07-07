@@ -1,5 +1,6 @@
 var v = require('valentine');
 var qwery = require('qwery');
+var bonzo = require('bonzo');
 var bean = require('bean');
 var t = require('./templates');
 var w = require('./window');
@@ -53,47 +54,52 @@ exports.init = function(page, cb) {
         page.body.html(t.test.render({
             runs : runs
         }));
-        v.each(series, function(series) {
-            var key = series.key;
-            var chart = w.nv.models.lineChart();
-            chart.tooltipContent(function(_, x, y, e, graph) {
-                return '<h3>' + runs[x].name + '</h3>' + '<p>' + runs[x][key] + ' ' + series.units + '</p>';
+        var renderCharts = function() {
+            v.each(series, function(series) {
+                var key = series.key;
+                var chart = w.nv.models.lineChart();
+                chart.tooltipContent(function(_, x, y, e, graph) {
+                    return '<h3>' + runs[x].name + '</h3>' + '<p>' + runs[x][key] + ' ' + series.units + '</p>';
+                });
+                chart.yAxis.axisLabel(series.name + ' (' + series.unitsShort + ')');
+                chart.showLegend(false);
+                var values = [];
+                v.each(runs, function(run, i) {
+                    if(run[key] !== null) {
+                        values.push({
+                            x : i,
+                            y : run[key]
+                        });
+                    }
+                });
+                bonzo(qwery('#g-' + key)).empty();
+                var sel = w.d3.select('#g-' + key).datum([
+                    {
+                        values : values
+                    }
+                ]);
+                var obj = chart(sel);
+                var point = null;
+                sel.on('click', function() {
+                    if(point !== null && point !== 0) {
+                        page.go('/compare/' + moduleName + '/' + testName + '/' + runs[point - 1].name + '/' + runs[point].name);
+                    }
+                });
+                sel.selectAll('.x').selectAll('.axis').remove();
+                var tooltipShow = obj.dispatch.on('tooltipShow');
+                var tooltipHide = obj.dispatch.on('tooltipHide');
+                obj.dispatch.on('tooltipShow', function(e) {
+                    point = e.pointIndex;
+                    tooltipShow(e);
+                });
+                obj.dispatch.on('tooltipHide', function(e) {
+                    point = null;
+                    tooltipHide(e);
+                });
             });
-            chart.yAxis.axisLabel(series.name + ' (' + series.unitsShort + ')');
-            chart.showLegend(false);
-            var values = [];
-            v.each(runs, function(run, i) {
-                if(run[key] !== null) {
-                    values.push({
-                        x : i,
-                        y : run[key]
-                    });
-                }
-            });
-            var sel = w.d3.select('#g-' + key).datum([
-                {
-                    values : values
-                }
-            ]);
-            var obj = chart(sel);
-            var point = null;
-            sel.on('click', function() {
-                if(point !== null && point !== 0) {
-                    page.go('/compare/' + moduleName + '/' + testName + '/' + runs[point - 1].name + '/' + runs[point].name);
-                }
-            });
-            sel.selectAll('.x').selectAll('.axis').remove();
-            var tooltipShow = obj.dispatch.on('tooltipShow');
-            var tooltipHide = obj.dispatch.on('tooltipHide');
-            obj.dispatch.on('tooltipShow', function(e) {
-                point = e.pointIndex;
-                tooltipShow(e);
-            });
-            obj.dispatch.on('tooltipHide', function(e) {
-                point = null;
-                tooltipHide(e);
-            });
-        });
+        };
+        renderCharts();
+        w.nv.utils.windowResize(renderCharts);
     });
     cb(null);
 };

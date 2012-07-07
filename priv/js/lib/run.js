@@ -111,7 +111,9 @@ exports.init = function(page, cb) {
                 });
             });
         });
+        var currentSeries = null;
         var setSeries = function(key) {
+            currentSeries = key;
             v.each(modules, function(module) {
                 v.each(module.tests, function(test) {
                     bonzo(qwery('#' + test.id)).empty();
@@ -134,6 +136,9 @@ exports.init = function(page, cb) {
             });
         };
         setSeries('time');
+        w.nv.utils.windowResize(function() {
+            setSeries(currentSeries);
+        });
     });
     cb();
 };

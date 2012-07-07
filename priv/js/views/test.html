@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row-fluid">
     <div class="span6">
         <svg id="g-time" style="height:280px"></svg>
     </div>
@@ -6,7 +6,7 @@
         <svg id="g-load" style="height:280px"></svg>
     </div>
 </div>
-<div class="row">
+<div class="row-fluid">
     <div class="span6">
         <svg id="g-memutil" style="height:280px"></svg>
     </div>
@@ -14,28 +14,29 @@
         <svg id="g-cpuutil" style="height:280px"></svg>
     </div>
 </div>
-<div class="span12">
-    <table class="table table-bordered table-striped table-condensed">
-        <thead>
-            <tr>
-                <th>Run</th>
-                <th>Duration</th>
-                <th>CPU load</th>
-                <th>Memory utilization</th>
-                <th>CPU utilization</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#runs}}
-            <tr>
-                <td>{{name}}</td>
-                <td class="{{time_class}}">{{time_label}}</td>
-                <td class="{{load_class}}">{{load_label}}</td>
-                <td class="{{memutil_class}}">{{memutil_label}}</td>
-                <td class="{{cpuutil_class}}">{{cpuutil_label}}</td>
-            </tr>
-            {{/runs}}
-        </tbody>
-    </table>
-
+<div class="row-fluid">
+    <div class="span12">
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th>Run</th>
+                    <th>Duration</th>
+                    <th>CPU load</th>
+                    <th>Memory utilization</th>
+                    <th>CPU utilization</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#runs}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td class="{{time_class}}">{{time_label}}</td>
+                    <td class="{{load_class}}">{{load_label}}</td>
+                    <td class="{{memutil_class}}">{{memutil_label}}</td>
+                    <td class="{{cpuutil_class}}">{{cpuutil_label}}</td>
+                </tr>
+                {{/runs}}
+            </tbody>
+        </table>
+    </div>
 </div>
