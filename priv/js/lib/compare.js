@@ -27,12 +27,28 @@ exports.init = function(page, cb) {
         });
         step(function() {
             var group = this.group();
+            page.req('runs', null, state.projectId, group());
             v.each(runs, function(run) {
                 page.req('testRun', null, run, group());
+                page.req('modules', null, {
+                    projectId : state.projectId,
+                    runId : run.runId
+                }, group());
+                page.req('tests', null, {
+                    projectId : state.projectId,
+                    runId : run.runId,
+                    moduleName : run.moduleName
+                }, group());
             });
-        }, function(_, runs) {
-            var runA = runs[0].run;
-            var runB = runs[1].run;
+        }, function(_, group) {
+            var runA = group[1].run;
+            var modulesA = group[2].modules;
+            var testsA = group[3].modules;
+
+            var runB = group[4].run;
+            var modulesB = group[5].modules;
+            var testsB = group[6].modules;
+
             var numbers = [];
             v.each(series, function(series) {
                 numbers.push({
@@ -45,33 +61,11 @@ exports.init = function(page, cb) {
             page.body.html(t.compare.render({
                 runA : runA,
                 runB : runB,
-                modules : [
-                    {
-                        name : 'moduleA'
-                    }, {
-                        name : 'moduleB'
-                    }, {
-                        name : 'moduleC'
-                    }
-                ],
-                runs : [
-                    {
-                        name : '6972067'
-                    }, {
-                        name : '2346734'
-                    }, {
-                        name : '2736297'
-                    }
-                ],
-                tests : [
-                    {
-                        name : 'testA'
-                    }, {
-                        name : 'testB'
-                    }, {
-                        name : 'testC'
-                    }
-                ],
+                modulesA : modulesA,
+                modulesB : modulesB,
+                runs : group[0].runs,
+                testsA : testsA,
+                testsB : testsB,
                 commits : [
                     {
                         id : 'a8a7d85c8c',
@@ -84,6 +78,24 @@ exports.init = function(page, cb) {
                 ],
                 numbers : numbers
             }));
+            bonzo(qwery('#runA')).val(runs[0].runId);
+            bonzo(qwery('#runB')).val(runs[1].runId);
+            bonzo(qwery('#moduleA')).val(runs[0].moduleName);
+            bonzo(qwery('#moduleB')).val(runs[1].moduleName);
+            bonzo(qwery('#testA')).val(runs[0].testName);
+            bonzo(qwery('#testB')).val(runs[1].testName);
+            var change = function() {
+                var runA = bonzo(qwery('#runA')).val();
+                var runB = bonzo(qwery('#runB')).val();
+                var moduleA = bonzo(qwery('#moduleA')).val();
+                var moduleB = bonzo(qwery('#moduleB')).val();
+                var testA = bonzo(qwery('#testA')).val();
+                var testB = bonzo(qwery('#testB')).val();
+                page.go('/' + state.projectId + '/compare/' + runA + '-' + runB + '/' + moduleA + '-' + moduleB + '/' + testA + '-' + testB);
+            };
+            v.each(qwery('select'), function(select) {
+                bean.add(select, 'change', change);
+            });
         });
     });
     cb();

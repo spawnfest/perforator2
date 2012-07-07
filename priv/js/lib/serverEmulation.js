@@ -1,4 +1,35 @@
 exports.init = function(page, cb) {
+    page.on('req_tests', function(_, req) {
+        page.emit('res_tests', null, {
+            projectId : req.projectId,
+            runId : req.runId,
+            moduleName : req.moduleName,
+            modules : [
+                {
+                    name : 'testA'
+                }, {
+                    name : 'testB'
+                }, {
+                    name : 'testC'
+                }
+            ]
+        });
+    });
+    page.on('req_modules', function(_, req) {
+        page.emit('res_modules', null, {
+            projectId : req.projectId,
+            runId : req.runId,
+            modules : [
+                {
+                    name : 'moduleA'
+                }, {
+                    name : 'moduleB'
+                }, {
+                    name : 'moduleC'
+                }
+            ]
+        });
+    });
     page.on('req_testRun', function(_, req) {
         page.emit('res_testRun', null, {
             projectId : req.projectId,

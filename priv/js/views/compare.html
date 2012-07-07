@@ -12,52 +12,52 @@
             <tbody>
                 <tr>
                     <td class="app-a">
-                        <select class="app-runs">
+                        <select id="runA" class="app-runs">
                             {{#runs}}
-                            <option value="{{name}}">{{name}}</option>
+                            <option value="{{id}}">{{id}}</option>
                             {{/runs}}
                         </select>
                     </td>
                     <td class="app-doublelabel">Run</td>
                     <td class="app-b">
-                        <select class="app-runs">
+                        <select id="runB" class="app-runs">
                             {{#runs}}
-                            <option value="{{name}}">{{name}}</option>
+                            <option value="{{id}}">{{id}}</option>
                             {{/runs}}
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td class="app-a">
-                        <select class="app-modules">
-                            {{#modules}}
+                        <select id="moduleA" class="app-modules">
+                            {{#modulesA}}
                             <option value="{{name}}">{{name}}</option>
-                            {{/modules}}
+                            {{/modulesA}}
                         </select>
                     </td>
                     <td class="app-doublelabel">Module</td>
                     <td class="app-b">
-                        <select class="app-modules">
-                            {{#modules}}
+                        <select id="moduleB" class="app-modules">
+                            {{#modulesB}}
                             <option value="{{name}}">{{name}}</option>
-                            {{/modules}}
+                            {{/modulesB}}
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td class="app-a">
-                        <select class="app-tests">
-                            {{#tests}}
+                        <select id="testA" class="app-tests">
+                            {{#testsA}}
                             <option value="{{name}}">{{name}}</option>
-                            {{/tests}}
+                            {{/testsA}}
                         </select>
                     </td>
                     <td class="app-doublelabel">Test</td>
                     <td class="app-b">
-                        <select class="app-tests">
-                            {{#tests}}
+                        <select id="testB" class="app-tests">
+                            {{#testsB}}
                             <option value="{{name}}">{{name}}</option>
-                            {{/tests}}
+                            {{/testsB}}
                         </select>
                     </td>
                 </tr>
