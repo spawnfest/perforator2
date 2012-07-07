@@ -1,6 +1,7 @@
 build:
 	npm install
-	cd lib;browserify --verbose --debug --outfile ../../www/browserify.js --entry index.js
+	node scripts/templates
+	node scripts/browserify
 
 browserify:
 	node scripts/browserify watch

@@ -23,6 +23,7 @@ start(_, _) ->
             {[<<"run">>, '...'], cowboy_http_static, ?INDEX_HTML},
             {[<<"test">>, '...'], cowboy_http_static, ?INDEX_HTML},
             {[<<"compare">>, '...'], cowboy_http_static, ?INDEX_HTML},
+            {[<<"project">>, '...'], cowboy_http_static, ?INDEX_HTML},
             % /static/
             {[<<"static">>, '...'], cowboy_http_static, [
                 {directory, {priv_dir, perforator_ci, [<<"www">>]}},

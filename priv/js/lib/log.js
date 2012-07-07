@@ -10,10 +10,12 @@ exports.init = function(page, cb) {
         page.body.html(t.log.render({
             projects : [
                 {
+                    id : '3ttat',
                     title : 'Project omg #1',
                     opened : true
                 },
                 {
+                    id : '3hsdg',
                     title : 'Project omg #2',
                     opened : false
                 }
@@ -39,9 +41,13 @@ exports.init = function(page, cb) {
                 title : 'Project omg #1'
             }
         }));
+        v.each(qwery('.app-edit'), function(edit) {
+            bean.add(edit, 'click', function() {
+                page.go('/project/' + bonzo(edit).data('id') + '/edit');
+            });
+        });
         v.each(qwery('tr'), function(row) {
-            bean.add(row, 'click', function(e) {
-                console.log(bonzo(row).data('id'));
+            bean.add(row, 'click', function() {
                 page.go('/run/' + bonzo(row).data('id'));
             });
         });
