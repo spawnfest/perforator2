@@ -16,7 +16,8 @@
     project_id=0 :: perforator_ci_types:project_id(),
     timestamp :: perforator_ci_types:timestamp(),
     commit_id :: perorator_ci_types:commit_id(),
-    info=[] :: list() % @todo specify
+    info=[] :: list(), % @todo specify
+    finished=false :: boolean()
 }).
 
 %% ============================================================================

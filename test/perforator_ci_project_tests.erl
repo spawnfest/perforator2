@@ -26,7 +26,6 @@ project_test_() ->
 %% ============================================================================
 
 test_start_project() ->
-    try
     1 = perforator_ci:create_and_start_project(<<"a">>, <<"b">>, on_demand),
     1 = perforator_ci:create_and_start_project(<<"a">>, <<"b">>, on_demand),
 
@@ -46,13 +45,7 @@ test_start_project() ->
         [_], % the same child is up
         supervisor:which_children(perforator_ci_project_sup)
     ),
-    ?assert(perforator_ci_project:is_project_running(1)),
-
-    ok
-
-    catch
-        C:R -> ?info("WTF", [{C, R}, {st, erlang:get_stacktrace()}])
-    end.
+    ?assert(perforator_ci_project:is_project_running(1)).
 
 test_ping_and_build() ->
     ok = meck:new(perforator_ci_git, [no_link, passthrough]),

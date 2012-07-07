@@ -63,6 +63,10 @@ test_create_build() ->
     ?assertEqual(
         {4, 2},
         perforator_ci_db:create_build(666, 123, <<"cid3">>, [])),
+
     ?assertMatch(
         #project_build{commit_id= <<"cid1">>},
-        perforator_ci_db:get_last_build(42)).
+        perforator_ci_db:get_last_build(42)),
+    ?assertMatch(
+        [#project_build{id=3, local_id=1}, #project_build{id=4, local_id=2}],
+        perforator_ci_db:get_unfinished_builds(666)).

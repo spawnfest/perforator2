@@ -13,6 +13,7 @@
     get_projects/0,
     create_build/4,
     get_last_build/1,
+    get_unfinished_builds/1,
 
     wait_for_db/0,
     init/0,
@@ -94,6 +95,19 @@ create_build(ProjectID, TS, CommitID, Info) ->
             end
         end).
 
+%% @doc Returns all unfinished (sorted) builds.
+-spec get_unfinished_builds(perforator_ci_types:project_id()) ->
+        [#project_build{}].
+get_unfinished_builds(ProjectID) ->
+    sort_builds(transaction(
+        fun () ->
+            mnesia:index_match_object(
+                #project_build{project_id=ProjectID, finished=false, _='_'},
+                #project_build.project_id
+            )
+        end
+    ), asc).
+
 %% @doc Returns last project build.
 -spec get_last_build(perforator_ci_types:project_id()) ->
         #project_build{} | undefined.
@@ -103,7 +117,7 @@ get_last_build(ProjectID) ->
             case mnesia:index_read(project_build, ProjectID,
                     #project_build.project_id) of
                 [] -> undefined;
-                Bs -> lists:last(Bs)
+                Bs when is_list(Bs) -> hd(sort_builds(Bs, desc))
             end
         end).
 
@@ -179,3 +193,15 @@ transaction(Fun) ->
         {atomic, Return} -> Return;
         {aborted, Reason} -> throw({aborted_transaction, Reason})
     end.
+
+-spec sort_builds([#project_build{}], asc|desc) -> [#project_build{}].
+sort_builds(Builds, Order) ->
+    Fun =
+        case Order of
+            asc ->
+                fun (#project_build{id=A}, #project_build{id=B}) -> A < B end;
+            desc ->
+                fun (#project_build{id=A}, #project_build{id=B}) -> A >= B end
+        end,
+
+    lists:sort(Fun, Builds).
