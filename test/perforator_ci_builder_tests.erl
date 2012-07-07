@@ -37,7 +37,8 @@ builder_test_() ->
         end,
         [
             {"Build workflow", fun test_workflow/0},
-            {"Callee crashes", fun test_callee_crash/0}
+            {"Callee crashes", fun test_callee_crash/0},
+            {"Worker crash", fun test_worker_crash/0}
         ]
     }.
 
@@ -86,6 +87,26 @@ test_callee_crash() ->
 
     ?assertEqual(
         [{Pid1, #project{}, #project_build{id=7}}],
+        perforator_ci_builder:get_queue()
+    ).
+
+% let worker crash: worker is restarted
+test_worker_crash() ->
+    meck:expect(perforator_ci_builder, run_build,
+        fun (_) -> timer:sleep(500), a+b end),
+
+    perforator_ci_builder:build(#project{}, #project_build{id=1}),
+    timer:sleep(50),
+    Pid1 = perforator_ci_builder:get_worker(),
+    ?silent(alert, timer:sleep(500)),
+    Pid2 = perforator_ci_builder:get_worker(),
+
+    ?assert(is_pid(Pid1)),
+    ?assert(is_pid(Pid2)),
+    ?assertNot(Pid1 =:= Pid2),
+
+    ?assertEqual(
+        [{self(), #project{}, #project_build{id=1}}],
         perforator_ci_builder:get_queue()
     ).
 

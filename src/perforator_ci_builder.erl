@@ -64,6 +64,10 @@ build(Project, Build) ->
 get_queue() ->
     gen_server:call(?SERV_NAME, get_queue).
 
+%% @doc Used for testing.
+get_worker() ->
+    gen_server:call(?SERV_NAME, get_worker).
+
 %% =============================================================================
 %% gen_server callbacks
 %% =============================================================================
@@ -77,6 +81,9 @@ init([]) ->
 
 handle_call(get_queue, _, #state{build_queue=Q}=S) ->
     {reply, Q, S};
+
+handle_call(get_worker, _, #state{worker=P}=S) ->
+    {reply, P, S};
 
 handle_call({build, Project, Build}, {Pid, _},
         #state{build_queue=Q}=State) ->
