@@ -40,8 +40,10 @@ project_test_() ->
 %% ============================================================================
 
 test_start_project() ->
-    1 = perforator_ci:create_and_start_project(<<"a">>, ?REPO, on_demand),
-    1 = perforator_ci:create_and_start_project(<<"a">>, ?REPO, on_demand),
+    1 = perforator_ci:create_and_start_project({<<"1">>, ?REPO, "b",
+        perforator_ci_git, on_demand, [], []}),
+    1 = perforator_ci:create_and_start_project({<<"1">>, ?REPO, "b",
+        perforator_ci_git, on_demand, [], []}),
 
     ?assertMatch(
         [_], % exactly one child is started
@@ -71,8 +73,8 @@ test_ping_and_build() ->
     ok = meck:new(perforator_ci_builder, [no_link, passthrough]),
     ok = meck:expect(perforator_ci_builder, build, 3, ok),
 
-    1 = perforator_ci:create_and_start_project(<<"omg">>, ?REPO,
-        {time, 50}),
+    1 = perforator_ci:create_and_start_project({<<"1">>, ?REPO, "b",
+        perforator_ci_git, {time, 50}, [], []}),
     timer:sleep(100),
 
     ?assert(meck:validate(perforator_ci_git)),

@@ -27,7 +27,7 @@
 
 -type repo_url() :: list().
 -type branch() :: list().
--type repo_backend() :: git. % maybe CVS one day
+-type repo_backend() :: perforator_git_backend. % maybe CVS one day
 
 -type build_id() :: integer().
 -type build_local_id() :: integer().
