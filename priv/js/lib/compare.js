@@ -35,6 +35,8 @@ exports.init = function(page, cb) {
             });
         });
         page.body.html(t.compare.render({
+            runA : runA,
+            runB : runB,
             modules : [
                 {
                     name : 'moduleA'

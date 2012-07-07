@@ -52,6 +52,8 @@ exports.init = function(page, cb) {
             });
         });
         page.body.html(t.test.render({
+            moduleName : moduleName,
+            testName : testName,
             runs : runs
         }));
         var renderCharts = function() {
