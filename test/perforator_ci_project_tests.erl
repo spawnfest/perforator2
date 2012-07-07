@@ -59,12 +59,20 @@ test_ping_and_build() ->
 
     1 = perforator_ci:create_and_start_project(<<"omg">>, <<"rep">>,
         {time, 50}),
-    timer:sleep(50),
+    timer:sleep(100),
 
     ?assert(meck:validate(perforator_ci_git)),
     ?assert(meck:validate(perforator_ci_builder)),
 
-    % perforator_ci_db:get_unfinished_builds()
+    ?assertMatch(
+        [#project_build{id=1, commit_id= <<"random_commit_id">>}],
+        perforator_ci_db:get_unfinished_builds(1)
+    ),
 
+    ok = gen_server:call(perforator_ci_project:get_pid(1),
+        {build_finished, 1, [omg]}),
     timer:sleep(50),
+
+    ?assertMatch([], perforator_ci_db:get_unfinished_builds(1)),
+
     ok = meck:unload([perforator_ci_builder, perforator_ci_git]).

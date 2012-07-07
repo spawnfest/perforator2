@@ -4,6 +4,7 @@
 
 -module(perforator_ci_db).
 
+-include_lib("stdlib/include/qlc.hrl").
 -include("perforator_ci.hrl").
 
 %% API
@@ -14,10 +15,12 @@
     create_build/4,
     get_last_build/1,
     get_unfinished_builds/1,
+    finish_build/2,
 
     wait_for_db/0,
     init/0,
-    create_tables/0
+    create_tables/0,
+    dump/1
 ]).
 
 %% ============================================================================
@@ -121,6 +124,24 @@ get_last_build(ProjectID) ->
             end
         end).
 
+%% @doc Updates build status to finished and appends info.
+%% @throws {build_not_found, BuildID}.
+-spec finish_build(perforator_ci_types:build_id(), list()) -> ok.
+finish_build(BuildID, Info) ->
+    transaction(
+        fun () ->
+            case mnesia:read(project_build, BuildID) of
+                [#project_build{}=B] ->
+                    ok = mnesia:write(
+                        B#project_build{
+                            finished = true,
+                            info = Info
+                        });
+                [_] ->
+                    throw({build_not_found, BuildID})
+            end
+        end).
+
 %% @doc Returns #project.
 %% @throws {project_not_found, ID}.
 -spec get_project(perforator_ci_types:project_id()) -> #project{}.
@@ -205,3 +226,9 @@ sort_builds(Builds, Order) ->
         end,
 
     lists:sort(Fun, Builds).
+
+dump(Table) ->
+    Fun = fun() ->
+        qlc:eval(qlc:q([R || R <- mnesia:table(Table)]))
+    end,
+    transaction(Fun).

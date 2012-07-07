@@ -69,4 +69,9 @@ test_create_build() ->
         perforator_ci_db:get_last_build(42)),
     ?assertMatch(
         [#project_build{id=3, local_id=1}, #project_build{id=4, local_id=2}],
+        perforator_ci_db:get_unfinished_builds(666)),
+
+    ?assertEqual(ok, perforator_ci_db:finish_build(4, [omg])),
+    ?assertMatch(
+        [#project_build{id=3, local_id=1}],
         perforator_ci_db:get_unfinished_builds(666)).

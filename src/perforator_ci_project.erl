@@ -59,6 +59,9 @@ is_project_running(ProjectID) ->
 start_link(ProjectID) ->
     gen_server:start_link(?MODULE, [ProjectID], []).
 
+get_pid(ProjectID) ->
+    gproc:lookup_pid({n, l, ProjectID}).
+
 %% =============================================================================
 %% gen_server callbacks
 %% =============================================================================
@@ -90,7 +93,7 @@ init([ProjectID]) ->
                 undefined -> State0 % nothing has been built
             end,
        
-        % Afk to build unfinished builds:
+        % Ask to build unfinished builds:
         [ok = perforator_ci_builder:build(ProjectID, C, B) ||
             #project_build{id=B, commit_id=C} <-
                 perforator_ci_db:get_unfinished_builds(ProjectID)],
@@ -103,6 +106,13 @@ init([ProjectID]) ->
         error:badarg -> % Most likely process already started, shame on gproc
             {stop, project_already_started}
     end.
+
+handle_call({build_finished, BuildID, Info}, _, State) ->
+    ok = perforator_ci_db:finish_build(BuildID, Info),
+
+    % @todo pubsub
+
+    {reply, ok, State};
 
 handle_call(_, _, State) ->
     {reply, ok, State}.
@@ -118,11 +128,15 @@ handle_cast(build_now,
 
     {noreply, State};
 
-handle_cast({build, CommitID},
-        #state{project_id=ID, repo_backend=Mod}=State) ->
-    BuildID = perforator_ci_db:create_build(ID,
+handle_cast({build, CommitID}, #state{project_id=ID}=State) ->
+    lager:info("Project (~p): request for build commit ~p~n",
+        [ID, CommitID]),
+    {BuildID, _} = perforator_ci_db:create_build(ID,
         perforator_ci_utils:timestamp(), CommitID, []),
-    % Create job for builder
+
+    % @todo pubsub
+
+    % Create job for a builder
     ok = perforator_ci_builder:build(ID, CommitID, BuildID),
     
     {noreply, State#state{last_commit_id=CommitID, last_build_id=BuildID}};
