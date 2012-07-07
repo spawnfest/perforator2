@@ -76,11 +76,13 @@ step(function() {
     });
 }, function(_, page) {
     this.parallel()(null, page);
-    log.init(page, this.parallel());
     run.init(page, this.parallel());
     test.init(page, this.parallel());
     projectEdit.init(page, this.parallel());
     compare.init(page, this.parallel());
+    // log should be initialized last, otherwise it could take over /project/*
+    // url from projectEdit (/project/add)
+    log.init(page, this.parallel());
 }, function(_, page) {
     p({
         click : true,
