@@ -9,6 +9,10 @@
 %% API
 -export([
     create_project/3,
+    get_project/1,
+    get_projects/0,
+
+    wait_for_db/0,
 
     init/0,
     create_tables/0
@@ -51,9 +55,31 @@ create_project(Name, Repo, Polling) ->
             end
         end).
 
+%% @doc Returns #project.
+%% @throws {project_not_found, ID}.
+-spec get_project(perforator_ci_types:project_id()) -> #project{}.
+get_project(ID) ->
+    transaction(
+        fun () ->
+            case mnesia:read(project, ID) of
+                [] -> throw({project_not_found, ID});
+                [#project{}=P] -> P
+            end
+        end).
+
+%% @doc Returns #project's.
+-spec get_projects() -> [#project{}].
+get_projects() ->
+    transaction(fun () -> mnesia:match_object(#project{_='_'}) end).
+
+%% @doc Wait till all tables are reachable.
+wait_for_db() ->
+    mnesia:wait_for_tables([project, project_build], 42000). % @todo Fix
+
 %% ============================================================================
 %% DB Init
-%% ============================================================================ %%
+%% ============================================================================
+
 %% @doc Creates mnesia schema and tables.
 %% WARNING: destroys all data!!!
 init() ->

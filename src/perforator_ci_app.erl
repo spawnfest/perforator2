@@ -46,6 +46,8 @@ start(_, _) ->
         cowboy_http_protocol, [{dispatch, Dispatch}]
     ),
 
+    perforator_ci_db:wait_for_db(),
+
     perforator_ci_sup:start_link().
 
 stop(_) -> ok.

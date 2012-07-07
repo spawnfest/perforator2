@@ -18,7 +18,8 @@ db_test_() ->
         end,
         fun (_) -> perforator_ci:stop() end,
         [
-            {"Create project", fun test_create_project/0}
+            {"Create project", fun test_create_project/0},
+            {"Get projects", fun test_get_projects/0}
         ]
     }.
 
@@ -32,4 +33,18 @@ test_create_project() ->
     ?assertEqual(
         1,
         perforator_ci_db:create_project(<<"omg">>, <<"repo">>, on_demand)
+    ),
+    ?assertEqual(
+        2,
+        perforator_ci_db:create_project(<<"gmo">>, <<"repo">>, on_demand)
+    ),
+    ?assertMatch(
+        #project{id=1, name= <<"omg">>, repo= <<"repo">>,
+            polling_strategy=on_demand},
+        perforator_ci_db:get_project(1)
     ).
+
+test_get_projects(
+    1 = perforator_ci_db:create_project(<<"a">>, <<"b">>, on_demand),
+
+    ?assertMatch([#project{id=1}], perforator_ci_db:get_projects()).

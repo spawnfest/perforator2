@@ -10,12 +10,14 @@ start() ->
     application:start(compiler),
     application:start(syntax_tools),
     application:start(lager),
+    application:start(mnesia),
     application:start(cowboy),
     application:start(perforator_ci).
 
 stop() ->
     application:stop(perforator_ci),
     application:stop(cowboy),
+    application:stop(mnesia),
     application:stop(lager),
     application:stop(syntax_tools),
     application:stop(compiler).

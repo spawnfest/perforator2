@@ -1,3 +1,5 @@
+%% App supervisor
+
 %% @author Martynas <martynasp@gmail.com>
 
 -module(perforator_ci_sup).
@@ -11,5 +13,15 @@
 start_link() ->
 	supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
+%% ============================================================================
+
 init([]) ->
-	{ok, {{one_for_one, 10, 10}, []}}.
+    Processes = [
+        {
+            perforator_ci_project_sup,
+            {perforator_ci_project_sup,  start_link, []},
+            transient, infinity, supervisor, [perforator_ci_project_sup]
+        }
+    ],
+
+	{ok, {{one_for_one, 10, 10}, Processes}}.

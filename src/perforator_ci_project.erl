@@ -40,6 +40,15 @@
 %% API
 %% ============================================================================
 
+%%% @doc Creates and starts project.
+%-spec create_project(perforator_ci_types:project_name(), binary(),
+%        perforator_ci_types:polling_strategy()) -> term().
+%create_project(Name, Repo, Polling) ->
+%create_project(Name, Repo, Polling) ->
+%    ID = perforator_ci_db:create_project(Name, Repo, Polling),
+%
+%    start_link(ID).
+
 %% @doc Starts project.
 -spec start_link(perforator_ci_types:project_id()) -> term().
 start_link(ProjectID) ->

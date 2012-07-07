@@ -1,7 +1,7 @@
 {application, perforator_ci, [
     {description, "Perforator www"},
     {vsn, "0.1"},
-    {modules, [perforator_ci]}, % hide some
-    {applications, [kernel, stdlib, lager, cowboy]},
+    {modules, [perforator_ci]}, % @todo add all in the end!
+    {applications, [kernel, stdlib, lager, mnesia, cowboy]},
     {mod, {perforator_ci_app, []}}
 ]}.
