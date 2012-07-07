@@ -3,6 +3,8 @@
 -module(perforator_ci_app).
 -behaviour(application).
 
+-include("perforator_ci.hrl").
+
 -export([start/2, stop/1]).
 
 %% @todo move back after finishing with testing
@@ -36,9 +38,10 @@ start(_, _) ->
         ]}
     ],
 
-    {ok, Port} = application:get_env(perforator_ci, http_port),
-    {ok, ListCount} = application:get_env(perforator_ci, listener_count),
-    cowboy:start_listener(perforator_ci_listener, ListCount,
+    Port = perforator_ci_utils:get_env(perforator_ci, http_port, ?HTTP_PORT),
+    LCount = perforator_ci_utils:get_env(perforator_ci, list_count,
+        ?LIST_COUNT),
+    cowboy:start_listener(perforator_ci_listener, LCount,
         cowboy_tcp_transport, [{port, Port}],
         cowboy_http_protocol, [{dispatch, Dispatch}]
     ),
