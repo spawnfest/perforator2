@@ -33,6 +33,7 @@ start(_, _) ->
                     {<<".css">>, [<<"text/css">>]},
                     {<<".js">>, [<<"application/javascript">>]}]}
             ]},
+            {[<<"websocket">>], perforator_ci_ws, []},
             % /*
             {'_', perforator_ci_web_handler, []}
         ]}
