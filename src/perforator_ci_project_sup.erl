@@ -31,7 +31,7 @@ start_link() ->
     Return.
 
 %% @doc Starts project (#project entry should exist in DB!).
--spec start_project(perforator_ci_types:project_id()) -> term().
+-spec start_project(perforator_ci_types:project_id()) -> {ok, term()}.
 start_project(ProjectID) ->
     supervisor:start_child(?MODULE, [ProjectID]).
 

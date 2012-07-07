@@ -40,11 +40,11 @@ test_create_project() ->
     ),
     ?assertMatch(
         #project{id=1, name= <<"omg">>, repo= <<"repo">>,
-            polling_strategy=on_demand},
+            polling=on_demand},
         perforator_ci_db:get_project(1)
     ).
 
-test_get_projects(
+test_get_projects() ->
     1 = perforator_ci_db:create_project(<<"a">>, <<"b">>, on_demand),
 
     ?assertMatch([#project{id=1}], perforator_ci_db:get_projects()).

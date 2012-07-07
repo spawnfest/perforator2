@@ -2,6 +2,6 @@
     {description, "Perforator www"},
     {vsn, "0.1"},
     {modules, [perforator_ci]}, % @todo add all in the end!
-    {applications, [kernel, stdlib, lager, mnesia, cowboy]},
+    {applications, [kernel, stdlib, lager, mnesia, gproc, cowboy]},
     {mod, {perforator_ci_app, []}}
 ]}.

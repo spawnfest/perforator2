@@ -9,8 +9,9 @@
 
 %% API
 -export([
+    is_project_running/1,
     start_link/1
- ]).
+]).
 
 %% gen_server callbacks
 -export([
@@ -40,14 +41,16 @@
 %% API
 %% ============================================================================
 
-%%% @doc Creates and starts project.
-%-spec create_project(perforator_ci_types:project_name(), binary(),
-%        perforator_ci_types:polling_strategy()) -> term().
-%create_project(Name, Repo, Polling) ->
-%create_project(Name, Repo, Polling) ->
-%    ID = perforator_ci_db:create_project(Name, Repo, Polling),
-%
-%    start_link(ID).
+%% @doc Should be called from the same node where project pool is located.
+-spec is_project_running(perforator_ci_types:project_id()) -> boolean().
+is_project_running(ProjectID) ->
+    try
+        gproc:lookup_pid({n, l, ProjectID}),
+        true
+    catch
+        error:badarg -> % shame on gproc #2
+            false
+    end.
 
 %% @doc Starts project.
 -spec start_link(perforator_ci_types:project_id()) -> term().
@@ -59,7 +62,14 @@ start_link(ProjectID) ->
 %% =============================================================================
 
 init([ProjectID]) ->
-    {ok, #state{}}.
+    try
+        true = gproc:reg({n, l, ProjectID}),
+
+        {ok, #state{}}
+    catch
+        error:badarg -> % Most likely process already started, shame on gproc
+            {stop, project_already_started}
+    end.
 
 handle_call(_, _, State) ->
     {reply, ok, State}.

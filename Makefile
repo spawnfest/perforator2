@@ -1,6 +1,6 @@
 REBAR=./rebar
 
-.PHONEY: deps distclean
+.PHONY: deps distclean test
 
 all: deps compile
 

@@ -18,18 +18,30 @@ project_test_() ->
         end,
         fun (_) -> perforator_ci:stop() end,
         [
-            {"Create project", fun test_create_project/0}
+            {"Start project/recovery", fun test_start_project/0}
         ]
     }.
 
 %% ============================================================================
 
-test_create_project() ->
-    ?assertEqual(
-        1,
-        perforator_ci_db:create_project(<<"omg">>, <<"repo">>, on_demand)
+test_start_project() ->
+    1 = perforator_ci:create_and_start_project(<<"a">>, <<"b">>, on_demand),
+    1 = perforator_ci:create_and_start_project(<<"a">>, <<"b">>, on_demand),
+
+    ?assertMatch(
+        [_], % exactly one child is started
+        supervisor:which_children(perforator_ci_project_sup)
     ),
-    ?assertEqual(
-        1,
-        perforator_ci_db:create_project(<<"omg">>, <<"repo">>, on_demand)
-    ).
+
+    ?silent(error,
+        begin
+            application:stop(perforator_ci),
+            application:start(perforator_ci),
+            timer:sleep(50)
+        end),
+
+    ?assertMatch(
+        [_], % the same child is up
+        supervisor:which_children(perforator_ci_project_sup)
+    ),
+    ?assert(perforator_ci_project:is_project_running(1)).
