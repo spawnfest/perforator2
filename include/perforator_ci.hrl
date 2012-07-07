@@ -11,10 +11,12 @@
 }).
 
 -record(project_build, {
-    id=0 :: perforator_ci_types:build_id(),
+    id=0 :: perforator_ci_types:build_id(), % global id
+    local_id=0 :: perforator_ci_types:build_id(), % local (in project) id
     project_id=0 :: perforator_ci_types:project_id(),
     timestamp :: perforator_ci_types:timestamp(),
-    commit_id :: perorator_ci_types:commit_id()
+    commit_id :: perorator_ci_types:commit_id(),
+    info=[] :: list() % @todo specify
 }).
 
 %% ============================================================================

@@ -13,6 +13,7 @@
 %% API
 %% ============================================================================
 
+%% @doc Creates project (in DB) and starts project handler process.
 -spec create_and_start_project(perforator_ci_types:project_name(), binary(),
         perforator_ci_types:polling_strategy()) ->
         perforator_ci_types:project_id().

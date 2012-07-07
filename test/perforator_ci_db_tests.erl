@@ -19,7 +19,8 @@ db_test_() ->
         fun (_) -> perforator_ci:stop() end,
         [
             {"Create project", fun test_create_project/0},
-            {"Get projects", fun test_get_projects/0}
+            {"Get projects", fun test_get_projects/0},
+            {"Create build", fun test_create_build/0}
         ]
     }.
 
@@ -48,3 +49,20 @@ test_get_projects() ->
     1 = perforator_ci_db:create_project(<<"a">>, <<"b">>, on_demand),
 
     ?assertMatch([#project{id=1}], perforator_ci_db:get_projects()).
+
+test_create_build() ->
+    ?assertEqual(
+        {1, 1},
+        perforator_ci_db:create_build(42, 123, <<"cid0">>, [])),
+    ?assertEqual(
+        {1, 1},
+        perforator_ci_db:create_build(42, 123, <<"cid0">>, [])),
+    ?assertEqual(
+        {2, 2},
+        perforator_ci_db:create_build(42, 123, <<"cid1">>, [])),
+    ?assertEqual(
+        {3, 1},
+        perforator_ci_db:create_build(666, 123, <<"cid2">>, [])),
+    ?assertEqual(
+        {4, 2},
+        perforator_ci_db:create_build(666, 123, <<"cid3">>, [])).

@@ -11,9 +11,9 @@
     create_project/3,
     get_project/1,
     get_projects/0,
+    create_build/4,
 
     wait_for_db/0,
-
     init/0,
     create_tables/0
 ]).
@@ -52,6 +52,44 @@ create_project(Name, Repo, Polling) ->
                         }),
 
                     ID
+            end
+        end).
+
+%% @doc Creates new build
+create_build(ProjectID, TS, CommitID, Info) ->
+    transaction(
+        fun () ->
+            case mnesia:index_read(project_build, CommitID,
+                    #project_build.commit_id) of % In a perfect world
+                    % collisions don't exist
+                [#project_build{id=ID, local_id=LID}] -> {ID, LID};
+                [] ->
+                    % Get next global and local id
+                    ID =
+                        case mnesia:last(project_build) of
+                            '$end_of_table' -> 1;
+                            N when is_integer(N) -> N + 1
+                        end,
+                    LID =
+                        case mnesia:index_read(project_build, ProjectID,
+                                #project_build.project_id) of
+                            [] -> 1;
+                            Bs when is_list(Bs) ->
+                                #project_build{local_id=LN} = lists:last(Bs),
+                                LN + 1
+                        end,
+                    % Write
+                    ok = mnesia:write(
+                        #project_build{
+                            id = ID,
+                            local_id = LID,
+                            project_id = ProjectID,
+                            timestamp = TS,
+                            commit_id = CommitID,
+                            info = Info
+                        }),
+
+                    {ID, LID}
             end
         end).
 
@@ -100,10 +138,12 @@ create_tables() ->
         {disc_copies, [node()]}
     ]),
 
+    % @todo Maybe add project_build to #project.builds
     mnesia:delete_table(project_build),
     {atomic, ok} = mnesia:create_table(project_build, [
         {type, ordered_set},
         {attributes, record_info(fields, project_build)},
+        {index, [#project_build.project_id, #project_build.commit_id]},
         {disc_copies, [node()]}
     ]),
 

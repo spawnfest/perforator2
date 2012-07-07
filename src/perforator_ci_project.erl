@@ -1,5 +1,7 @@
 %% @doc Project worker responsible for project repo polling, asking for a
 %% build.
+%%
+%% WARNING: API calls can't be done from remote nodes.
 
 %% @author Martynas <martynasp@gmail.com>
 
@@ -41,7 +43,6 @@
 %% API
 %% ============================================================================
 
-%% @doc Should be called from the same node where project pool is located.
 -spec is_project_running(perforator_ci_types:project_id()) -> boolean().
 is_project_running(ProjectID) ->
     try
