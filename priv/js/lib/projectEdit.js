@@ -6,7 +6,7 @@ var bonzo = require('bonzo');
 var moment = require('moment');
 
 exports.init = function(page, cb) {
-    page.handle(/^\/project\/add$/, function() {
+    page.handle(/^\/add$/, function() {
         page.body.html(t.projectEdit.render({
             action : 'Add'
         }));
@@ -19,12 +19,12 @@ exports.init = function(page, cb) {
                 }
             });
             page.once('projectAdded', function(_, project) {
-                page.go('/project/' + project.id);
+                page.go('/' + project.id);
             });
             e.preventDefault();
         });
     });
-    page.handle(/^\/project\/(.+)\/edit$/, function(from, to, params) {
+    page.handle(/^\/(.+)\/edit$/, function(from, to, params) {
         page.req('project', null, params[0], function(_, project) {
             page.body.html(t.projectEdit.render({
                 project : project,
@@ -39,7 +39,7 @@ exports.init = function(page, cb) {
                         type : 'git'
                     }
                 });
-                page.go('/project/' + project.id);
+                page.go('/' + project.id);
                 e.preventDefault();
             });
         });
