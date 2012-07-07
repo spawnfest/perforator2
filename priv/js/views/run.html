@@ -1,28 +1,30 @@
-<div class="span12">
-    <h2>Run #{{run.id}}</h2>
-    <table class="table table-bordered table-striped table-condensed">
-        <thead>
-            <tr>
-                <th colspan="2">
-                    <select>
-                        {{#series}}
-                        <option value="{{key}}">{{name}}</option>
-                        {{/series}}
-                    </select>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#modules}}
-            <tr>
-                <td><h3>{{name}}</h3></td>
-            </tr>
-            {{#tests}}
-            <tr class="app-clickablerow">
-                <td><svg id="{{id}}" style="height:60px"></svg></td>
-            </tr>
-            {{/tests}}
-            {{/modules}}
-        </tbody>
-    </table>
+<div class="row-fluid">
+    <div class="span12">
+        <h2>Run #{{run.id}}</h2>
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th colspan="2">
+                        <select>
+                            {{#series}}
+                            <option value="{{key}}">{{name}}</option>
+                            {{/series}}
+                        </select>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#modules}}
+                <tr>
+                    <td><h3>{{name}}</h3></td>
+                </tr>
+                {{#tests}}
+                <tr class="app-clickablerow">
+                    <td><svg id="{{id}}" style="height:60px"></svg></td>
+                </tr>
+                {{/tests}}
+                {{/modules}}
+            </tbody>
+        </table>
+    </div>
 </div>

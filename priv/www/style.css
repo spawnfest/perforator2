@@ -6,12 +6,23 @@
 }
 .app-a {
     text-align: left !important;
+    margin: 0 !important;
+    width: 40% !important;
+    background: transparent !important;
 }
 .app-doublelabel {
     text-align: center !important;
+    margin: 0 !important;
+    width: 20% !important;
+    border-left-width: 0 !important;
+    background: transparent !important;
 }
 .app-b {
     text-align: right !important;
+    margin: 0 !important;
+    width: 40% !important;
+    border-left-width: 0 !important;
+    background: transparent !important;
 }
 .app-clickablerow {
     cursor: pointer;
