@@ -7,3 +7,4 @@ log
 *.swp
 Mnesia.*
 .eunit
+erl_crash.dump
