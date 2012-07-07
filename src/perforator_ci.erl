@@ -2,6 +2,8 @@
 
 -module(perforator_ci).
 
+-include("perforator_ci.hrl").
+
 %% API
 -export([
     create_and_start_project/3
@@ -30,22 +32,30 @@ create_and_start_project(Name, Repo, Polling) ->
 %% ============================================================================
 
 start() ->
-    application:start(compiler),
-    application:start(syntax_tools),
-    application:start(lager),
-    application:start(mnesia),
-    application:start(gproc),
-    application:start(cowboy),
-    application:start(perforator_ci).
+    ?mute(begin
+        application:start(compiler),
+        application:start(syntax_tools),
+        application:start(lager)
+    end),
+    ?silent(error, begin
+        application:start(mnesia),
+        application:start(gproc),
+        application:start(cowboy),
+        application:start(perforator_ci)
+    end).
 
 stop() ->
-    application:stop(perforator_ci),
-    application:stop(cowboy),
-    application:stop(gproc),
-    application:stop(mnesia),
-    application:stop(lager),
-    application:stop(syntax_tools),
-    application:stop(compiler).
+    ?silent(error, begin
+        application:stop(perforator_ci),
+        application:stop(cowboy),
+        application:stop(gproc),
+        application:stop(mnesia)
+    end),
+    ?mute(begin
+        application:stop(lager),
+        application:stop(syntax_tools),
+        application:stop(compiler)
+    end).
 
 %% @doc See perforator_ci_db:init/0 for more info.
 init() ->

@@ -18,4 +18,4 @@
 -type build_id() :: integer().
 -type commit_id() :: binary().
 -type timestamp() :: binary().
--type polling_strategy() :: {time, integer()} | on_demand.
+-type polling_strategy() :: {time, integer()} | on_demand. % Time is in ms!

@@ -47,8 +47,26 @@
 -spec is_project_running(perforator_ci_types:project_id()) -> boolean().
 is_project_running(ProjectID) ->
     try
+        gproc:lookup_pid({n, l, ProjectID}),
+        true
+    catch
+        error:badarg -> % gproc shame #2
+            false
+    end.
+
+%% @doc Starts project.
+-spec start_link(perforator_ci_types:project_id()) -> term().
+start_link(ProjectID) ->
+    gen_server:start_link(?MODULE, [ProjectID], []).
+
+%% =============================================================================
+%% gen_server callbacks
+%% =============================================================================
+
+init([ProjectID]) ->
+    try
         % Register
-        true = gproc:lookup_pid({n, l, ProjectID}),
+        true = gproc:reg({n, l, ProjectID}),
 
         % Restore state data
         #project{repo=Repo, repo_backend=RepoBackend, polling=Polling} =
@@ -71,26 +89,10 @@ is_project_running(ProjectID) ->
                 undefined -> State0 % nothing has been built
             end,
 
+        % Set timer for polling (if needed)
+        ok = start_timer(State1),
+
         {ok, State1}
-    catch
-        error:badarg -> % shame on gproc #2
-            false
-    end.
-
-%% @doc Starts project.
--spec start_link(perforator_ci_types:project_id()) -> term().
-start_link(ProjectID) ->
-    gen_server:start_link(?MODULE, [ProjectID], []).
-
-%% =============================================================================
-%% gen_server callbacks
-%% =============================================================================
-
-init([ProjectID]) ->
-    try
-        true = gproc:reg({n, l, ProjectID}),
-
-        {ok, #state{}}
     catch
         error:badarg -> % Most likely process already started, shame on gproc
             {stop, project_already_started}
@@ -99,8 +101,40 @@ init([ProjectID]) ->
 handle_call(_, _, State) ->
     {reply, ok, State}.
 
+handle_cast(build_now,
+        #state{project_id=ID, repo_backend=Mod, last_commit_id=CID}=State) ->
+    case Mod:check_for_updates(ID, CID) of
+        undefined ->
+            gen_server:cast({build, CID}); % rebuild old commit
+        NewCommitID when is_binary(NewCommitID) ->
+            gen_server:cast({build, NewCommitID})
+    end,
+
+    {noreply, State};
+
+handle_cast({build, CommitID},
+        #state{project_id=ID, repo_backend=Mod}=State) ->
+    BuildID = perforator_ci_db:create_build(ID,
+        perforator_ci_utils:timestamp(), CommitID, []),
+    % Create job for builder
+    ok = perforator_ci_builder:build(ID, CommitID, BuildID),
+    
+    {noreply, State#state{last_commit_id=CommitID, last_build_id=BuildID}};
+
 handle_cast(_, State) ->
     {noreply, State}.
+
+handle_info(ping,
+        #state{project_id=ID, repo_backend=Mod, last_commit_id=CID}=State) ->
+    case Mod:check_for_updates(ID, CID) of
+        undefined -> ok; % do nothing
+        NewCID when is_binary(NewCID) ->
+            gen_server:cast(self(), {build, NewCID})
+    end,
+
+    ok = start_timer(State),
+
+    {noreply, State};
 
 handle_info(_, State) ->
     {noreply, State}.
@@ -109,4 +143,17 @@ code_change(_, State, _) ->
     {ok, State}.
 
 terminate(_, _) ->
+    ok.
+
+%% =============================================================================
+%% Helpers
+%% =============================================================================
+
+%% @doc Start timer for polling (if needed).
+-spec start_timer(#state{}) -> ok.
+start_timer(#state{polling=on_demand}) -> ok;
+
+start_timer(#state{polling={time, After}}) ->
+    erlang:send_after(After, self(), ping),
+
     ok.

@@ -7,7 +7,7 @@
     name :: perorator_ci_types:project_name(),
     repo :: binary(),
     repo_backend=perforator_ci_git :: atom(),
-    polling=on_demand :: perorator_ci_types:polling_strategy()
+    polling=on_demand :: perforator_ci_types:polling_strategy()
 }).
 
 -record(project_build, {
@@ -53,10 +53,19 @@
         lager:set_loglevel(lager_console_backend, Level),
         error_logger:tty(false),
         try
-            timer:sleep(1),
-            Expr
+            timer:sleep(10),
+            Expr,
+            timer:sleep(10)
         after
             lager:set_loglevel(lager_console_backend, Lager_OldLevel),
             error_logger:tty(true)
         end
+    end)()).
+
+-define(mute(Expr), (
+    fun () ->
+        error_logger:tty(false),
+        timer:sleep(10),
+        Expr,
+        error_logger:tty(true)
     end)()).
