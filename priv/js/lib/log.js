@@ -23,11 +23,24 @@ var insertProject = function(projects, project) {
     };
 };
 
+var replaceProject = function(projects, project) {
+    for(var i = 0; i < projects.length; i += 1) {
+        if(projects[i].id === project.id) {
+            projects[i] = project;
+            return;
+        }
+    }
+};
+
 exports.init = function(page, cb) {
     step(function() {
         page.req('projects', null, null, this);
     }, function(_, projects) {
-        page.once('projectAdded', function(_, project) {
+        page.on('projectUpdated', function(_, project) {
+            replaceProject(projects, project);
+            bonzo(qwery('#project-' + project.id)).replaceWith(t.project.render(project));
+        });
+        page.on('projectAdded', function(_, project) {
             // ABSTRACT THIS SHIT
             var position = insertProject(projects, project);
             var html = t.project.render(project);
@@ -51,6 +64,14 @@ exports.init = function(page, cb) {
                 if(res.projectId !== params[0]) {
                     return;
                 }
+                var offProjectUpdated = page.on('projectUpdated', function(_, p) {
+                    if(p.id === project.id) {
+                        bonzo(qwery('#project-header')).text(project.title);
+                    }
+                });
+                page.beforego(function(from, to) {
+                    offProjectUpdated();
+                });
                 var runs = res.runs;
                 var project = null;
                 var runLag = null;

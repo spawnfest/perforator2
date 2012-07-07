@@ -24,12 +24,24 @@ exports.init = function(page, cb) {
             e.preventDefault();
         });
     });
-    page.handle(/^\/project\/(.+)\/edit$/, function() {
-        page.body.html(t.projectEdit.render({
-            action : 'Save'
-        }));
-        bean.add(qwery('form')[0], 'submit', function(e) {
-            e.preventDefault();
+    page.handle(/^\/project\/(.+)\/edit$/, function(from, to, params) {
+        page.req('project', null, params[0], function(_, project) {
+            page.body.html(t.projectEdit.render({
+                project : project,
+                action : 'Save'
+            }));
+            bean.add(qwery('form')[0], 'submit', function(e) {
+                page.emit('updateProject', null, {
+                    id : project.id,
+                    title : bonzo(qwery('#title')).val(),
+                    repo : {
+                        url : bonzo(qwery('#url')).val(),
+                        type : 'git'
+                    }
+                });
+                page.go('/project/' + project.id);
+                e.preventDefault();
+            });
         });
     });
     cb();
