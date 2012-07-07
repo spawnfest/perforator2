@@ -1,10 +1,8 @@
 exports.init = function(page, cb) {
     page.on('req_tests', function(_, req) {
         page.emit('res_tests', null, {
-            projectId : req.projectId,
-            runId : req.runId,
-            moduleName : req.moduleName,
-            tests : [
+            req : req,
+            res : [
                 {
                     name : 'testA'
                 }, {
@@ -17,9 +15,8 @@ exports.init = function(page, cb) {
     });
     page.on('req_modules', function(_, req) {
         page.emit('res_modules', null, {
-            projectId : req.projectId,
-            runId : req.runId,
-            modules : [
+            req : req,
+            res : [
                 {
                     name : 'moduleA'
                 }, {
@@ -32,12 +29,9 @@ exports.init = function(page, cb) {
     });
     page.on('req_testRun', function(_, req) {
         page.emit('res_testRun', null, {
-            projectId : req.projectId,
-            moduleName : req.moduleName,
-            testName : req.testName,
-            runId : req.runId,
-            run : {
-                name : 'abcd64d7',
+            req : req,
+            res : {
+                name : req.runId,
                 time : 92000,
                 load : 1,
                 memutil : 122000000,
@@ -47,24 +41,22 @@ exports.init = function(page, cb) {
     });
     page.on('req_testRuns', function(_, req) {
         page.emit('res_testRuns', null, {
-            projectId : req.projectId,
-            moduleName : req.moduleName,
-            testName : req.testName,
-            runs : [
+            req : req,
+            res : [
                 {
-                    name : 'abcd64d7',
+                    name : '8888',
                     time : 92000,
                     load : 1,
                     memutil : 122000000,
                     cpuutil : 0.9
                 }, {
-                    name : 'ab235799',
+                    name : '8008',
                     time : 72000,
                     load : 0.7,
                     memutil : 922000000,
                     cpuutil : 0.4
                 }, {
-                    name : '32asdf55',
+                    name : '8808',
                     time : 78000,
                     load : 1.2,
                     memutil : 102000000,
@@ -73,10 +65,10 @@ exports.init = function(page, cb) {
             ]
         });
     });
-    page.on('req_run', function(_, id) {
+    page.on('req_run', function(_, req) {
         page.emit('res_run', null, {
-            id : id,
-            modules : [
+            req : req,
+            res : [
             {
                 name : 'moduleA',
                 tests : [
@@ -159,14 +151,20 @@ exports.init = function(page, cb) {
         project.id = String(Math.random());
         page.emit('projectAdded', null, project);
     });
-    page.on('req_runs', function(_, projectId) {
+    page.on('req_runs', function(_, req) {
         page.emit('res_runs', null, {
-            projectId : projectId,
-            runs : [
+            req : req,
+            res : [
                 {
                     id : '8888',
                     started : new Date().getTime(),
                     time : 1000,
+                    modules : 2,
+                    tests : 4
+                }, {
+                    id : '8008',
+                    started : new Date().getTime(),
+                    time : 800,
                     modules : 2,
                     tests : 4
                 }, {
@@ -179,33 +177,38 @@ exports.init = function(page, cb) {
             ]
         });
     });
-    page.on('req_project', function(_, projectId) {
+    page.on('req_project', function(_, req) {
         page.emit('res_project', null, {
-            id : projectId,
-            title : 'Project omg #' + projectId,
-            repo : {
-                type : 'git',
-                url : 'git@github.com:omg/proj1'
-            }
-        });
-    });
-    page.on('req_projects', function(_, m) {
-        page.emit('res_projects', null, [ {
-                id : '3ttat',
-                title : 'Project omg #1',
+            req : req,
+            res : {
+                title : 'Project omg #' + req,
                 repo : {
                     type : 'git',
                     url : 'git@github.com:omg/proj1'
                 }
-            }, {
-                id : '3hsdg',
-                title : 'Project omg #2000',
-                repo : {
-                    type : 'git',
-                    url : 'git@github.com:omg/proj2'
-                }
             }
-        ]);
+        });
+    });
+    page.on('req_projects', function(_, req) {
+        page.emit('res_projects', null, {
+            req : req,
+            res : [ {
+                    id : '3ttat',
+                    title : 'Project omg #1',
+                    repo : {
+                        type : 'git',
+                        url : 'git@github.com:omg/proj1'
+                    }
+                }, {
+                    id : '3hsdg',
+                    title : 'Project omg #2000',
+                    repo : {
+                        type : 'git',
+                        url : 'git@github.com:omg/proj2'
+                    }
+                }
+            ]
+        });
     });
     cb(null);
 };

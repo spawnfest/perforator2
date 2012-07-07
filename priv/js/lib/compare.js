@@ -41,13 +41,13 @@ exports.init = function(page, cb) {
                 }, group());
             });
         }, function(_, group) {
-            var runA = group[1].run;
-            var modulesA = group[2].modules;
-            var testsA = group[3].tests;
+            var runA = group[1];
+            var modulesA = group[2];
+            var testsA = group[3];
 
-            var runB = group[4].run;
-            var modulesB = group[5].modules;
-            var testsB = group[6].tests;
+            var runB = group[4];
+            var modulesB = group[5];
+            var testsB = group[6];
 
             var numbers = [];
             v.each(series, function(series) {
@@ -63,7 +63,7 @@ exports.init = function(page, cb) {
                 runB : runB,
                 modulesA : modulesA,
                 modulesB : modulesB,
-                runs : group[0].runs,
+                runs : group[0],
                 testsA : testsA,
                 testsB : testsB,
                 commits : [

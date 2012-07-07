@@ -1,6 +1,7 @@
 var t = require('./templates');
 var qwery = require('qwery');
 var domready = require('domready');
+var equal = require('deep-equal');
 var bonzo = require('bonzo');
 var p = require('page');
 var log = require('./log');
@@ -49,7 +50,12 @@ step(function() {
             }));
         },
         req : function(event, err, msg, cb) {
-            this.once('res_' + event, cb);
+            var off = this.on('res_' + event, function(err, result) {
+                if(equal(result.req, msg)) {
+                    off();
+                    cb(err, result.res);
+                }
+            });
             this.emit('req_' + event, err, msg);
         },
         body : bonzo(qwery('#body')[0]),
