@@ -78,10 +78,10 @@ exports.init = function(page, cb) {
             id : id,
             modules : [
             {
-                name : 'test_modulea',
+                name : 'moduleA',
                 tests : [
                     {
-                        name : 'bla_blabla',
+                        name : 'testA',
                         series : {
                             memutil : {
                                 previous : 100,
@@ -96,7 +96,7 @@ exports.init = function(page, cb) {
                             }
                         }
                     }, {
-                        name : 'what_ever',
+                        name : 'testB',
                         series : {
                             memutil : {
                                 previous : 150,
@@ -113,10 +113,10 @@ exports.init = function(page, cb) {
                     }
                 ]
             }, {
-                name : 'test_moduleb',
+                name : 'moduleB',
                 tests : [
                     {
-                        name : 'foo_bar',
+                        name : 'testA',
                         series : {
                             memutil : {
                                 previous : 100,
@@ -131,7 +131,7 @@ exports.init = function(page, cb) {
                             }
                         }
                     }, {
-                        name : 'what_now',
+                        name : 'testB',
                         series : {
                             memutil : {
                                 previous : 120,
