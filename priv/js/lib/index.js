@@ -19,8 +19,7 @@ step(function() {
         event = JSON.parse(event.data.toString());
         bean.fire(socket, event.type, event.err, event.msg);
     };
-    // TODO uncomment this when WebSocket server is ready
-    //socket.onopen = this.parallel();
+    socket.onopen = this.parallel();
 }, function() {
     var previousPath = null;
     this(null, {
