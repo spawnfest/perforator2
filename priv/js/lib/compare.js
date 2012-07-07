@@ -35,6 +35,33 @@ exports.init = function(page, cb) {
             });
         });
         page.body.html(t.compare.render({
+            modules : [
+                {
+                    name : 'moduleA'
+                }, {
+                    name : 'moduleB'
+                }, {
+                    name : 'moduleC'
+                }
+            ],
+            runs : [
+                {
+                    name : '6972067'
+                }, {
+                    name : '2346734'
+                }, {
+                    name : '2736297'
+                }
+            ],
+            tests : [
+                {
+                    name : 'testA'
+                }, {
+                    name : 'testB'
+                }, {
+                    name : 'testC'
+                }
+            ],
             commits : [
                 {
                     id : 'a8a7d85c8c',
@@ -47,12 +74,6 @@ exports.init = function(page, cb) {
             ],
             numbers : numbers
         }));
-        v.each(qwery('tr'), function(row) {
-            bean.add(row, 'click', function(e) {
-                console.log(bonzo(row).data('id'));
-                page.go('/run/' + bonzo(row).data('id'));
-            });
-        });
     });
     cb();
 };
