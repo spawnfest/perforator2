@@ -8,8 +8,8 @@
 
 -compile(export_all).
 
--define(REPO, ".eunit/test.git").
--define(REPOS, ".eunit/repos").
+-define(REPO, "test.git").
+-define(REPOS, "repos").
 
 %% ============================================================================
 
