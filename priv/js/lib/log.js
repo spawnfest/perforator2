@@ -41,6 +41,11 @@ exports.init = function(page, cb) {
                 title : 'Project omg #1'
             }
         }));
+        v.each(qwery('.app-add'), function(add) {
+            bean.add(add, 'click', function() {
+                page.go('/project/add');
+            });
+        });
         v.each(qwery('.app-edit'), function(edit) {
             bean.add(edit, 'click', function() {
                 page.go('/project/' + bonzo(edit).data('id') + '/edit');
