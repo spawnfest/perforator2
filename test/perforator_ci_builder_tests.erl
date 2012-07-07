@@ -46,9 +46,9 @@ builder_test_() ->
 
 % normal flow, no one crashes, callee gets response:
 test_workflow() ->
-    meck:expect(perforator_ci_project, build_is_done,
+    meck:expect(perforator_ci_project, build_finished,
         fun (Pid, BuildID, Results) ->
-            Pid ! {build_is_done, BuildID, Results},
+            Pid ! {build_finished, BuildID, Results},
             ok
         end),
 
@@ -58,7 +58,7 @@ test_workflow() ->
     perforator_ci_builder:build(#project{}, #project_build{id=4}),
     receive
         M ->
-            ?assertEqual(M, {build_is_done, 4, result})
+            ?assertEqual(M, {build_finished, 4, result})
     end.
 
 % let it crash: callee crashes, all its items are deleted

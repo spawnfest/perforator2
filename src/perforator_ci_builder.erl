@@ -1,4 +1,5 @@
-%% @doc Projects builder. Only one per app because of obvious reasons.
+%% @doc Projects builder. Only one per app because of obvious reasons (would be
+%% non-sense to share some system resources between performance tests).
 
 %% @author Martynas <martynasp@gmail.com>
 
@@ -31,7 +32,7 @@
 -record(state, {
     build_queue=[] :: [queue_item()],
     worker :: pid() | undefined % pid of process responsible for handling build
-    % undefined means that there is no job
+    % undefined means that currently there is no job running
 }).
 
 -ifdef(TEST).
@@ -111,7 +112,7 @@ handle_cast(ping, #state{build_queue=[Item|_]}=S) ->
             Results = ?MODULE:run_build(Item),
             % inform
             {Pid, _, #project_build{id=BuildID}} = Item,
-            ok = perforator_ci_project:build_is_done(Pid, BuildID, Results),
+            ok = perforator_ci_project:build_finished(Pid, BuildID, Results),
             % exit
             exit('$work_is_done')
         end

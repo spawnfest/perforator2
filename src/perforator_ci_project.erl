@@ -15,7 +15,7 @@
 -export([
     is_project_running/1,
     start_link/1,
-    build_is_done/3
+    build_finished/3
 ]).
 
 %% gen_server callbacks
@@ -64,10 +64,13 @@ is_project_running(ProjectID) ->
 start_link(ProjectID) ->
     gen_server:start_link(?MODULE, [ProjectID], []).
 
+%% @doc Pings project, that requested build is done.
+build_finished(Pid, BuildID, Results) ->
+    gen_server:call(Pid, {build_finished, BuildID, Results}).
+
+%% @doc Used for tests only.
 get_pid(ProjectID) ->
     gproc:lookup_pid({n, l, ProjectID}).
-
-build_is_done(ProjectID, BuildID, Results) -> ok.
 
 %% =============================================================================
 %% gen_server callbacks
@@ -115,8 +118,8 @@ init([ProjectID]) ->
             {stop, project_already_started}
     end.
 
-handle_call({build_finished, BuildID, Info}, _, State) ->
-    ok = perforator_ci_db:finish_build(BuildID, Info),
+handle_call({build_finished, BuildID, Results}, _, State) ->
+    ok = perforator_ci_db:finish_build(BuildID, Results),
 
     % @todo pubsub
 
