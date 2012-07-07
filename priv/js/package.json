@@ -1,0 +1,25 @@
+{
+    "author": "Vytautas Jakutis <vytautas@jakut.is> (http://jakut.is/)",
+    "name": "perforator-www",
+    "description": "Continuous Performance Testing",
+    "version": "0.0.1",
+    "dependencies": {
+        "moment" : "1.6.x",
+        "scopify" : "0.2.x",
+        "step" : "0.0.x",
+        "cookie" : "0.0.x",
+        "page" : "1.1.x",
+        "qwery" : "3.3.x",
+        "bean" : "0.4.x",
+        "valentine" : "1.5.x",
+        "bonzo" : "1.1.x",
+        "domready" : "0.2.x",
+        "browserify" : "1.13.x",
+        "hogan.js" : "2.0.x"
+    },
+    "devDependencies": {},
+    "optionalDependencies": {},
+    "engines": {
+        "node": "*"
+    }
+}

@@ -1,0 +1,7 @@
+{application, perforator_www, [
+    {description, "Perforator www"},
+    {vsn, "0.1"},
+    {modules, [perforator_www]}, % hide some
+    {applications, [kernel, stdlib, sasl, cowboy]},
+    {mod, {perforator_www_app, []}}
+]}.
