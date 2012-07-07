@@ -47,7 +47,11 @@ exports.init = function(page, cb) {
         page.handle(/^\/project\/(.+)$/, function(from, to, params) {
             step(function() {
                 page.req('runs', null, params[0], this);
-            }, function(_, runs) {
+            }, function(_, res) {
+                if(res.projectId !== params[0]) {
+                    return;
+                }
+                var runs = res.runs;
                 var project = null;
                 var runLag = null;
 
