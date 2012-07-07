@@ -2,18 +2,13 @@
     <div class="span3">
         <div class="well sidebar-nav app-nav">
             <ul class="nav nav-list">
-                <li class="nav-header">Projects</li>
+                <li id="projects-header" class="nav-header">Projects</li>
                 {{#projects}}
-                {{#opened}}
-                <li class="active"><a href="/project/{{id}}">{{title}}</a></li>
-                {{/opened}}
-                {{^opened}}
-                <li><a href="/project/{{id}}">{{title}}</a></li>
-                {{/opened}}
+                {{> project}}
                 {{/projects}}
                 <li class="nav-header">Actions</li>
                 <li><a href="/project/add"><i class="icon-plus-sign"></i> Add</a></li>
-                <li><a href="/project/{{currentId}}/edit"><i class="icon-edit"></i> Edit</a></li>
+                <li><a href="/project/{{project.id}}/edit"><i class="icon-edit"></i> Edit</a></li>
             </ul>
         </div>
     </div>
@@ -24,8 +19,8 @@
                 <tr>
                     <th>#</th>
                     <th>Started</th>
-                    <th>Duration delta</th>
-                    <th>Duration</th>
+                    <th>Time delta</th>
+                    <th>Time</th>
                     <th>Modules</th>
                     <th>Tests</th>
                 </tr>
@@ -35,8 +30,8 @@
                 <tr data-id="{{id}}" class="app-clickablerow">
                     <td>{{id}}</td>
                     <td>{{started}}</td>
-                    <td>{{durationDelta}}</td>
-                    <td>{{duration}}</td>
+                    <td>{{timeDelta}}</td>
+                    <td>{{time}}</td>
                     <td>{{modules}}</td>
                     <td>{{tests}}</td>
                 </tr>

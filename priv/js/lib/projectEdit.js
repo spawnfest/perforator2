@@ -11,6 +11,16 @@ exports.init = function(page, cb) {
             action : 'Add'
         }));
         bean.add(qwery('form')[0], 'submit', function(e) {
+            page.emit('addProject', null, {
+                title : bonzo(qwery('#title')).val(),
+                repo : {
+                    url : bonzo(qwery('#url')).val(),
+                    type : 'git'
+                }
+            });
+            page.once('projectAdded', function(_, project) {
+                page.go('/project/' + project.id);
+            });
             e.preventDefault();
         });
     });

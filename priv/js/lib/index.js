@@ -7,6 +7,7 @@ var log = require('./log');
 var run = require('./run');
 var test = require('./test');
 var projectEdit = require('./projectEdit');
+var serverEmulation = require('./serverEmulation');
 var compare = require('./compare');
 var bean = require('bean');
 var window = require('./window');
@@ -48,8 +49,8 @@ step(function() {
             }));
         },
         req : function(event, err, msg, cb) {
-            this.once(event, cb);
-            this.emit(event, err, msg);
+            this.once('res_' + event, cb);
+            this.emit('req_' + event, err, msg);
         },
         body : bonzo(qwery('#body')[0]),
         handle : function(path, cb) {
@@ -76,6 +77,7 @@ step(function() {
     });
 }, function(_, page) {
     this.parallel()(null, page);
+    serverEmulation.init(page, this.parallel());
     run.init(page, this.parallel());
     test.init(page, this.parallel());
     projectEdit.init(page, this.parallel());
