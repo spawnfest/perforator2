@@ -1,0 +1,18 @@
+<div class="span12">
+    <h2>Run #{{run.id}}</h2>
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th colspan="2"><select><option>Time</option></select></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#tests}}
+            <tr>
+                <td><svg id="{{id}}" style="height:80px"></svg></td>
+                <td class="{{style}}">{{time}}</td>
+            </tr>
+            {{/tests}}
+        </tbody>
+    </table>
+</div>

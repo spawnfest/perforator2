@@ -1,4 +1,8 @@
 var t = require('./templates');
+var v = require('valentine');
+var qwery = require('qwery');
+var bean = require('bean');
+var bonzo = require('bonzo');
 var moment = require('moment');
 
 exports.init = function(page, cb) {
@@ -35,6 +39,12 @@ exports.init = function(page, cb) {
                 title : 'Project omg #1'
             }
         }));
+        v.each(qwery('tr'), function(row) {
+            bean.add(row, 'click', function(e) {
+                console.log(bonzo(row).data('id'));
+                page.go('/run/' + bonzo(row).data('id'));
+            });
+        });
     });
     cb();
 };

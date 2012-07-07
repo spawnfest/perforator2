@@ -5,6 +5,9 @@
 
 var cookie = require('cookie');
 
+exports.d3 = window.d3;
+exports.nv = window.nv;
+
 exports.setCookie = function(name, value) {
     if(value === null) {
         var exp = new Date();

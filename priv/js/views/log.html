@@ -19,6 +19,7 @@
     </div>
     <div class="span9">
         <h2>Run history of {{project.title}}</h2>
+        <svg id="bullet" style="height:80px"></svg>
         <table class="table table-bordered table-striped table-condensed">
             <thead>
                 <tr>
@@ -32,7 +33,7 @@
             </thead>
             <tbody>
                 {{#runs}}
-                <tr>
+                <tr data-id="{{id}}">
                     <td>{{id}}</td>
                     <td>{{started}}</td>
                     <td>{{durationDelta}}</td>

@@ -4,6 +4,7 @@ var domready = require('domready');
 var bonzo = require('bonzo');
 var p = require('page');
 var log = require('./log');
+var run = require('./run');
 var bean = require('bean');
 var window = require('./window');
 var step = require('step');
@@ -19,7 +20,7 @@ step(function() {
     //socket.onopen = this.parallel();
 }, function() {
     var previousPath = null;
-    var page = {
+    this(null, {
         once : function(event, handler) {
             bean.one(socket, event, function(err, msg) {
                 console.log('page.once', event, err, msg);
@@ -45,18 +46,19 @@ step(function() {
             }));
         },
         req : function(event, err, msg, cb) {
-            page.once(event, cb);
-            page.emit(event, err, msg);
+            this.once(event, cb);
+            this.emit(event, err, msg);
         },
         body : bonzo(qwery('#body')[0]),
         handle : function(path, cb) {
+            var self = this;
             console.log('adding handler', path);
             p(path, function(ctx) {
                 setTimeout(function() {
                     var nextPath = window.getPath();
                     if(previousPath !== nextPath) {
                         console.log('handling', previousPath, nextPath);
-                        bean.fire(page, 'page', [previousPath, nextPath]);
+                        bean.fire(self, 'page', [previousPath, nextPath]);
                         cb(previousPath, nextPath, ctx.params);
                         previousPath = nextPath;
                     }
@@ -64,19 +66,21 @@ step(function() {
             });
         },
         beforego : function(cb) {
-            bean.one(page, 'page', cb);
+            bean.one(this, 'page', cb);
         },
         go : function(path) {
             p(path);
         }
-    };
-
-    log.init(page, function() {
-        p({
-            click : true,
-            popstate : true,
-            dispatch : true
-        });
-        page.go(window.getPath());
     });
+}, function(_, page) {
+    this.parallel()(null, page);
+    log.init(page, this.parallel());
+    run.init(page, this.parallel());
+}, function(_, page) {
+    p({
+        click : true,
+        popstate : true,
+        dispatch : true
+    });
+    page.go(window.getPath());
 });
