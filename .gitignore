@@ -1,3 +1,5 @@
 /priv/js/node_modules
 /priv/js/lib/templates.js
 /priv/www/browserify.js
+/deps
+/ebin
