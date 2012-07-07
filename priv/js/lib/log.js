@@ -61,9 +61,6 @@ exports.init = function(page, cb) {
             step(function() {
                 page.req('runs', null, params[0], this);
             }, function(_, res) {
-                if(res.projectId !== params[0]) {
-                    return;
-                }
                 var offProjectUpdated = page.on('projectUpdated', function(_, p) {
                     if(p.id === project.id) {
                         bonzo(qwery('#project-header')).text(project.title);
