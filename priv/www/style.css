@@ -7,6 +7,16 @@
 .app-nav {
     padding: 19px 0 !important;
 }
+h2 .label {
+    vertical-align: middle !important;
+    font-size: 0.7em;
+    position: absolute !important;
+    left: 0 !important;
+}
+h2 {
+    position: relative !important;
+    text-align: center;
+}
 .app-a {
     text-align: left !important;
     margin: 0 !important;
