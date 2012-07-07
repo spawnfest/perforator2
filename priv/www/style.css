@@ -4,6 +4,9 @@
 .app-bad {
     background: #f85f5f !important;
 }
+.app-nav {
+    padding: 19px 0 !important;
+}
 .app-a {
     text-align: left !important;
     margin: 0 !important;

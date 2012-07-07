@@ -7,17 +7,19 @@ var moment = require('moment');
 
 exports.init = function(page, cb) {
     page.handle('/', function() {
+        var id = '3ttat';
         page.body.html(t.log.render({
+            currentId : id,
             projects : [
                 {
                     id : '3ttat',
                     title : 'Project omg #1',
-                    opened : true
+                    opened : id === '3ttat'
                 },
                 {
                     id : '3hsdg',
                     title : 'Project omg #2',
-                    opened : false
+                    opened : id === '3hsdg'
                 }
             ],
             runs : [
@@ -41,16 +43,6 @@ exports.init = function(page, cb) {
                 title : 'Project omg #1'
             }
         }));
-        v.each(qwery('.app-add'), function(add) {
-            bean.add(add, 'click', function() {
-                page.go('/project/add');
-            });
-        });
-        v.each(qwery('.app-edit'), function(edit) {
-            bean.add(edit, 'click', function() {
-                page.go('/project/' + bonzo(edit).data('id') + '/edit');
-            });
-        });
         v.each(qwery('tr'), function(row) {
             bean.add(row, 'click', function() {
                 page.go('/run/' + bonzo(row).data('id'));
