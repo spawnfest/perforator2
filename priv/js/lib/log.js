@@ -7,7 +7,10 @@ var moment = require('moment');
 
 exports.init = function(page, cb) {
     page.handle('/', function() {
-        var id = '3ttat';
+        page.go('/project/3ttat');
+    });
+    page.handle(/^\/project\/(.+)$/, function(from, to, params) {
+        var id = params[0];
         page.body.html(t.log.render({
             currentId : id,
             projects : [
