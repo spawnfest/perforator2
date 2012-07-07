@@ -5,6 +5,8 @@ var bonzo = require('bonzo');
 var qwery = require('qwery');
 var w = require('./window');
 var v = require('valentine');
+var series = require('./series');
+series = series.series;
 
 exports.init = function(page, cb) {
     page.handle(/^\/run\/(.+)$/, function() {
@@ -98,29 +100,6 @@ exports.init = function(page, cb) {
                 test.id = 'test-' + module.name + '-' + test.name;
             });
         });
-        var series = [
-            {
-                name : 'Time',
-                key : 'time',
-                units : 'milliseconds',
-                higherBetter : false
-            }, {
-                name : 'Average Memory Utilization',
-                key : 'memutil',
-                units : 'bytes',
-                higherBetter : false
-            }, {
-                name : 'Average CPU Load',
-                key : 'load',
-                units : 'TODO',
-                higherBetter : false
-            }, {
-                name : 'Average CPU Utilization',
-                key : 'cpuutil',
-                units : 'TODO',
-                higherBetter : false
-            }
-        ];
         var seriesMap = {};
         v.each(series, function(series) {
             seriesMap[series.key] = series;
@@ -137,6 +116,13 @@ exports.init = function(page, cb) {
             setSeries(select.val());
         });
         var chart = w.nv.models.bulletChart();
+        v.each(modules, function(module) {
+            v.each(module.tests, function(test) {
+                bean.add(qwery('#' + test.id)[0], 'click', function() {
+                    page.go('/test/' + module.name + '/' + test.name);
+                });
+            });
+        });
         var setSeries = function(key) {
             v.each(modules, function(module) {
                 v.each(module.tests, function(test) {
