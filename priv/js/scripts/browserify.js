@@ -16,7 +16,7 @@ var compile = function(type) {
     fs.writeFileSync(__dirname + '/../../www/browserify.js', b.bundle());
 };
 
-compile();
+compile('change');
 if(process.argv[2] === 'watch') {
     fs.watch(dir, compile);
 }
