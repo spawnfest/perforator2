@@ -4,3 +4,12 @@
 .app-bad {
     background: #f00 !important;
 }
+.app-a {
+    text-align: left !important;
+}
+.app-doublelabel {
+    text-align: center !important;
+}
+.app-b {
+    text-align: right !important;
+}

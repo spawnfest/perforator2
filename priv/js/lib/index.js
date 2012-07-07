@@ -6,6 +6,7 @@ var p = require('page');
 var log = require('./log');
 var run = require('./run');
 var test = require('./test');
+var compare = require('./compare');
 var bean = require('bean');
 var window = require('./window');
 var step = require('step');
@@ -78,6 +79,7 @@ step(function() {
     log.init(page, this.parallel());
     run.init(page, this.parallel());
     test.init(page, this.parallel());
+    compare.init(page, this.parallel());
 }, function(_, page) {
     p({
         click : true,

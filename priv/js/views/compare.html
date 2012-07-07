@@ -1,0 +1,91 @@
+<div class="row">
+<div class="span12">
+    <table class="table table-bordered table-striped table-condensed">
+        <tbody>
+            <tr>
+                <td class="span5 app-a">
+                    <select class="app-runs">
+                        {{#runs}}
+                        <option value="{{name}}">{{name}}</option>
+                        {{/runs}}
+                    </select>
+                </td>
+                <td class="span2 app-doublelabel">Run</td>
+                <td class="span5 app-b">
+                    <select class="app-runs">
+                        {{#runs}}
+                        <option value="{{name}}">{{name}}</option>
+                        {{/runs}}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="span5 app-a">
+                    <select class="app-modules">
+                        {{#modules}}
+                        <option value="{{name}}">{{name}}</option>
+                        {{/modules}}
+                    </select>
+                </td>
+                <td class="span2 app-doublelabel">Module</td>
+                <td class="span5 app-b">
+                    <select class="app-modules">
+                        {{#modules}}
+                        <option value="{{name}}">{{name}}</option>
+                        {{/modules}}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="span5 app-a">
+                    <select class="app-tests">
+                        {{#tests}}
+                        <option value="{{name}}">{{name}}</option>
+                        {{/tests}}
+                    </select>
+                </td>
+                <td class="span2 app-doublelabel">Test</td>
+                <td class="span5 app-b">
+                    <select class="app-tests">
+                        {{#tests}}
+                        <option value="{{name}}">{{name}}</option>
+                        {{/tests}}
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+<div class="row">
+<div class="span12">
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>A</th>
+                <th>B</th>
+                <th>Delta</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#numbers}}
+            <tr>
+                <td>{{series}}</td>
+                <td>{{A}}</td>
+                <td>{{B}}</td>
+                <td>{{delta}}</td>
+            </tr>
+            {{/numbers}}
+        </tbody>
+    </table>
+</div>
+</div>
+<div class="row">
+<div class="span12">
+    {{#commits}}
+    <p>Commit {{id}} {{shortDescription}}</p>
+    {{/commits}}
+</div>
+</div>
+
