@@ -5,11 +5,11 @@
 
 -module(perforator_ci_project).
 
--behaviour(perforator_ci_project).
+-behaviour(gen_server).
 
 %% API
 -export([
-    start_link/3
+    start_link/1
  ]).
 
 %% gen_server callbacks
@@ -22,15 +22,14 @@
     code_change/3
 ]).
 
--type polling_strategy() :: {time, integer()} | on_demand.
 
 -record(state, {
     project_id :: perforator_ci_types:project_id(),
     repo :: binary(), % remote repo url
     repo_backend=perforator_ci_git :: atom(), % maybe add CVS support one day
-    polling=on_demand :: polling_strategy(),
+    polling=on_demand :: perforator_ci_types:polling_strategy(),
     last_build_id=0 :: perforator_ci_types:build_id(),
-    last_commit_id= <<"undef">> :: perorator_ci_types:commit_id()
+    last_commit_id= <<"undef">> :: perforator_ci_types:commit_id()
 }).
 
 -ifdef(TEST).
@@ -42,16 +41,15 @@
 %% ============================================================================
 
 %% @doc Starts project.
--spec start_link(perforator_ci_types:project_id(), binary(),
-        polling_strategy()) -> {ok, pid()}.
-start_link(ProjectID, Repo, Polling) ->
-    gen_server:start_link(?MODULE, [ProjectID, Repo, Polling], []).
+-spec start_link(perforator_ci_types:project_id()) -> term().
+start_link(ProjectID) ->
+    gen_server:start_link(?MODULE, [ProjectID], []).
 
 %% =============================================================================
 %% gen_server callbacks
 %% =============================================================================
 
-init([ProjectID, Repo, Polling]) ->
+init([ProjectID]) ->
     {ok, #state{}}.
 
 handle_call(_, _, State) ->
