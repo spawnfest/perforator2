@@ -1,4 +1,7 @@
 exports.init = function(page, cb) {
+    page.on('updateProject', function(_, project) {
+        page.emit('projectUpdated', null, project);
+    });
     page.on('addProject', function(_, project) {
         project.id = String(Math.random());
         page.emit('projectAdded', null, project);
@@ -21,6 +24,16 @@ exports.init = function(page, cb) {
                     tests : 4
                 }
             ]
+        });
+    });
+    page.on('req_project', function(_, projectId) {
+        page.emit('res_project', null, {
+            id : projectId,
+            title : 'Project omg #' + projectId,
+            repo : {
+                type : 'git',
+                url : 'git@github.com:omg/proj1'
+            }
         });
     });
     page.on('req_projects', function(_, m) {
