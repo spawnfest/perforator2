@@ -2,6 +2,7 @@
 %%
 %% WARNING: all calls are not safe!
 %% @todo Add behaviour
+%% @todo Escape input
 
 %% @author Martynas <martynasp@gmail.com>
 
@@ -10,16 +11,54 @@
 -include("perforator_ci.hrl").
 
 -export([
-    clone/2
+    clone/2,
+    check_for_updates/3
 ]).
 
 %% ============================================================================
 
-%% @todo Escape input
 -spec clone(list(), list()) -> ok.
-clone(RepoURL, Path) ->
-    perforator_ci_utils:sh(?FMT("rm -rf ~p", [Path])), % dirty hack
-    perforator_ci_utils:sh(?FMT("git clone ~p ~p", [RepoURL, Path])),
+clone(RepoURL, RepoPath) ->
+    perforator_ci_utils:sh(?FMT("rm -rf ~p", [RepoPath])), % dirty hack
+    perforator_ci_utils:sh(?FMT("git clone ~p ~p", [RepoURL, RepoPath])),
     ok.
 
-check_for_updates() -> ok.
+%% @doc Checks if for given repo's branch there exists a "newer" commit than
+%% given commit.
+-spec check_for_updates(perforator_ci_types:repo_path(),
+        perforator_ci_types:branch(), perforator_ci_types:commit_id()) ->
+            perforator_ci_types:commit_id() | undefined.
+check_for_updates(RepoPath, Branch, CommitID) ->
+    try
+        perforator_ci_utils:sh(?FMT("git fetch", []), [{cd, RepoPath}]),
+        perforator_ci_utils:sh(?FMT("git checkout ~p", [Branch]), [{cd, RepoPath}]),
+
+        CommitID1 = list_to_binary(
+            lists:reverse(
+                tl(tl(lists:reverse(
+                    perforator_ci_utils:sh(
+                        ?FMT("git log -n 1 --format=\"%H\"", []),
+                        [{cd, RepoPath}])
+                )))
+            )
+        ),
+
+        % check if returned commit id is ancestor of previous commit
+        case CommitID of
+            undefined -> CommitID1;
+            _ ->
+                case perforator_ci_utils:sh(?FMT("git log ~s..~s",
+                        [CommitID, CommitID1]), [{cd, RepoPath}]) of
+                    [] -> % nope
+                        undefined;
+                    _ -> % yes
+                        CommitID1
+                end
+        end
+    catch
+        throw:{exec_error, {_, 128, _}} -> % 128 most likely git repo is empty
+            undefined;
+        throw:{exec_error, {_, 1, _}} -> % 1 most likely branch not found
+            % @todo rethrow
+            undefined
+    end.

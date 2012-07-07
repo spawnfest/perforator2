@@ -10,6 +10,7 @@
     timestamp/0,
     get_env/3,
     sh/1,
+    sh/2,
     repo_path/1
 ]).
 
@@ -30,18 +31,22 @@ get_env(App, Key, Default) ->
     end.
 
 %% @doc Exec given command.
-%% @throws {error_on_exec, Command, ErrCode, Output}.
--spec sh(list()) -> list().
-sh(Command) ->
-    Port = open_port({spawn, Command}, [
+%% @throws {exec_error, {Command, ErrCode, Output}}.
+-spec sh(list(), list()) -> list().
+sh(Command, Opts0) ->
+    Port = open_port({spawn, Command}, Opts0 ++ [
         exit_status, {line, 255}, stderr_to_stdout
     ]),
+
 
     case sh_receive_loop(Port, []) of
         {ok, Data} -> Data;
         {error, {ErrCode, Output}} ->
-            throw({error_on_exec, Command, ErrCode, Output})
+            throw({exec_error, {Command, ErrCode, Output}})
     end.
+
+sh(Command) ->
+    sh(Command, []).
 
 sh_receive_loop(Port, Acc) ->
     receive

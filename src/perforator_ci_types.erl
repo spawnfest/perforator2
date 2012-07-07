@@ -31,5 +31,5 @@
 
 -type build_id() :: integer().
 -type build_local_id() :: integer().
--type commit_id() :: binary().
+-type commit_id() :: binary() | undefined.
 -type timestamp() :: integer().

@@ -37,7 +37,7 @@
     polling=on_demand :: perforator_ci_types:polling_strategy(),
 
     last_build_id=0 :: perforator_ci_types:build_id(),
-    last_commit_id= <<"$undefined">> :: perforator_ci_types:commit_id()
+    last_commit_id=undefined :: perforator_ci_types:commit_id()
 }).
 
 -ifdef(TEST).
