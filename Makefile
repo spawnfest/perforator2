@@ -13,3 +13,6 @@ compile:
 
 distclean:
 	$(REBAR) delete-deps
+
+nodeps:
+	$(REBAR) compile skip_deps=true
