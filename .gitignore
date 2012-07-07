@@ -1,6 +1,9 @@
-/priv/js/node_modules
-/priv/js/lib/templates.js
-/priv/www/browserify.js
-/deps
-/ebin
-/log
+priv/js/node_modules
+priv/js/lib/templates.js
+priv/www/browserify.js
+deps
+ebin
+log
+*.swp
+Mnesia.*
+.eunit
