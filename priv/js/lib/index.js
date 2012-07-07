@@ -17,7 +17,7 @@ step(function() {
     domready(this.parallel());
     socket.onmessage = function(event) {
         event = JSON.parse(event.data.toString());
-        bean.fire(socket, event.type, event.err, event.msg);
+        bean.fire(socket, event.type, [event.err, event.msg]);
     };
     socket.onopen = this.parallel();
 }, function() {

@@ -34,7 +34,7 @@ exports.getPath = function() {
     return window.location.pathname;
 };
 exports.createSocket = function() {
-    return new window.WebSocket('ws://' + window.location.host + '/');
+    return new window.WebSocket('ws://' + window.location.host + '/websocket');
 };
 if(typeof window.console === 'undefined' || typeof window.console.log === 'undefined' || exports.getCookie('log') !== 'yes') {
     window.console = {
