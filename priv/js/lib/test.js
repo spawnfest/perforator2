@@ -80,7 +80,6 @@ exports.init = function(page, cb) {
                         } else {
                             point = e.pointIndex;
                         }
-                        console.log(point, runs);
                         tooltipShow(e);
                     });
                     obj.dispatch.on('tooltipHide', function(e) {
