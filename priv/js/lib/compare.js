@@ -43,11 +43,11 @@ exports.init = function(page, cb) {
         }, function(_, group) {
             var runA = group[1].run;
             var modulesA = group[2].modules;
-            var testsA = group[3].modules;
+            var testsA = group[3].tests;
 
             var runB = group[4].run;
             var modulesB = group[5].modules;
-            var testsB = group[6].modules;
+            var testsB = group[6].tests;
 
             var numbers = [];
             v.each(series, function(series) {
