@@ -9,9 +9,7 @@
 start() ->
     application:start(compiler),
     application:start(syntax_tools),
-    %application:start(lager),
-    application:start(sasl),
-    application:start(inets),
+    application:start(lager),
     application:start(cowboy),
     application:start(perforator_ci).
 

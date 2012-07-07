@@ -2,6 +2,6 @@
     {description, "Perforator www"},
     {vsn, "0.1"},
     {modules, [perforator_ci]}, % hide some
-    {applications, [kernel, stdlib, sasl, cowboy]},
+    {applications, [kernel, stdlib, lager, cowboy]},
     {mod, {perforator_ci_app, []}}
 ]}.
