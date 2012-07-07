@@ -1,4 +1,47 @@
 exports.init = function(page, cb) {
+    page.on('req_testRun', function(_, req) {
+        page.emit('res_testRun', null, {
+            projectId : req.projectId,
+            moduleName : req.moduleName,
+            testName : req.testName,
+            runId : req.runId,
+            run : {
+                name : 'abcd64d7',
+                time : 92000,
+                load : 1,
+                memutil : 122000000,
+                cpuutil : 0.9
+            }
+        });
+    });
+    page.on('req_testRuns', function(_, req) {
+        page.emit('res_testRuns', null, {
+            projectId : req.projectId,
+            moduleName : req.moduleName,
+            testName : req.testName,
+            runs : [
+                {
+                    name : 'abcd64d7',
+                    time : 92000,
+                    load : 1,
+                    memutil : 122000000,
+                    cpuutil : 0.9
+                }, {
+                    name : 'ab235799',
+                    time : 72000,
+                    load : 0.7,
+                    memutil : 922000000,
+                    cpuutil : 0.4
+                }, {
+                    name : '32asdf55',
+                    time : 78000,
+                    load : 1.2,
+                    memutil : 102000000,
+                    cpuutil : 1.0
+                }
+            ]
+        });
+    });
     page.on('req_run', function(_, id) {
         page.emit('res_run', null, {
             id : id,

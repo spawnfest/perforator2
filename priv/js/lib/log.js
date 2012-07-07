@@ -55,9 +55,9 @@ exports.init = function(page, cb) {
             }
         });
         page.handle('/', function() {
-            page.go('/project/3ttat');
+            page.go('/3ttat');
         });
-        page.handle(/^\/project\/(.+)$/, function(from, to, params) {
+        page.handle(/^\/(.+)$/, function(from, to, params) {
             step(function() {
                 page.req('runs', null, params[0], this);
             }, function(_, res) {
@@ -103,7 +103,7 @@ exports.init = function(page, cb) {
                 }, t));
                 v.each(qwery('tr'), function(row) {
                     bean.add(row, 'click', function() {
-                        page.go('/run/' + bonzo(row).data('id'));
+                        page.go('/' + project.id + '/run/' + bonzo(row).data('id'));
                     });
                 });
             });

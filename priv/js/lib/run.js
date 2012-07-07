@@ -9,9 +9,12 @@ var series = require('./series');
 series = series.series;
 
 exports.init = function(page, cb) {
-    page.handle(/^\/run\/(.+)$/, function(from, to, params) {
-        var id = params[0];
-        page.req('run', null, id, function(_, res) {
+    page.handle(/^\/(.+)\/run\/(.+)$/, function(from, to, params) {
+        var state = {
+            projectId : params[0],
+            id : params[1]
+        };
+        page.req('run', null, state, function(_, res) {
             var modules = res.modules;
             v.each(modules, function(module) {
                 v.each(module.tests, function(test) {
@@ -25,7 +28,7 @@ exports.init = function(page, cb) {
             page.body.html(t.run.render({
                 modules : modules,
                 series : series,
-                id : id
+                id : state.id
             }));
             var select = bonzo(qwery('select'));
             bean.add(select[0], 'change', function() {
@@ -35,7 +38,7 @@ exports.init = function(page, cb) {
             v.each(modules, function(module) {
                 v.each(module.tests, function(test) {
                     bean.add(qwery('#' + test.id)[0].parentNode.parentNode, 'click', function() {
-                        page.go('/test/' + module.name + '/' + test.name);
+                        page.go('/' + state.projectId + '/test/' + module.name + '/' + test.name);
                     });
                 });
             });
