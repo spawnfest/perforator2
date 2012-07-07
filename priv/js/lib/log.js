@@ -60,7 +60,7 @@ exports.init = function(page, cb) {
         page.handle(/^\/(.+)$/, function(from, to, params) {
             step(function() {
                 page.req('runs', null, params[0], this);
-            }, function(_, res) {
+            }, function(_, runs) {
                 var offProjectUpdated = page.on('projectUpdated', function(_, p) {
                     if(p.id === project.id) {
                         bonzo(qwery('#project-header')).text(project.title);
@@ -69,7 +69,6 @@ exports.init = function(page, cb) {
                 page.beforego(function(from, to) {
                     offProjectUpdated();
                 });
-                var runs = res.runs;
                 var project = null;
                 var runLag = null;
 
@@ -95,7 +94,6 @@ exports.init = function(page, cb) {
                 v.each(runs, function(run) {
                     run.started = moment(new Date(run.started)).fromNow();
                 });
-                console.log(projects);
                 page.body.html(t.log.render({
                     projects : projects,
                     runs : runs,
