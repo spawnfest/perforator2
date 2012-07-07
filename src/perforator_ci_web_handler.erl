@@ -1,4 +1,4 @@
-%% @author Martynas <martynas@numeris.lt>
+%% @author Martynas <martynasp@gmail.com>
 
 -module(perforator_ci_web_handler).
 

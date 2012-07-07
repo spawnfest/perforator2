@@ -1,6 +1,6 @@
 %% @doc Wrapper for mnesia.
 
-%% @author Martynas <martynas@numeris.lt>
+%% @author Martynas <martynas@gmail.com>
 
 -module(perforator_ci_db).
 
