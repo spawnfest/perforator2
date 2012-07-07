@@ -68,4 +68,5 @@ stop() ->
 
 %% @doc See perforator_ci_db:init/0 for more info.
 init() ->
-    perforator_ci_db:init().
+    perforator_ci_db:init(),
+    perforator_ci_pubsub:init().

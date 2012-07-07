@@ -15,7 +15,9 @@
     build_id/0,
     build_local_id/0,
     commit_id/0,
-    timestamp/0
+    timestamp/0,
+
+    pubsub_group/0
 ]).
 
 %% ============================================================================
@@ -33,3 +35,5 @@
 -type build_local_id() :: integer().
 -type commit_id() :: binary() | undefined.
 -type timestamp() :: integer().
+
+-type pubsub_group() :: perforator_ci_project | perforator_ci_builder.
