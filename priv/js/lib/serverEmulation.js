@@ -4,7 +4,7 @@ exports.init = function(page, cb) {
             projectId : req.projectId,
             runId : req.runId,
             moduleName : req.moduleName,
-            modules : [
+            tests : [
                 {
                     name : 'testA'
                 }, {
