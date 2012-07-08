@@ -63,7 +63,7 @@ to_build_test() ->
         }]}],
         JSON = perforator_ci_json:to(build, #project_build{info=Data}),
         %?info("JSONBLE:", [JSON]),
-        Enc = jiffy:encode(JSON),
+        Enc = jiffy:encode(JSON)
         %?info("ENCODED:", [Enc])
    catch C:R -> ?info("FUCK", [C, R, erlang:get_stacktrace()])
    end.

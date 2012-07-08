@@ -151,7 +151,8 @@ to(build, PB=#project_build{info=TestInfo}) ->
         {[
             {name, SuiteName},
             {test_cases, lists:map(fun ({CaseName, CaseData}) ->
-                    force_objects([{name, CaseName}|CaseData])
+                    force_objects([{name, CaseName}|
+                        proplists:delete(runs, CaseData)])
                 end,
                 TestCases)}
         ]}
