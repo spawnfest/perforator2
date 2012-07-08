@@ -109,10 +109,10 @@ to(queue_size, {Node, Size}) ->
 
 to(builds, Builds) ->
     lists:map(
-        fun (#project_build{id=ID, finished=Finished,
+        fun (#project_build{id=ID, finished=Fin,
                 timestamp=TS, info=Info, commit_id=CID}) ->
             {Finished, Success} =
-                case Finished of
+                case Fin of
                     failure -> {true, false};
                     true -> {true, true};
                     false -> {false, false}
