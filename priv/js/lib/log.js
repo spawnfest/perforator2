@@ -10,7 +10,11 @@ var common = require('./common');
 
 exports.init = function(page, cb) {
     page.handle('/', function() {
-        page.go('/1');
+        if(page.projectId) {
+            page.go('/' + page.projectId);
+        } else {
+            page.go('/1');
+        }
     });
     page.handle(/^\/(.+)$/, function(from, to, params) {
         step(function() {
