@@ -1,3 +1,8 @@
+footer {
+    margin-top: 300px;
+    background: #eee;
+    text-align: center;
+}
 .app-good {
     background: #61fa61 !important;
 }
