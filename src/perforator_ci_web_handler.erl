@@ -125,6 +125,13 @@ handle_request([<<"build">>], Data, _Req) ->
                 perforator_ci_json:from(build, Data))
         end);
 
+handle_request([<<"previous_build">>], Data, _Req) ->
+    wrap_call(previous_build,
+        fun () ->
+            perforator_ci_db:get_previous_build_id(
+                perforator_ci_json:from(previous_build, Data))
+        end);
+
 %% 404
 handle_request(_, _, _) ->
     throw(404).

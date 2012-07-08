@@ -76,6 +76,13 @@ test_create_build() ->
         perforator_ci_db:create_build({666, 123, <<"cid3">>, []})),
 
     ?assertMatch(
+        3,
+        perforator_ci_db:get_previous_build_id(4)),
+    ?assertMatch(
+        undefined,
+        perforator_ci_db:get_previous_build_id(3)),
+
+    ?assertMatch(
         #project_build{commit_id= <<"cid1">>},
         perforator_ci_db:get_last_build(42)),
     ?assertMatch(

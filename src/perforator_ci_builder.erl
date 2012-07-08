@@ -237,7 +237,11 @@ run_build({_Pid, #project{id=ProjectID, repo_url=RepoUrl,
                 perforator_ci_utils:sh(C, [{cd, RepoDir}])
             catch
                 throw:{exec_error, {_, _, Reason}} ->
-                    throw({C, Reason})
+                    throw({C, Reason});
+                error:badarg ->
+                    lager:error("Internal error: ~p~n",
+                        [erlang:get_stacktrace()]),
+                    throw({internal_error, C})
             end
         end,
         Instructions

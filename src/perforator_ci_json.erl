@@ -50,7 +50,11 @@ from(build_now, ProjectID) ->
     ProjectID;
 
 from(build, ProjectID) ->
-    ProjectID.
+    ProjectID;
+
+from(previous_build, BuildID) ->
+    BuildID.
+
 
 %% ============================================================================
 %% To jiffy intermediate from Erlang term()
@@ -141,5 +145,11 @@ to(builds, Builds) ->
 
 to(build, #project_build{finished=failure, info=Info}) ->
     throw(Info);
+
+to(previous_build, Data) ->
+    case Data of
+        undefined -> null;
+        N when is_integer(N) -> N
+    end;
 
 to(build_now, _) -> null.

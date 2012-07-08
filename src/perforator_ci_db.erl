@@ -20,6 +20,7 @@
     get_unfinished_builds/1,
     finish_build/3,
     get_build/1,
+    get_previous_build_id/1,
 
     wait_for_db/0,
     init/0,
@@ -124,7 +125,8 @@ create_build({ProjectID, TS, CommitID, Info}) ->
                         #project_build.project_id) of
                     [] -> 1;
                     Bs when is_list(Bs) ->
-                        #project_build{local_id=LN} = lists:last(Bs),
+                        #project_build{local_id=LN} =
+                            hd(sort_builds(Bs, desc)),
                         LN + 1
                 end,
             % Write
@@ -165,6 +167,22 @@ get_last_build(ProjectID) ->
                     #project_build.project_id) of
                 [] -> undefined;
                 Bs when is_list(Bs) -> hd(sort_builds(Bs, desc))
+            end
+        end).
+
+-spec get_previous_build_id(perforator_ci_types:build_id()) ->
+        perforator_ci_types:build_id() | undefined.
+get_previous_build_id(ID) ->
+    transaction(
+        fun () ->
+            [#project_build{local_id=LID, project_id=PID}] =
+                mnesia:read(project_build, ID),
+            case mnesia:index_match_object(
+                    #project_build{project_id=PID, local_id=LID-1, _='_'},
+                    #project_build.project_id) of
+                [#project_build{id=ID1}] -> ID1;
+                [] -> undefined;
+                M -> ?info("WTF", [{m, M}]), undefined
             end
         end).
 
