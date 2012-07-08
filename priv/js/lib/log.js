@@ -34,8 +34,11 @@ exports.init = function(page, cb) {
                     run.finished = true;
                     run.succeeded = buildFinished.success;
                     run.time = (buildFinished.timestamp - (run.buildInit ? run.buildInit.timestamp : 0)) * 1000; // TODO this is fishy - when is run.buildInit undefined?
+                    run.origTime = run.time;
+                    run.time += ' ms';
                     if(run.previous) {
-                        run.timeDelta = run.time - run.previous.time;
+                        run.timeDelta = run.origTime - run.previous.origTime;
+                        run.timeDelta += ' ms';
                     }
                     w.el('run-' + run.id).replaceWith(t.logRun.render(run, t));
                     attachClickHandler(w.el('run-' + run.id)[0]);
@@ -67,10 +70,12 @@ exports.init = function(page, cb) {
 
             runs.reverse();
             v.each(runs, function(run) {
+                run.origTime = run.time;
+                run.time += ' ms';
                 if(runLag === null) {
                     run.timeDelta = null;
                 } else {
-                    run.timeDelta = run.time - runLag.time;
+                    run.timeDelta = (run.origTime - runLag.origTime) + ' ms';
                 }
                 runLag = run;
             });
