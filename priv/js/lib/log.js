@@ -34,14 +34,14 @@ var replaceProject = function(projects, project) {
 
 exports.init = function(page, cb) {
     step(function() {
-        page.req('projects', null, null, this);
+        page.req('projects', null, this);
     }, function(_, projects) {
-        page.on('projectUpdated', function(_, project) {
+        bean.add(page, 'projectUpdated', function(project) {
             replaceProject(projects, project);
             bonzo(qwery('#project-' + project.id)).replaceWith(t.project.render(project));
         });
-        page.on('projectAdded', function(_, project) {
-            // ABSTRACT THIS SHIT
+        bean.add(page, 'projectAdded', function(project) {
+            console.log(project);
             var position = insertProject(projects, project);
             var html = t.project.render(project);
             if(position.after === null) {
@@ -55,11 +55,11 @@ exports.init = function(page, cb) {
             }
         });
         page.handle('/', function() {
-            page.go('/3ttat');
+            page.go('/8888');
         });
         page.handle(/^\/(.+)$/, function(from, to, params) {
             step(function() {
-                page.req('runs', null, params[0], this);
+                page.req('runs', params[0], this);
             }, function(_, runs) {
                 var offProjectUpdated = page.on('projectUpdated', function(_, p) {
                     if(p.id === project.id) {

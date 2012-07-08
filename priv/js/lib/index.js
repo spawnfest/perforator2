@@ -1,6 +1,7 @@
 var t = require('./templates');
 var qwery = require('qwery');
 var domready = require('domready');
+var reqwest = require('reqwest');
 var equal = require('deep-equal');
 var bonzo = require('bonzo');
 var p = require('page');
@@ -49,14 +50,26 @@ step(function() {
                 type : event
             }));
         },
-        req : function(event, err, msg, cb) {
-            var off = this.on('res_' + event, function(err, result) {
-                if(equal(result.req, msg)) {
-                    off();
-                    cb(err, result.res);
+        req : function(resource, msg, cb) {
+            cb = cb || function(){};
+            serverEmulation.post(resource, msg, cb);
+            /*
+            reqwest({
+                url : '/api/1/' + resource,
+                method : 'post',
+                data : msg,
+                success : function(resp) {
+                    if(resp.err) {
+                        cb({
+                            err : resp.err,
+                            msg : resp.msg
+                        }, null);
+                    } else {
+                        cb(null, resp.msg);
+                    }
                 }
             });
-            this.emit('req_' + event, err, msg);
+            */
         },
         body : bonzo(qwery('#body')[0]),
         handle : function(path, cb) {
