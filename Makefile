@@ -2,8 +2,12 @@ REBAR=./rebar
 
 .PHONY: deps distclean test
 
+default: all
+
 all: deps compile
 
+clean:
+	$(REBAR) clean
 deps:
 	$(REBAR) get-deps
 
@@ -22,3 +26,7 @@ test_%:
 
 nodeps:
 	$(REBAR) compile skip_deps=true
+
+start-clean: clean all
+	./init.sh
+	./start.sh
