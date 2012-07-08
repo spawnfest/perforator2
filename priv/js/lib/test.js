@@ -14,7 +14,7 @@ exports.init = function(page, cb) {
             moduleName : params[1],
             testName : params[2]
         };
-        page.req('testRuns', null, state, function(_, runs) {
+        page.req('testRuns', state, function(_, runs) {
             v.each(series, function(series) {
                 var lag = null;
                 var key = series.key;

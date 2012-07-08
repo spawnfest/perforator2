@@ -11,34 +11,38 @@ exports.init = function(page, cb) {
             action : 'Add'
         }));
         bean.add(qwery('form')[0], 'submit', function(e) {
-            page.emit('addProject', null, {
-                title : bonzo(qwery('#title')).val(),
-                repo : {
-                    url : bonzo(qwery('#url')).val(),
-                    type : 'git'
-                }
-            });
-            page.once('projectAdded', function(_, project) {
+            var project = {
+                name : bonzo(qwery('#name')).val(),
+                repo_url : bonzo(qwery('#repo_url')).val(),
+                branch : bonzo(qwery('#branch')).val(),
+                build_instructions : [],
+                polling_strategy : 'ondemand'
+            };
+            page.req('project/new', project, function(_, id) {
+                project.id = id;
+                bean.fire(page, 'projectAdded', [project]);
                 page.go('/' + project.id);
             });
             e.preventDefault();
         });
     });
     page.handle(/^\/(.+)\/edit$/, function(from, to, params) {
-        page.req('project', null, params[0], function(_, project) {
+        page.req('project', params[0], function(_, project) {
             page.body.html(t.projectEdit.render({
                 project : project,
                 action : 'Save'
             }));
             bean.add(qwery('form')[0], 'submit', function(e) {
-                page.emit('updateProject', null, {
+                project = {
                     id : project.id,
-                    title : bonzo(qwery('#title')).val(),
-                    repo : {
-                        url : bonzo(qwery('#url')).val(),
-                        type : 'git'
-                    }
-                });
+                    name : bonzo(qwery('#name')).val(),
+                    repo_url : bonzo(qwery('#repo_url')).val(),
+                    branch : bonzo(qwery('#branch')).val(),
+                    build_instructions : [],
+                    polling_strategy : 'ondemand'
+                };
+                page.req('project/update', project);
+                bean.fire(page, 'projectUpdated', [project]);
                 page.go('/' + project.id);
                 e.preventDefault();
             });

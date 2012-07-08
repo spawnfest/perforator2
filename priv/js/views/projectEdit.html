@@ -2,15 +2,21 @@
     <div class="span12">
         <form class="form-horizontal">
             <div class="control-group">
-                <label class="control-label" for="title">Title</label>
+                <label class="control-label" for="name">Name</label>
                 <div class="controls">
-                    <input type="text" id="title" value="{{project.title}}">
+                    <input type="text" id="name" value="{{project.name}}">
                 </div>
             </div>
             <div class="control-group">
-                <label class="control-label" for="url">Git repository URL</label>
+                <label class="control-label" for="repo_url">Git repository URL</label>
                 <div class="controls">
-                    <input type="text" id="url" value="{{project.repo.url}}">
+                    <input type="text" id="repo_url" value="{{project.repo_url}}">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="branch">Branch</label>
+                <div class="controls">
+                    <input type="text" id="branch" value="{{project.branch}}">
                 </div>
             </div>
             <div class="form-actions">
