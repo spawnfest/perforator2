@@ -45,3 +45,26 @@ from_project_update_test() ->
         {<<"id">>, <<"name">>, "url", "branch", perforator_ci_git, on_demand,
             ["one", "two"], []},
         ?FROM(project_update, ?DEC(JSON))).
+
+to_build_test() ->
+    try
+        Data = [{<<"test_suite_1">>, [{test_cases,
+            [{<<"test_case_1">>, [
+                {successful, true},
+                {result, [
+                    {failures, 1},
+                    {duration, [
+                        {min, 3},
+                        {max, 4},
+                        {mean, 6}
+                    ]}
+                ]}
+            ]}]
+        }]}],
+        JSON = perforator_ci_json:to(build, #project_build{info=Data}),
+        %?info("JSONBLE:", [JSON]),
+        Enc = jiffy:encode(JSON),
+        %?info("ENCODED:", [Enc])
+   catch C:R -> ?info("FUCK", [C, R, erlang:get_stacktrace()])
+   end.
+

@@ -145,6 +145,17 @@ to(builds, Builds) ->
 
 to(build, #project_build{finished=failure, info=Info}) ->
     throw(Info);
+to(build, PB=#project_build{info=TestInfo}) ->
+    lists:map(fun ({SuiteName, SuiteData}) ->
+        TestCases = proplists:get_value(test_cases, SuiteData),
+        {[
+            {name, SuiteName},
+            {test_cases, lists:map(fun ({CaseName, CaseData}) ->
+                    force_objects([{name, CaseName}|CaseData])
+                end,
+                TestCases)}
+        ]}
+    end, TestInfo);
 
 to(previous_build, Data) ->
     case Data of
@@ -153,3 +164,16 @@ to(previous_build, Data) ->
     end;
 
 to(build_now, _) -> null.
+
+%% ============================================================================
+%% Helpers
+%% ============================================================================
+
+%% @hack: We know that all our test data is proplists, so we force it into JSON
+%% objects for Jiffy to be happy.
+force_objects({Key, Val}) ->
+    {Key, force_objects(Val)};
+force_objects(PropList) when is_list(PropList) ->
+    {[force_objects(Elem) || Elem <- PropList]};
+force_objects(A) ->
+    A.
