@@ -25,6 +25,7 @@ exports.init = function(page, cb) {
                     run.time = (buildFinished.timestamp - run.buildInit.timestamp) * 1000;
                     run.timeDelta = run.time - run.previous.time;
                     bonzo(qwery('#run-' + buildFinished.build_id)).replaceWith(t.logRun.render(run, t));
+                    attachClickHandler(qwery('#run-' + buildFinished.build_id));
                 }
             }));
             offs.push(page.on('build_init', function(_, buildInit) {
@@ -39,6 +40,7 @@ exports.init = function(page, cb) {
                         tests : ''
                     };
                     runsEl.prepend(t.logRun.render(run, t));
+                    attachClickHandler(qwery('#run-' + buildInit.build_id));
                     runs.unshift(run);
                 }
             }));
@@ -69,11 +71,12 @@ exports.init = function(page, cb) {
                 project : project
             }, t));
             var runsEl = bonzo(qwery('#runs'));
-            v.each(qwery('tr'), function(row) {
+            var attachClickHandler = function(row) {
                 bean.add(row, 'click', function() {
                     page.go('/' + project.id + '/run/' + bonzo(row).data('id'));
                 });
-            });
+            };
+            v.each(qwery('tr'), attachClickHandler);
         });
     });
     cb();
