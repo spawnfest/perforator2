@@ -1,4 +1,11 @@
 %% @doc WebSockets handler used for catching events pushed through pubsub.
+%%
+%% Each response has a following form:
+%% {
+%%     err: null | string(),
+%%     type: string(),
+%%     msg: {}
+%% }
 
 %% @author Martynas <martynas@numeris.lt>
 
@@ -33,8 +40,12 @@ websocket_handle({text, Msg}, Req, State) ->
 websocket_handle(_Data, Req, State) ->
     {ok, Req, State}.
 
-websocket_info({perforator_ci_event, Group, Data}, Req, State) ->
-    Reply = handle_event(Group, Data),
+websocket_info({perforator_ci_event, Group, {Type, Data}}, Req, State) ->
+    Reply = jiffy:encode({[
+        {err, null},
+        {type, ?BIN(Type)},
+        {msg, perforator_ci_json:to(Type, Data)}
+    ]}),
 
     {reply, {text, Reply}, Req, State};
 
@@ -43,16 +54,3 @@ websocket_info(_Info, Req, State) ->
 
 websocket_terminate(_Reason, _Req, _State) ->
     ok.
-
-%% ============================================================================
-%% Event handlers
-%% ============================================================================
-
-handle_event(Group, Ev) ->
-    jiffy:encode(handle_event_1(Group, Ev)).
-
-handle_event_1(perforator_ci_project, {build_init, Data}) ->
-    perforator_ci_json:to(build_init, Data);
-
-handle_event_1(perforator_ci_project, {build_finished, Data}) ->
-    perforator_ci_json:to(build_finished, Data).

@@ -90,4 +90,10 @@ to(build_finished, {ProjectID, BuildID, Success, TS}) ->
         {build_id, BuildID},
         {success, Success},
         {timestamp, TS}
+    ]};
+
+to(queue_size, {Node, Size}) ->
+    {[
+        {name, ?BIN(Node)},
+        {size, Size}
     ]}.

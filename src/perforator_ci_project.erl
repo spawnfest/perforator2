@@ -16,7 +16,8 @@
     is_project_running/1,
     start_link/1,
     build_finished/4,
-    get_pid/1
+    get_pid/1,
+    build_now/1
 ]).
 
 %% gen_server callbacks
@@ -67,6 +68,10 @@ start_link(ProjectID) ->
 %% @doc Pings project, that requested build is done.
 build_finished(Pid, BuildID, Results, Success) ->
     gen_server:call(Pid, {build_finished, BuildID, Results, Success}).
+
+%% @doc Asks to make request to build a project.
+build_now(ProjectID) ->
+    gen_server:cast(get_pid(ProjectID), ping).
 
 %% @doc Used for tests only.
 get_pid(ProjectID) ->

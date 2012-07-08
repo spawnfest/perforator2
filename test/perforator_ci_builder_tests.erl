@@ -149,6 +149,11 @@ test_real_workflow() ->
         {build_finished, {1, 1, true, _}}}, M1)
     end,
 
+    receive M2 ->
+        ?assertMatch({perforator_ci_event, perforator_ci_builder,
+        {queue_size, {_, 0}}}, M2)
+    end,
+
     ?assertMatch(
         #project_build{id=1, finished=true, info=ok},
         perforator_ci_db:get_build(1)),

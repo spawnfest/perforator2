@@ -139,6 +139,8 @@ handle_cast(_, State) ->
 % worker done!
 handle_info({'EXIT', Pid, '$work_is_done'},
         #state{worker=Pid, build_queue=[_|T]}) ->
+    ok = perforator_ci_pubsub:broadcast(perforator_ci_builder,
+        {queue_size, {node(), length(T)}}),
     gen_server:cast(self(), ping),
 
     {noreply, #state{build_queue=T}};
@@ -166,6 +168,9 @@ handle_info({'EXIT', Pid, _}, #state{build_queue=Q, worker=P}) ->
 
     % filter out queue items
     Q1 = [Item || {Pid0, _, _}=Item <- Q, Pid0 =/= Pid],
+
+    ok = perforator_ci_pubsub:broadcast(perforator_ci_builder,
+        {queue_size, {node(), length(Q1)}}),
 
     {noreply, #state{build_queue=Q1, worker=P1}};
 
