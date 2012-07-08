@@ -47,33 +47,24 @@ from_project_update_test() ->
         ?FROM(project_update, ?DEC(JSON))).
 
 to_build_test() ->
-    try
-        Data = [{suites, [{<<"test_suite_1">>, [{test_cases,
-            [{<<"test_case_1">>, [
-                {successful, true},
-                {result, [
-                    {failures, 1},
-                    {duration, [
-                        {min, 3},
-                        {max, 4},
-                        {mean, 6}
-                    ]}
+    Data = [{suites, [{<<"test_suite_1">>, [{test_cases,
+        [{<<"test_case_1">>, [
+            {successful, true},
+            {result, [
+                {failures, 1},
+                {duration, [
+                    {min, 3},
+                    {max, 4},
+                    {mean, 6}
                 ]}
-            ]}]
-        }]}]}],
-        JSON = perforator_ci_json:to(build, #project_build{info=Data}),
-        %?info("JSONBLE:", [JSON]),
-        Enc = jiffy:encode(JSON)
-        %?info("ENCODED:", [Enc])
-   catch C:R -> ?info("", [C, R, erlang:get_stacktrace()])
-   end.
+            ]}
+        ]}]
+    }]}]}],
+    JSON = perforator_ci_json:to(build, #project_build{info=Data}),
+    _Enc = jiffy:encode(JSON). %% it happens -- good enough.
 
 to_test_runs_test() ->
-    try
-        Data = [{1,[{failures,1},{duration,[{min,3},{max,4},{mean,6}]}]}],
-        JSON = perforator_ci_json:to(test_runs, Data),
-        Enc = jiffy:encode(JSON),
-        ?info("ENCODED:", [Enc])
-   catch C:R -> ?info("", [C, R, erlang:get_stacktrace()])
-   end.
+    Data = [{1,[{failures,1},{duration,[{min,3},{max,4},{mean,6}]}]}],
+    JSON = perforator_ci_json:to(test_runs, Data),
+    _Enc = jiffy:encode(JSON). %% it happens -- good enough.
 

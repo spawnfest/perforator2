@@ -163,6 +163,8 @@ get_unfinished_builds(ProjectID) ->
 -spec get_test_runs(perforator_ci_types:project_id(), TestSuite::binary(),
     TestName::binary()) ->
         [TestData :: term()].
+%% @todo refactor this to return all test data, not only test data relevant for
+%% HTTP request.
 get_test_runs(ProjectId, SuiteName, TestName) ->
     Builds = get_builds(ProjectId),
     MappedBuilds = [{Build#project_build.id, Build#project_build.info} ||

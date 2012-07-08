@@ -119,6 +119,5 @@ test_get_test_runs() ->
         timer:sleep(100),
         Results = perforator_ci_db:get_test_runs(42, <<"test_suite_1">>,
             <<"test_case_1">>),
-        ?info("Results:", [{rez, Results}]),
         ?assertNotEqual([], Results).
 
