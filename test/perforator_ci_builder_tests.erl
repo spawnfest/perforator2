@@ -155,7 +155,7 @@ test_real_workflow() ->
 
     2 = perforator_ci:create_and_start_project({<<"2">>, ?REPO, "origin/master",
         perforator_ci_git, {time, 50}, ["fail fail fail"], []}),
-    timer:sleep(200),
+    timer:sleep(300),
 
     ?assertMatch(
         #project_build{id=2, finished=failure, info={_, _}},
