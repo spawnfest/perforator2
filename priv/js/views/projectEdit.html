@@ -41,6 +41,14 @@
                     {{/project.ondemand}}
                 </div>
             </div>
+            <div class="control-group">
+                <label class="control-label">Build instructions</label>
+                <div class="controls">
+                    {{#project.build_instructions}}
+                    {{> build_instruction}}
+                    {{/project.build_instructions}}
+                </div>
+            </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">{{action}}</button>
             </div>

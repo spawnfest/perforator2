@@ -33,7 +33,11 @@ exports.init = function(page, cb) {
             name : project.name,
             repo_url : project.repo_url,
             branch : project.branch,
-            build_instructions : project.build_instructions.splice(),
+            build_instructions : v.map(project.build_instructions, function(instruction) {
+                return {
+                    instruction : instruction
+                };
+            }),
             ondemand : ondemand,
             polling_strategy : project.polling_strategy
         };
@@ -49,8 +53,8 @@ exports.init = function(page, cb) {
                     time : 10000
                 }
             }),
-            action : 'Add'
-        }));
+            action : 'Add project'
+        }, t));
         augment();
         bean.add(qwery('form')[0], 'submit', function(e) {
             var project = gather();
@@ -66,8 +70,8 @@ exports.init = function(page, cb) {
         page.req('project', page.projectId, function(_, project) {
             page.body.html(t.projectEdit.render({
                 project : adapt(project),
-                action : 'Save'
-            }));
+                action : 'Save project'
+            }, t));
             augment();
             bean.add(qwery('form')[0], 'submit', function(e) {
             var ondemand = bonzo(qwery('#ondemand')).attr('checked');
