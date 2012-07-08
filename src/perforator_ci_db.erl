@@ -14,6 +14,7 @@
     get_project/1,
     get_projects/0,
     get_builds/1,
+    get_test_runs/3,
 
     create_build/1,
     get_last_build/1,
@@ -156,6 +157,26 @@ get_unfinished_builds(ProjectID) ->
             )
         end
     ), asc).
+
+%% @doc Returns all test runs of a single test case.
+%% @todo do proper specs
+-spec get_test_runs(perforator_ci_types:project_id(), TestSuite::binary(),
+    TestName::binary()) ->
+        [TestData :: term()].
+get_test_runs(ProjectId, SuiteName, TestName) ->
+    Builds = get_builds(ProjectId),
+    MappedBuilds = [{Build#project_build.id, Build#project_build.info} ||
+            Build <- Builds],
+    lists:flatmap(fun ({BuildId, TestData}) ->
+        TestSuites = proplists:get_value(suites, TestData, []),
+        SuiteData = proplists:get_value(SuiteName, TestSuites, []),
+        TestCases = proplists:get_value(test_cases, SuiteData, []),
+        TestCase = proplists:get_value(TestName, TestCases, []),
+        case proplists:get_value(result, TestCase) of
+            undefined -> [];
+            Result -> [{BuildId, Result}]
+        end
+    end, MappedBuilds).
 
 %% @doc Returns last project build.
 -spec get_last_build(perforator_ci_types:project_id()) ->

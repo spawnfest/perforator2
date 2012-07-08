@@ -65,6 +65,15 @@ to_build_test() ->
         %?info("JSONBLE:", [JSON]),
         Enc = jiffy:encode(JSON)
         %?info("ENCODED:", [Enc])
-   catch C:R -> ?info("FUCK", [C, R, erlang:get_stacktrace()])
+   catch C:R -> ?info("", [C, R, erlang:get_stacktrace()])
+   end.
+
+to_test_runs_test() ->
+    try
+        Data = [{1,[{failures,1},{duration,[{min,3},{max,4},{mean,6}]}]}],
+        JSON = perforator_ci_json:to(test_runs, Data),
+        Enc = jiffy:encode(JSON),
+        ?info("ENCODED:", [Enc])
+   catch C:R -> ?info("", [C, R, erlang:get_stacktrace()])
    end.
 

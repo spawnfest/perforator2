@@ -1,6 +1,7 @@
 %% @doc JSON intermediate format (jiffy) (de)serializer to Erlang terms.
 
 %% @author Martynas <martynasp@gmail.com>
+%% @author Ignas <i.vysniauskas@gmail.com>
 
 -module(perforator_ci_json).
 
@@ -53,8 +54,13 @@ from(build, ProjectID) ->
     ProjectID;
 
 from(previous_build, BuildID) ->
-    BuildID.
+    BuildID;
 
+from(test_runs, {Data}) ->
+    ProjectId = proplists:get_value(<<"projectId">>, Data),
+    ModuleName = proplists:get_value(<<"moduleName">>, Data),
+    TestName = proplists:get_value(<<"testName">>, Data),
+    {ProjectId, ModuleName, TestName}.
 
 %% ============================================================================
 %% To jiffy intermediate from Erlang term()
@@ -158,6 +164,11 @@ to(build, #project_build{info=TestInfo}) ->
                 TestCases)}
         ]}
     end, Suites);
+
+to(test_runs, Data) ->
+    lists:map(fun ({BuildId, TestData}) ->
+        force_objects([{build_id, BuildId}|TestData])
+    end, Data);
 
 to(previous_build, Data) ->
     case Data of

@@ -19,7 +19,8 @@ db_test_() ->
         fun (_) -> perforator_ci:stop() end,
         [
             {"Create/update project", fun test_create_project/0},
-            {"Create build", fun test_create_build/0}
+            {"Create build", fun test_create_build/0},
+            {"Get test runs", fun test_get_test_runs/0}
         ]
     }.
 
@@ -96,3 +97,28 @@ test_create_build() ->
     ?assertMatch(
         [#project_build{id=4}],
         perforator_ci_db:get_unfinished_builds(666)).
+
+test_get_test_runs() ->
+        ?assertMatch(
+            #project_build{id=1, local_id=1},
+            perforator_ci_db:create_build({42, 123, <<"cid0">>, []})),
+        Data = [{suites, [{<<"test_suite_1">>, [{test_cases,
+            [{<<"test_case_1">>, [
+                {successful, true},
+                {result, [
+                    {failures, 1},
+                    {duration, [
+                        {min, 3},
+                        {max, 4},
+                        {mean, 6}
+                    ]}
+                ]}
+            ]}]
+        }]}]}],
+        ?assertEqual(ok, perforator_ci_db:finish_build(1, Data, false)),
+        timer:sleep(100),
+        Results = perforator_ci_db:get_test_runs(42, <<"test_suite_1">>,
+            <<"test_case_1">>),
+        ?info("Results:", [{rez, Results}]),
+        ?assertNotEqual([], Results).
+

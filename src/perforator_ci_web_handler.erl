@@ -41,7 +41,7 @@ handle(Req, State) ->
                         [] -> null;
                         [{D, true}] -> jiffy:decode(D)
                     end,
-                    
+
                     cowboy_http_req:reply(
                         200,
                         [{<<"Content-Type">>, <<"application/json">>}],
@@ -130,6 +130,14 @@ handle_request([<<"previous_build">>], Data, _Req) ->
         fun () ->
             perforator_ci_db:get_previous_build_id(
                 perforator_ci_json:from(previous_build, Data))
+        end);
+
+handle_request([<<"test_runs">>], Data, _Req) ->
+    wrap_call(test_runs,
+        fun () ->
+            {ProjectID, SuiteName, TestName} =
+                perforator_ci_json:from(test_runs, Data),
+            perforator_ci_db:get_test_runs(ProjectID, SuiteName, TestName)
         end);
 
 %% 404
