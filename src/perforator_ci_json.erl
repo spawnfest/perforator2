@@ -18,7 +18,7 @@
 from(project_new, {Data}) ->
     Polling =
         case proplists:get_value(<<"polling_strategy">>, Data) of
-            <<"on_demand">> -> on_demand;
+            <<"ondemand">> -> on_demand;
             {[{<<"time">>, T}]} -> {time, T}
         end,
     BuildInstr = [binary_to_list(I) || I <-
@@ -41,6 +41,12 @@ from(project_update, {Data}) ->
     );
 
 from(project, ProjectID) ->
+    ProjectID;
+
+from(builds, ProjectID) ->
+    ProjectID;
+
+from(build_now, ProjectID) ->
     ProjectID.
 
 %% ============================================================================
@@ -56,7 +62,7 @@ to(project_update, _) ->
 to(project, #project{id=ID, name=Name, repo_url=RepoURL, branch=Branch,
         polling=Polling, build_instructions=BuildInstr}) ->
     Polling1 = case Polling of
-        on_demand -> ?BIN(on_demand);
+        on_demand -> ?BIN(ondemand);
         {time, N} -> {[{time, N}]}
     end,
     BuildInstr1 = [?BIN(I) || I <- BuildInstr],
@@ -96,4 +102,6 @@ to(queue_size, {Node, Size}) ->
     {[
         {name, ?BIN(Node)},
         {size, Size}
-    ]}.
+    ]};
+
+to(build_now, _) -> null.

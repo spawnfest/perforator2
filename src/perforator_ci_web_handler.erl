@@ -103,6 +103,21 @@ handle_request([<<"projects">>], _Data, _Req) ->
 handle_request([<<"builders">>], _Data, _Req) ->
     wrap_call(builders, fun () -> perforator_ci:get_builders() end);
 
+%% /builds
+handle_request([<<"builds">>], Data, Req) ->
+    wrap_call(builds,
+        fun () ->
+            perforator_ci_db:get_builds(
+                perforator_ci_json:from(builds, Data))
+        end);
+
+handle_request([<<"build_now">>], Data, Req) ->
+    wrap_call(build_now,
+        fun () ->
+            perforator_ci_project:build_now(
+                perforator_ci_json:from(build_now, Data))
+        end);
+
 %% 404
 handle_request(_, _, _) ->
     throw(404).

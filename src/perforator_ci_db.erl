@@ -13,6 +13,7 @@
     update_project/1,
     get_project/1,
     get_projects/0,
+    get_builds/1,
 
     create_build/1,
     get_last_build/1,
@@ -23,7 +24,9 @@
     wait_for_db/0,
     init/0,
     create_tables/0,
-    dump/1
+    dump/1,
+
+    init_data/0
 ]).
 
 %% ============================================================================
@@ -219,6 +222,14 @@ get_build(ID) ->
             end
         end).
 
+%% @doc Returns project builds.
+get_builds(ProjectID) ->
+    sort_builds(transaction(
+        fun () ->
+            mnesia:index_read(project_build, ProjectID,
+                    #project_build.project_id)
+        end), desc).
+
 %% @doc Returns #project's.
 -spec get_projects() -> [#project{}].
 get_projects() ->
@@ -298,3 +309,11 @@ dump(Table) ->
         qlc:eval(qlc:q([R || R <- mnesia:table(Table)]))
     end,
     transaction(Fun).
+
+init_data() ->
+    Data = [
+        {project,1,<<"name">>,"file:///tmp/omg.git", "origin/master",perforator_ci_git, {time,100000}, ["one","two"], []},
+        {project,2,<<"name2">>,"file:///tmp/omg.git", "origin/master",perforator_ci_git,on_demand, ["one","two"], []}
+    ],
+
+    [mnesia:dirty_write(D) || D <- Data].
