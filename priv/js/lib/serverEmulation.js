@@ -19,34 +19,34 @@ exports.post = function(page, req, cb) {
                 name : 'moduleC'
             }
         ]);
-    } else if(page === 'testRun') {
+    } else if(page === 'test_run') {
         cb(null, {
             name : req.runId,
-            time : 92000,
-            load : 1,
-            memutil : 122000000,
-            cpuutil : 0.9
+            duration : 92000,
+            cpu_load : 1,
+            used_memory : 122000000,
+            cpu_util : 0.9
         });
-    } else if(page === 'testRuns') {
+    } else if(page === 'test_runs') {
         cb(null, [
             {
                 name : '8888',
-                time : 92000,
-                load : 1,
-                memutil : 122000000,
-                cpuutil : 0.9
+                duration : 92000,
+                cpu_load : 1,
+                used_memory : 122000000,
+                cpu_util : 0.9
             }, {
                 name : '8008',
-                time : 72000,
-                load : 0.7,
-                memutil : 922000000,
-                cpuutil : 0.4
+                duration : 72000,
+                cpu_load : 0.7,
+                used_memory : 922000000,
+                cpu_util : 0.4
             }, {
                 name : '8808',
-                time : 78000,
-                load : 1.2,
-                memutil : 102000000,
-                cpuutil : 1.0
+                duration : 78000,
+                cpu_load : 1.2,
+                used_memory : 102000000,
+                cpu_util : 1.0
             }
         ]);
     } else if(page === 'build') {
