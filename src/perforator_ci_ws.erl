@@ -23,6 +23,7 @@ init({tcp, http}, _Req, _Opts) ->
 websocket_init(_TransportName, Req, _Opts) ->
     % Subscribe:
     ok = perforator_ci_pubsub:subscribe(perforator_ci_project),
+    ok = perforator_ci_pubsub:subscribe(perforator_ci_builder),
 
     {ok, Req, []}.
 

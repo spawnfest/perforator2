@@ -128,8 +128,9 @@ handle_call({build_finished, BuildID, Results, Success}, _,
     lager:info("Build Finished: ~p~n", [BuildID]),
     ok = perforator_ci_db:finish_build(BuildID, Results, Success),
 
+    TS = perforator_ci_utils:timestamp(),
     ok = perforator_ci_pubsub:broadcast(perforator_ci_project,
-        {build_finished, {ID, BuildID, Success}}),
+        {build_finished, {ID, BuildID, Success, TS}}),
 
     {reply, ok, State};
 
@@ -139,12 +140,13 @@ handle_call(_, _, State) ->
 handle_cast({build, CommitID}, #state{project_id=ID}=State) ->
     lager:info("Project (~p): request for build commit ~p~n",
         [ID, CommitID]),
-    #project_build{id=BuildID}=Build = perforator_ci_db:create_build({ID,
-        perforator_ci_utils:timestamp(), CommitID, []}),
+    TS = perforator_ci_utils:timestamp(),
+    #project_build{id=BuildID}=Build = perforator_ci_db:create_build({ID, TS,
+        CommitID, []}),
 
     Project = perforator_ci_db:get_project(ID), % ehh, could create from #state
     ok = perforator_ci_pubsub:broadcast(perforator_ci_project,
-        {build_init, {ID, BuildID, CommitID}}),
+        {build_init, {ID, BuildID, CommitID, TS}}),
 
     % Create job for a builder
     ok = perforator_ci_builder:build(Project, Build),

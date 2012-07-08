@@ -21,8 +21,8 @@
 
 -spec timestamp() -> perforator_ci_types:timestamp().
 timestamp() ->
-    {Mega, Sec, Micro} = erlang:now(),
-    (Mega * 1000000 + Sec) * 1000000 + Micro.
+    {Mega, Sec, _} = erlang:now(),
+    (Mega * 1000000 + Sec).
 
 %% @doc Returns application env variable or default unless it exists.
 get_env(App, Key, Default) ->

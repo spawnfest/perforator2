@@ -141,12 +141,12 @@ test_real_workflow() ->
 
     receive M0 ->
         ?assertMatch({perforator_ci_event, perforator_ci_project,
-            {build_init, {1, 1, _}}}, M0)
+            {build_init, {1, 1, _, _}}}, M0)
     end,
 
     receive M1 ->
         ?assertMatch({perforator_ci_event, perforator_ci_project,
-        {build_finished, {1, 1, true}}}, M1)
+        {build_finished, {1, 1, true, _}}}, M1)
     end,
 
     ?assertMatch(

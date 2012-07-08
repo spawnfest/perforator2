@@ -76,16 +76,18 @@ to(projects, Projects) ->
 to(builders, Builders) ->
     [{[{name, ?BIN(N)}, {queue_size, Q}]} || {N, Q} <- Builders];
 
-to(build_init, {ProjectID, BuildID, CommitID}) ->
+to(build_init, {ProjectID, BuildID, CommitID, TS}) ->
     {[
         {project_id, ProjectID},
         {build_id, BuildID},
-        {commit_id, CommitID}
+        {commit_id, CommitID},
+        {timestamp, TS}
     ]};
 
-to(build_finished, {ProjectID, BuildID, Success}) ->
+to(build_finished, {ProjectID, BuildID, Success, TS}) ->
     {[
         {project_id, ProjectID},
         {build_id, BuildID},
-        {success, Success}
+        {success, Success},
+        {timestamp, TS}
     ]}.
