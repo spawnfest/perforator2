@@ -43,6 +43,7 @@ start(_, _) ->
     ),
 
     perforator_ci_db:wait_for_db(),
+    perforator_ci_pubsub:init(),
 
     perforator_ci_sup:start_link().
 
