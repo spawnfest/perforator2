@@ -40,7 +40,7 @@ websocket_handle({text, Msg}, Req, State) ->
 websocket_handle(_Data, Req, State) ->
     {ok, Req, State}.
 
-websocket_info({perforator_ci_event, Group, {Type, Data}}, Req, State) ->
+websocket_info({perforator_ci_event, _Group, {Type, Data}}, Req, State) ->
     Reply = jiffy:encode({[
         {err, null},
         {type, ?BIN(Type)},

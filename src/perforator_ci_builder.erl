@@ -94,6 +94,8 @@ handle_call(get_worker, _, #state{worker=P}=S) ->
 handle_call({build, Project, Build}, {Pid, _},
         #state{build_queue=Q}=State) ->
     Q1 = enqueue({Pid, Project, Build}, Q),
+    ok = perforator_ci_pubsub:broadcast(perforator_ci_builder,
+        {queue_size, {node(), length(Q1)}}),
 
     gen_server:cast(self(), ping), % ping!
 

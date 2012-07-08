@@ -104,7 +104,7 @@ to(build_finished, {ProjectID, BuildID, Success, TS}) ->
 to(queue_size, {Node, Size}) ->
     {[
         {name, ?BIN(Node)},
-        {size, Size}
+        {queue_size, Size}
     ]};
 
 to(builds, Builds) ->
