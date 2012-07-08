@@ -3,7 +3,6 @@
 %% and executes (FIFO) only one at a time in spawned process.
 %% If builder (not spawned process) dies, all projects resend build requests.
 %%
-%%
 %% There could be more than one builder instance, but it should run on
 %% different node %% (and preferable on different host),
 %% but there is no auto node discovery. So either put in kernel app

@@ -166,7 +166,8 @@ get_unfinished_builds(ProjectID) ->
 %% @todo refactor this to return all test data, not only test data relevant for
 %% HTTP request.
 get_test_runs(ProjectId, SuiteName, TestName) ->
-    Builds = get_builds(ProjectId),
+    Builds = [B || #project_build{finished=F}=B <- get_builds(ProjectId),
+        F =:= true],
     MappedBuilds = [{Build#project_build.id, Build#project_build.info} ||
             Build <- Builds],
     lists:flatmap(fun ({BuildId, TestData}) ->

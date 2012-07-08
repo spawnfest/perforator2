@@ -115,7 +115,7 @@ test_get_test_runs() ->
                 ]}
             ]}]
         }]}]}],
-        ?assertEqual(ok, perforator_ci_db:finish_build(1, Data, false)),
+        ?assertEqual(ok, perforator_ci_db:finish_build(1, Data, true)),
         timer:sleep(100),
         Results = perforator_ci_db:get_test_runs(42, <<"test_suite_1">>,
             <<"test_case_1">>),
