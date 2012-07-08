@@ -9,7 +9,7 @@ var series = require('./series');
 series = series.series;
 
 exports.init = function(page, cb) {
-    page.handle(/^\/(.+)\/run\/(.+)$/, function(from, to, params) {
+    page.handle(/^\/(.+)\/build\/(.+)$/, function(from, to, params) {
         var state = {
             projectId : page.projectId,
             id : params[0]

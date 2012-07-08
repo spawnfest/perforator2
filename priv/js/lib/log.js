@@ -78,7 +78,7 @@ exports.init = function(page, cb) {
                     return;
                 }
                 bean.add(row, 'click', function() {
-                    page.go('/' + project.id + '/run/' + bonzo(row).data('id'));
+                    page.go('/' + project.id + '/build/' + bonzo(row).data('id'));
                 });
             };
             v.each(qwery('tr'), attachClickHandler);
