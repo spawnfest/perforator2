@@ -59,7 +59,7 @@ step(function() {
         req : function(resource, msg, cb) {
             console.log('page.req', resource, msg);
             cb = cb || function(){};
-            if(['project/new', 'project/update', 'project', 'projects', 'builders'].indexOf(resource) >= 0) {
+            if(['build_now', 'project/new', 'project/update', 'project', 'projects', 'builders'].indexOf(resource) >= 0) {
                 reqwest({
                     url : '/api/1/' + resource,
                     method : 'post',
@@ -188,6 +188,10 @@ step(function() {
         };
         bean.add(page, 'projectId', updateSidebar);
         updateSidebar();
+        bean.add(w.el('build-now')[0], 'click', function(e) {
+            page.req('build_now', page.projectId);
+            e.preventDefault();
+        });
         var addBuilderListener = function(builder) {
             var onUpdate = function() {
                 w.el('builder-li-' + builder.name).replaceWith(t.worker.render(builder));

@@ -2,9 +2,10 @@
 {{#projects}}
 {{> project}}
 {{/projects}}
-<li class="nav-header">Actions</li>
-<li><a href="/add"><i class="icon-plus-sign"></i> Add project</a></li>
-<li><a href="/{{projectId}}/edit"><i class="icon-edit"></i> Edit project</a></li>
+<li class="nav-header">Project Actions</li>
+<li><a id="build-now" href="#"><i class="icon-repeat"></i> Build now</a></li>
+<li><a href="/{{projectId}}/edit"><i class="icon-edit"></i> Edit</a></li>
+<li><a href="/add"><i class="icon-plus-sign"></i> Add</a></li>
 <li class="nav-header">Builders</li>
 {{#workers}}
 {{> worker}}
