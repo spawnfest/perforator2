@@ -14,7 +14,7 @@ exports.init = function(page, cb) {
             projectId : params[0],
             id : params[1]
         };
-        page.req('run', null, state, function(_, modules) {
+        page.req('run', state, function(_, modules) {
             v.each(modules, function(module) {
                 v.each(module.tests, function(test) {
                     test.id = 'test-' + module.name + '-' + test.name;
