@@ -125,7 +125,7 @@ exports.post = function(page, req, cb) {
         cb(null, null);
     } else if(page === 'project/new') {
         cb(null, Math.floor(Math.random() * 1000000));
-    } else if(page === 'runs') {
+    } else if(page === 'builds') {
         cb(null, [
             {
                 id : '8888',
@@ -187,12 +187,13 @@ exports.post = function(page, req, cb) {
 };
 
 exports.init = function(page, cb) {
-    page.emit('workerPoolChanged', null, [{
-        name : 'Wo00t',
-        queue_size : 10
-    }, {
-        name : 'WorkWork',
-        queue_size : 0
-    }]);
+    /* TODO
+    setTimeout(function() {
+        page.emit('queue_size', null, {
+            name : 'perforator_ci@laptop',
+            queue_size : 10
+        });
+        }, 2000);
+    */
     cb(null);
 };

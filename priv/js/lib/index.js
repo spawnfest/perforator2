@@ -15,10 +15,10 @@ var projectEdit = require('./projectEdit');
 var serverEmulation = require('./serverEmulation');
 var compare = require('./compare');
 var bean = require('bean');
-var window = require('./window');
+var w = require('./window');
 var step = require('step');
 
-var socket = window.createSocket();
+var socket = w.createSocket();
 step(function() {
     domready(this.parallel());
     socket.onmessage = function(event) {
@@ -57,6 +57,7 @@ step(function() {
             }));
         },
         req : function(resource, msg, cb) {
+            console.log('page.req', resource, msg);
             cb = cb || function(){};
             if(['project/new', 'project/update', 'project', 'projects', 'builders'].indexOf(resource) >= 0) {
                 reqwest({
@@ -69,6 +70,7 @@ step(function() {
                         console.log('req error', resource, msg, arguments);
                     },
                     success : function(resp) {
+                        console.log('resp', resp);
                         if(resp.err) {
                             cb({
                                 err : resp.err,
@@ -83,14 +85,14 @@ step(function() {
                 serverEmulation.post(resource, msg, cb);
             }
         },
-        body : bonzo(qwery('#body')[0]),
+        body : w.el('body'),
         projectId : null,
         handle : function(path, cb) {
             var self = this;
             console.log('adding handler', path);
             p(path, function(ctx) {
                 setTimeout(function() {
-                    var nextPath = window.getPath();
+                    var nextPath = w.getPath();
                     if(previousPath !== nextPath) {
                         console.log('handling', previousPath, nextPath);
                         bean.fire(self, 'page', [previousPath, nextPath, ctx.params]);
@@ -129,10 +131,9 @@ step(function() {
     bean.fire(page.store.builders, 'refresh');
     page.on('queue_size', function(_, queue_size) {
         var q = common.findBy(page.store.builders, 'name', queue_size.name);
-        q.size = queue_size;
+        q.queue_size = queue_size.queue_size;
         bean.fire(q, 'update');
     });
-
     this.parallel()(null, page);
     run.init(page, this.parallel());
     test.init(page, this.parallel());
@@ -171,7 +172,6 @@ step(function() {
     };
 
     page.req('projects', null, function(_, projects) {
-        console.log('projects', arguments);
         var updateSidebar = function() {
             v.each(projects, function(p) {
                 if(page.projectId === p.id) {
@@ -180,11 +180,24 @@ step(function() {
                     p.opened = false;
                 }
             });
-            bonzo(qwery('#sidebar')).html(t.sidebar.render({
+            w.el('sidebar').html(t.sidebar.render({
                 projectId : page.projectId,
                 projects : projects,
                 workers : page.store.builders
             }, t));
+        };
+        bean.add(page, 'projectId', updateSidebar);
+        updateSidebar();
+        var addBuilderListener = function(builder) {
+            var onUpdate = function() {
+                w.el('builder-li-' + builder.name).replaceWith(t.worker.render(builder));
+            };
+            var onDelete = function() {
+                bean.remove(builder, 'update', onUpdate);
+                bean.remove(builder, 'delete', onDelete);
+            };
+            bean.add(builder, 'update', onUpdate);
+            bean.add(builder, 'delete', onDelete);
         };
         bean.add(page.store.builders, 'change', function(changes) {
             bonzo(qwery('.app-worker')).remove();
@@ -192,43 +205,31 @@ step(function() {
             v.each(page.store.builders, function(builder) {
                 html += t.worker.render(builder);
             });
-            v.each(changes.inserted, function(builder) {
-                var onUpdate = function() {
-                };
-                var onDelete = function() {
-                    bean.remove(builder, 'update', onUpdate);
-                    bean.remove(builder, 'delete', onDelete);
-                };
-                bean.add(builder, 'update', onUpdate);
-                bean.add(builder, 'delete', onDelete);
-            });
-            bonzo(qwery('#sidebar')).append(html);
+            v.each(changes.inserted, addBuilderListener);
+            w.el('sidebar').append(html);
         });
-        bean.add(page, 'projectId', updateSidebar);
-        updateSidebar();
+        v.each(page.store.builders, addBuilderListener);
         cb(null);
         bean.add(page, 'projectUpdated', function(project) {
-            console.log('projectUpdated', project);
             replaceProject(projects, project);
             if(project.id === page.projectId) {
                 project.opened = true;
             }
-            bonzo(qwery('#project-' + project.id)).replaceWith(t.project.render(project));
+            w.el('project-' + project.id).replaceWith(t.project.render(project));
         });
         bean.add(page, 'projectAdded', function(project) {
-            console.log('projectAdded', project);
             if(project.id === page.projectId) {
                 project.opened = true;
             }
             var position = insertProject(projects, project);
             var html = t.project.render(project);
             if(position.after === null) {
-                bonzo(qwery('#projects-header')).after(html);
+                w.el('projects-header').after(html);
             } else {
                 if(position.after) {
-                    bonzo(qwery('#project-' + position.project.id)).after(html);
+                    w.el('project-' + position.project.id).after(html);
                 } else {
-                    bonzo(qwery('#project-' + position.project.id)).before(html);
+                    w.el('project-' + position.project.id).before(html);
                 }
             }
         });
@@ -238,5 +239,5 @@ step(function() {
         popstate : true,
         dispatch : true
     });
-    page.go(window.getPath());
+    page.go(w.getPath());
 });

@@ -4,10 +4,13 @@
 // Also, it overwrites window.console.log to an empty handler, if a cookie called 'log' is not set to 'yes'
 
 var cookie = require('cookie');
+var bonzo = require('bonzo');
 
 exports.d3 = window.d3;
 exports.nv = window.nv;
-
+exports.el = function(id) {
+    return bonzo(window.document.getElementById(id));
+};
 exports.setCookie = function(name, value) {
     if(value === null) {
         var exp = new Date();
