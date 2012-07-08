@@ -94,7 +94,7 @@ init([ProjectID]) ->
 
         % Restore state data
         #project{repo_url=RepoUrl, branch=Branch, repo_backend=RepoBackend,
-            polling=Polling} = perforator_ci_db:get_project(ProjectID),
+            polling=Polling}=Project = perforator_ci_db:get_project(ProjectID),
 
         State0 = #state{
             project_id = ProjectID,
@@ -115,9 +115,8 @@ init([ProjectID]) ->
             end,
 
         % Ask to build unfinished builds:
-        [ok = perforator_ci_builder:build(ProjectID, C, B) ||
-            #project_build{id=B, commit_id=C} <-
-                perforator_ci_db:get_unfinished_builds(ProjectID)],
+        [ok = perforator_ci_builder:build(Project, B) ||
+            B <- perforator_ci_db:get_unfinished_builds(ProjectID)],
 
         % Set timer for polling (if needed)
         ok = start_timer(State1),

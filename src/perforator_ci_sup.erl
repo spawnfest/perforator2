@@ -19,14 +19,14 @@ start_link() ->
 init([]) ->
     Processes = [
         {
-            perforator_ci_project_sup,
-            {perforator_ci_project_sup,  start_link, []},
-            transient, infinity, supervisor, [perforator_ci_project_sup]
-        },
-        {
             perforator_ci_builder,
             {perforator_ci_builder, start_link, []},
             transient, 5000, worker, [perforator_ci_builder]
+        },
+        {
+            perforator_ci_project_sup,
+            {perforator_ci_project_sup,  start_link, []},
+            transient, infinity, supervisor, [perforator_ci_project_sup]
         }
     ],
 
