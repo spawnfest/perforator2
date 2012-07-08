@@ -182,7 +182,7 @@ get_previous_build_id(ID) ->
                     #project_build.project_id) of
                 [#project_build{id=ID1}] -> ID1;
                 [] -> undefined;
-                M -> ?info("WTF", [{m, M}]), undefined
+                _ -> undefined
             end
         end).
 
