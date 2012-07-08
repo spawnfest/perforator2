@@ -13,7 +13,7 @@ exports.init = function(page, cb) {
     });
     page.handle(/^\/(.+)$/, function(from, to, params) {
         step(function() {
-            page.req('runs', page.projectId, this.parallel());
+            page.req('builds', page.projectId, this.parallel());
             page.req('project', page.projectId, this.parallel());
         }, function(_, runs, project) {
             var offs = [];
