@@ -10,6 +10,7 @@
 %% API
 -export([
     create_project/1,
+    update_project/1,
     get_project/1,
     get_projects/0,
 
@@ -66,6 +67,37 @@ create_project({Name, RepoUrl, Branch, RepoBackend, Polling, BuildInstr,
                         }),
 
                     ID
+            end
+        end).
+
+%% @doc Updates project (only record in DB).
+%% @throws {project_not_found, I}.
+-spec update_project({
+        perforator_ci_types:project_id(),
+        perforator_ci_types:project_name(), perforator_ci_types:repo_url(),
+        perforator_ci_types:branch(), perforator_ci_types:repo_backend(),
+        perforator_ci_types:polling_strategy(),
+        perforator_ci_types:build_instructions(), list()}) -> ok.
+update_project({ID, Name, RepoUrl, Branch, RepoBackend, Polling, BuildInstr,
+        Info}) ->
+    transaction(
+        fun () ->
+            case mnesia:read(project, ID) of
+                [] ->
+                    throw({project_not_found, ID});
+                [#project{}] ->
+                    % update
+                    ok = mnesia:write(
+                        #project{
+                            id = ID,
+                            name = Name,
+                            repo_url = RepoUrl,
+                            branch = Branch,
+                            repo_backend = RepoBackend,
+                            polling = Polling,
+                            build_instructions = BuildInstr,
+                            info = Info
+                        })
             end
         end).
 

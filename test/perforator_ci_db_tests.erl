@@ -18,7 +18,7 @@ db_test_() ->
         end,
         fun (_) -> perforator_ci:stop() end,
         [
-            {"Create project", fun test_create_project/0},
+            {"Create/update project", fun test_create_project/0},
             {"Create build", fun test_create_build/0}
         ]
     }.
@@ -49,7 +49,17 @@ test_create_project() ->
     ),
     ?assertMatch(
         [#project{id=1}, #project{id=2}],
-        perforator_ci_db:get_projects()).
+        perforator_ci_db:get_projects()),
+
+    ?assertEqual(
+        ok,
+        perforator_ci_db:update_project({
+            1, <<"1">>, "omg", "b", git, on_demand, [], []})
+    ),
+    ?assertMatch(
+        #project{id=1, repo_url="omg"},
+        perforator_ci_db:get_project(1)
+    ).
 
 test_create_build() ->
     ?assertEqual(
