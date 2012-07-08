@@ -130,18 +130,21 @@ exports.post = function(page, req, cb) {
             {
                 id : '8888',
                 started : new Date().getTime(),
+                succeeded : true,
                 time : 1000,
                 modules : 2,
                 tests : 4
             }, {
                 id : '8008',
                 started : new Date().getTime(),
+                succeeded : false,
                 time : 800,
                 modules : 2,
                 tests : 4
             }, {
                 id : '8808',
                 started : new Date().getTime(),
+                succeeded : true,
                 time : 900,
                 modules : 2,
                 tests : 4

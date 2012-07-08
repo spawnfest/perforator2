@@ -21,6 +21,7 @@ exports.init = function(page, cb) {
                 if(buildFinished.project_id === project.id) {
                     var run = common.findById(runs, buildFinished.build_id);
                     run.finished = true;
+                    run.succeeded = buildFinished.success;
                     run.time = (buildFinished.timestamp - run.buildInit.timestamp) * 1000;
                     run.timeDelta = run.time - run.previous.time;
                     bonzo(qwery('#run-' + buildFinished.build_id)).replaceWith(t.logRun.render(run, t));
