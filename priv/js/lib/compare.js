@@ -11,10 +11,10 @@ series = series.series;
 exports.init = function(page, cb) {
     page.handle(/^\/(.+)\/compare\/(.+)\/(.+)\/(.+)$/, function(from, to, params) {
         var state = {
-            projectId : params[0],
-            runIds : params[1].split('-'),
-            moduleNames : params[2].split('-'),
-            testNames : params[3].split('-')
+            projectId : page.projectId,
+            runIds : params[0].split('-'),
+            moduleNames : params[1].split('-'),
+            testNames : params[2].split('-')
         };
         var runs = [];
         v.each(state.runIds, function(_, i) {

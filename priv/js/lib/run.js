@@ -11,8 +11,8 @@ series = series.series;
 exports.init = function(page, cb) {
     page.handle(/^\/(.+)\/run\/(.+)$/, function(from, to, params) {
         var state = {
-            projectId : params[0],
-            id : params[1]
+            projectId : page.projectId,
+            id : params[0]
         };
         page.req('run', state, function(_, modules) {
             v.each(modules, function(module) {

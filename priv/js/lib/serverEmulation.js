@@ -150,7 +150,7 @@ exports.post = function(page, req, cb) {
     } else if(page === 'project') {
         cb(null, {
             id : req,
-            name : 'Project omg #1',
+            name : 'Project omg #' + req,
             repo_url : 'git://github.com/linus/linux',
             branch : 'master',
             build_instructions : [],
@@ -176,5 +176,12 @@ exports.post = function(page, req, cb) {
 };
 
 exports.init = function(page, cb) {
+    page.emit('workerPoolChanged', null, [{
+        id : 1,
+        active : true
+    }, {
+        id : 12,
+        active : false
+    }]);
     cb(null);
 };

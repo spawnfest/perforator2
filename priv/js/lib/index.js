@@ -1,5 +1,6 @@
 var t = require('./templates');
 var qwery = require('qwery');
+var v = require('valentine');
 var domready = require('domready');
 var reqwest = require('reqwest');
 var equal = require('deep-equal');
@@ -72,6 +73,7 @@ step(function() {
             */
         },
         body : bonzo(qwery('#body')[0]),
+        projectId : null,
         handle : function(path, cb) {
             var self = this;
             console.log('adding handler', path);
@@ -80,7 +82,7 @@ step(function() {
                     var nextPath = window.getPath();
                     if(previousPath !== nextPath) {
                         console.log('handling', previousPath, nextPath);
-                        bean.fire(self, 'page', [previousPath, nextPath]);
+                        bean.fire(self, 'page', [previousPath, nextPath, ctx.params]);
                         cb(previousPath, nextPath, ctx.params);
                         previousPath = nextPath;
                     }
@@ -96,7 +98,6 @@ step(function() {
     });
 }, function(_, page) {
     this.parallel()(null, page);
-    serverEmulation.init(page, this.parallel());
     run.init(page, this.parallel());
     test.init(page, this.parallel());
     projectEdit.init(page, this.parallel());
@@ -104,6 +105,93 @@ step(function() {
     // log should be initialized last, otherwise it could take over /project/*
     // url from projectEdit (/project/add)
     log.init(page, this.parallel());
+    serverEmulation.init(page, this.parallel());
+    var cb = this.parallel();
+
+    var insertProject = function(projects, project) {
+        for(var i = 0; i < projects.length; i += 1) {
+            if(projects[i].name > project.name) {
+                projects[i].splice(i, 0, project);
+                return {
+                    after : false,
+                    project : projects[i + 1]
+                };
+            }
+        }
+        projects.push(project);
+        return {
+            after : projects.length === 1 ? null : true,
+            project : projects[projects.length - 2]
+        };
+    };
+
+    var replaceProject = function(projects, project) {
+        for(var i = 0; i < projects.length; i += 1) {
+            if(projects[i].id === project.id) {
+                projects[i] = project;
+                return;
+            }
+        }
+    };
+
+    var workers = null;
+    page.on('workerPoolChanged', function(_, w) {
+        workers = w;
+        bonzo(qwery('.app-worker')).remove();
+        var html = '';
+        v.each(w, function(worker) {
+            html += t.worker.render(worker);
+        });
+        bonzo(qwery('#sidebar')).append(html);
+    });
+    page.req('projects', null, function(_, projects) {
+        console.log(projects);
+        var updateSidebar = function() {
+            v.each(projects, function(p) {
+                if(page.projectId === p.id) {
+                    p.opened = true;
+                } else {
+                    p.opened = false;
+                }
+            });
+            bonzo(qwery('#sidebar')).html(t.sidebar.render({
+                projectId : page.projectId,
+                projects : projects,
+                workers : workers
+            }, t));
+        };
+        bean.add(page, 'page', function(from, to, params) {
+            if(params.length > 0) {
+                var projectId = parseInt(params[0], 10);
+                if(projectId !== page.projectId) {
+                    page.projectId = projectId;
+                    updateSidebar();
+                }
+                params.shift();
+            }
+        });
+        updateSidebar();
+        cb(null);
+        bean.add(page, 'projectUpdated', function(project) {
+            console.log('projectUpdated', project);
+            replaceProject(projects, project);
+            bonzo(qwery('#project-' + project.id)).replaceWith(t.project.render(project));
+        });
+        bean.add(page, 'projectAdded', function(project) {
+            console.log('projectAdded', project);
+            var position = insertProject(projects, project);
+            var html = t.project.render(project);
+            if(position.after === null) {
+                bonzo(qwery('#projects-header')).append(html);
+            } else {
+                if(position.after) {
+                    bonzo(qwery('#project-' + position.project.id)).after(html);
+                } else {
+                    bonzo(qwery('#project-' + position.project.id)).before(html);
+                }
+            }
+        });
+    });
 }, function(_, page) {
     p({
         click : true,

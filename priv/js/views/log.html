@@ -1,42 +1,25 @@
-<div class="row-fluid">
-    <div class="span3">
-        <div class="well sidebar-nav app-nav">
-            <ul class="nav nav-list">
-                <li id="projects-header" class="nav-header">Projects</li>
-                {{#projects}}
-                {{> project}}
-                {{/projects}}
-                <li class="nav-header">Actions</li>
-                <li><a href="/add"><i class="icon-plus-sign"></i> Add</a></li>
-                <li><a href="/{{project.id}}/edit"><i class="icon-edit"></i> Edit</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="span9">
-        <h2><span class="label">project</span> <span id="project-name">{{project.name}}</span></h2>
-        <table class="table table-bordered table-striped table-condensed">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Started</th>
-                    <th>Time delta</th>
-                    <th>Time</th>
-                    <th>Modules</th>
-                    <th>Tests</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#runs}}
-                <tr data-id="{{id}}" class="app-clickablerow">
-                    <td>{{id}}</td>
-                    <td>{{started}}</td>
-                    <td>{{timeDelta}}</td>
-                    <td>{{time}}</td>
-                    <td>{{modules}}</td>
-                    <td>{{tests}}</td>
-                </tr>
-                {{/runs}}
-            </tbody>
-        </table>
-    </div>
-</div>
+<h2><span class="label">project</span> <span id="project-name">{{project.name}}</span></h2>
+<table class="table table-bordered table-striped table-condensed">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Started</th>
+            <th>Time delta</th>
+            <th>Time</th>
+            <th>Modules</th>
+            <th>Tests</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#runs}}
+        <tr data-id="{{id}}" class="app-clickablerow">
+            <td>{{id}}</td>
+            <td>{{started}}</td>
+            <td>{{timeDelta}}</td>
+            <td>{{time}}</td>
+            <td>{{modules}}</td>
+            <td>{{tests}}</td>
+        </tr>
+        {{/runs}}
+    </tbody>
+</table>

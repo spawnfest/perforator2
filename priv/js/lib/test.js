@@ -10,9 +10,9 @@ series = series.series;
 exports.init = function(page, cb) {
     page.handle(/^\/(.+)\/test\/(.+)\/(.+)$/, function(from, to, params) {
         var state = {
-            projectId : params[0],
-            moduleName : params[1],
-            testName : params[2]
+            projectId : page.projectId,
+            moduleName : params[0],
+            testName : params[1]
         };
         page.req('testRuns', state, function(_, runs) {
             v.each(series, function(series) {
