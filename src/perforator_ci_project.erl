@@ -53,11 +53,10 @@
 -spec is_project_running(perforator_ci_types:project_id()) -> boolean().
 is_project_running(ProjectID) ->
     try
-        gproc:lookup_pid({n, l, ProjectID}),
+        get_pid(ProjectID),
         true
     catch
-        error:badarg -> % gproc shame #2
-            false
+        throw:{project_process_not_found, ProjectID} -> false
     end.
 
 %% @doc Starts project.
@@ -71,7 +70,12 @@ build_finished(Pid, BuildID, Results) ->
 
 %% @doc Used for tests only.
 get_pid(ProjectID) ->
-    gproc:lookup_pid({n, l, ProjectID}).
+    try
+        gproc:lookup_pid({n, l, ProjectID})
+    catch
+        error:badarg -> % stupid gproc exception
+            throw({project_process_not_found, ProjectID})
+    end.
 
 %% =============================================================================
 %% gen_server callbacks
