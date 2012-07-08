@@ -216,6 +216,7 @@ wait_for_db() ->
 %% @doc Creates mnesia schema and tables.
 %% WARNING: destroys all data!!!
 init() ->
+    mnesia:stop(),
     % Schema
     mnesia:delete_schema([node()]),
     mnesia:create_schema([node()]),
