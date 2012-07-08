@@ -10,16 +10,9 @@
             <th>Tests</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="runs">
         {{#runs}}
-        <tr data-id="{{id}}" class="app-clickablerow">
-            <td>{{id}}</td>
-            <td>{{started}}</td>
-            <td>{{timeDelta}}</td>
-            <td>{{time}}</td>
-            <td>{{modules}}</td>
-            <td>{{tests}}</td>
-        </tr>
+        {{> logRun}}
         {{/runs}}
     </tbody>
 </table>

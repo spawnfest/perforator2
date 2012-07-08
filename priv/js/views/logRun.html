@@ -1,0 +1,13 @@
+<tr id="run-{{id}}" data-id="{{id}}" class="app-clickablerow">
+    <td>{{id}}</td>
+    <td>{{started}}</td>
+    {{#finished}}
+    <td>{{timeDelta}}</td>
+    <td>{{time}}</td>
+    {{/finished}}
+    {{^finished}}
+    <td colspan="2"><i class="icon-time"></i></td>
+    {{/finished}}
+    <td>{{modules}}</td>
+    <td>{{tests}}</td>
+</tr>

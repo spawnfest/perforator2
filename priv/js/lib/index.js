@@ -4,6 +4,7 @@ var v = require('valentine');
 var domready = require('domready');
 var reqwest = require('reqwest');
 var equal = require('deep-equal');
+var deep = require('./deep');
 var bonzo = require('bonzo');
 var p = require('page');
 var log = require('./log');
@@ -27,6 +28,9 @@ step(function() {
 }, function() {
     var previousPath = null;
     this(null, {
+        store : {
+            builders : []
+        },
         once : function(event, handler) {
             bean.one(socket, event, function(err, msg) {
                 console.log('page.once', event, err, msg);
@@ -103,6 +107,29 @@ step(function() {
         }
     });
 }, function(_, page) {
+    bean.add(page, 'page', function(from, to, params) {
+        if(params.length > 0) {
+            var projectId = parseInt(params[0], 10);
+            if(projectId !== page.projectId) {
+                page.projectId = projectId;
+                bean.fire(page, 'projectId');
+            }
+            params.shift();
+        }
+    });
+    /*
+    bean.add(page.builders, 'refresh', function() {
+        page.req('builders', null, function(_, builders) {
+            var changes = deep.update(page.builders, builders);
+            if(changes.updated.length > 0 || changes.inserted.length > 0 || changes.deleted.length > 0) {
+                bean.fire(page.builders, 'change', changes);
+            }
+        });
+    });
+    // TODO finish the new style of organizing builders
+    // bean.fire(page.builders, 'refresh');
+    */
+
     this.parallel()(null, page);
     run.init(page, this.parallel());
     test.init(page, this.parallel());
@@ -154,6 +181,7 @@ step(function() {
             bonzo(qwery('#sidebar')).append(html);
         });
         page.req('projects', null, function(_, projects) {
+            console.log('projects', arguments);
             var updateSidebar = function() {
                 v.each(projects, function(p) {
                     if(page.projectId === p.id) {
@@ -168,16 +196,7 @@ step(function() {
                     workers : workers
                 }, t));
             };
-            bean.add(page, 'page', function(from, to, params) {
-                if(params.length > 0) {
-                    var projectId = parseInt(params[0], 10);
-                    if(projectId !== page.projectId) {
-                        page.projectId = projectId;
-                        updateSidebar();
-                    }
-                    params.shift();
-                }
-            });
+            bean.add(page, 'projectId', updateSidebar);
             updateSidebar();
             cb(null);
             bean.add(page, 'projectUpdated', function(project) {
@@ -207,7 +226,6 @@ step(function() {
             });
         });
     });
-}, function(_, page) {
     p({
         click : true,
         popstate : true,

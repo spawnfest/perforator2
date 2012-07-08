@@ -5,6 +5,7 @@ var step = require('step');
 var bean = require('bean');
 var bonzo = require('bonzo');
 var moment = require('moment');
+var common = require('./common');
 
 exports.init = function(page, cb) {
     page.handle('/', function() {
@@ -16,9 +17,28 @@ exports.init = function(page, cb) {
             page.req('project', page.projectId, this.parallel());
         }, function(_, runs, project) {
             var offs = [];
-            offs.push(page.on('projectUpdated', function(_, p) {
-                if(p.id === project.id) {
-                    bonzo(qwery('#project-header')).text(project.name);
+            offs.push(page.on('build_finished', function(_, buildFinished) {
+                if(buildFinished.project_id === project.id) {
+                    var run = common.findById(runs, buildFinished.build_id);
+                    run.finished = true;
+                    run.time = (buildFinished.timestamp - run.buildInit.timestamp) * 1000;
+                    run.timeDelta = run.time - run.previous.time;
+                    bonzo(qwery('#run-' + buildFinished.build_id)).replaceWith(t.logRun.render(run, t));
+                }
+            }));
+            offs.push(page.on('build_init', function(_, buildInit) {
+                if(buildInit.project_id === project.id) {
+                    var run = {
+                        previous : runs[0],
+                        buildInit : buildInit,
+                        id : buildInit.build_id,
+                        started : moment(new Date(buildInit.timestamp * 1000)).fromNow(),
+                        finished : false,
+                        modules : '',
+                        tests : ''
+                    };
+                    runsEl.prepend(t.logRun.render(run, t));
+                    runs.unshift(run);
                 }
             }));
             page.beforego(function(from, to) {
@@ -30,6 +50,7 @@ exports.init = function(page, cb) {
 
             runs.reverse();
             v.each(runs, function(run) {
+                run.finished = true;
                 if(runLag === null) {
                     run.timeDelta = null;
                 } else {
@@ -46,11 +67,28 @@ exports.init = function(page, cb) {
                 runs : runs,
                 project : project
             }, t));
+            var runsEl = bonzo(qwery('#runs'));
             v.each(qwery('tr'), function(row) {
                 bean.add(row, 'click', function() {
                     page.go('/' + project.id + '/run/' + bonzo(row).data('id'));
                 });
             });
+            setTimeout(function() {
+                page.emit('buildInit', null, {
+                    project_id : project.id,
+                    build_id : 232362,
+                    commit_id : '26246',
+                    timestamp : Math.floor(new Date().getTime() / 1000)
+                });
+                setTimeout(function() {
+                    page.emit('buildFinished', null, {
+                        project_id : project.id,
+                        build_id : 232362,
+                        success : true,
+                        timestamp : Math.floor(new Date().getTime() / 1000)
+                    });
+                }, 2000);
+            }, 2000);
         });
     });
     cb();
