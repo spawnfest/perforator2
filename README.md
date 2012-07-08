@@ -30,7 +30,7 @@ Perforator CI should be running on http://localhost:8080/
 We need add a project which does some performance unit testing.
 
 The Perforator tools has some sample performance testing modules, so let's try
-it, use git@github.com:Spawnfest2012/perforator.git as your repo and keep keep
+it, use git@github.com:Spawnfest2012/perforator.git as your repo and keep 
 the default build steps.
 
 Do a few builds and click around, you should experience some fabulous
