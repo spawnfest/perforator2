@@ -47,6 +47,9 @@ from(builds, ProjectID) ->
     ProjectID;
 
 from(build_now, ProjectID) ->
+    ProjectID;
+
+from(build, ProjectID) ->
     ProjectID.
 
 %% ============================================================================
@@ -132,5 +135,8 @@ to(builds, Builds) ->
             ]}
         end,
         Builds);
+
+to(build, #project_build{finished=failure, info=Info}) ->
+    throw(Info);
 
 to(build_now, _) -> null.
