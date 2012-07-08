@@ -12,7 +12,8 @@
 
 -export([
     clone/2,
-    check_for_updates/3
+    check_for_updates/3,
+    checkout/2
 ]).
 
 %% ============================================================================
@@ -36,8 +37,9 @@ clone(RepoURL, RepoPath) ->
             perforator_ci_types:commit_id() | undefined.
 check_for_updates(RepoPath, Branch, CommitID) ->
     try
-        perforator_ci_utils:sh(?FMT("git fetch", []), [{cd, RepoPath}]),
-        perforator_ci_utils:sh(?FMT("git checkout ~p", [Branch]), [{cd, RepoPath}]),
+        perforator_ci_utils:sh("git fetch", [{cd, RepoPath}]),
+        perforator_ci_utils:sh(?FMT("git checkout ~p", [Branch]),
+            [{cd, RepoPath}]),
 
         CommitID1 = list_to_binary(
             lists:reverse(
@@ -66,4 +68,18 @@ check_for_updates(RepoPath, Branch, CommitID) ->
             undefined;
         throw:{exec_error, {_, 1, _}} -> % 1 most likely branch not found
             undefined
+    end.
+
+%% @doc Fetches changes and tries to checkout to given commit.
+%% @throws {unable_to_checkout, Reason}
+-spec checkout(list(), perforator_ci_types:commit_id()) -> ok.
+checkout(RepoDir, CommitID) ->
+    try
+        perforator_ci_utils:sh("git fetch", [{cd, RepoDir}]),
+        perforator_ci_utils:sh(?FMT("git checkout ~s", [CommitID]),
+            [{cd, RepoDir}]),
+        ok
+    catch
+        throw:{exec_error, {_, 128, Reason}} ->
+            throw({unable_to_checkout, Reason})
     end.

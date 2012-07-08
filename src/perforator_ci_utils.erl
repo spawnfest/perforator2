@@ -39,7 +39,6 @@ sh(Command, Opts0) ->
         exit_status, {line, 255}, stderr_to_stdout
     ]),
 
-
     case sh_receive_loop(Port, []) of
         {ok, Data} -> Data;
         {error, {ErrCode, Output}} ->
@@ -51,8 +50,7 @@ sh(Command) ->
 
 sh_receive_loop(Port, Acc) ->
     receive
-        {Port, {data, {eol, Line}}} ->
-            sh_receive_loop(Port, [Line ++ "\n"|Acc]);
+        {Port, {data, {eol, Line}}} -> sh_receive_loop(Port, [Line ++ "\n"|Acc]);
         {Port, {data, {noeol, Line}}} ->
             sh_receive_loop(Port, [Line|Acc]);
         {Port, {exit_status, 0}} ->

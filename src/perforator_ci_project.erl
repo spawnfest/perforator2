@@ -15,7 +15,7 @@
 -export([
     is_project_running/1,
     start_link/1,
-    build_finished/3,
+    build_finished/4,
     get_pid/1
 ]).
 
@@ -65,8 +65,8 @@ start_link(ProjectID) ->
     gen_server:start_link(?MODULE, [ProjectID], []).
 
 %% @doc Pings project, that requested build is done.
-build_finished(Pid, BuildID, Results) ->
-    gen_server:call(Pid, {build_finished, BuildID, Results}).
+build_finished(Pid, BuildID, Results, Success) ->
+    gen_server:call(Pid, {build_finished, BuildID, Results, Success}).
 
 %% @doc Used for tests only.
 get_pid(ProjectID) ->
@@ -108,7 +108,7 @@ init([ProjectID]) ->
                     };
                 undefined -> State0 % nothing has been built
             end,
-       
+
         % Ask to build unfinished builds:
         [ok = perforator_ci_builder:build(ProjectID, C, B) ||
             #project_build{id=B, commit_id=C} <-
@@ -123,8 +123,9 @@ init([ProjectID]) ->
             {stop, project_already_started}
     end.
 
-handle_call({build_finished, BuildID, Results}, _, State) ->
-    ok = perforator_ci_db:finish_build(BuildID, Results),
+handle_call({build_finished, BuildID, Results, Success}, _, State) ->
+    lager:info("Build Finished: ~p~n", [BuildID]),
+    ok = perforator_ci_db:finish_build(BuildID, Results, Success),
 
     % @todo pubsub
 

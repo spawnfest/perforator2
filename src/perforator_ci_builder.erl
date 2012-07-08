@@ -33,8 +33,7 @@
 
 -record(state, {
     build_queue=[] :: [queue_item()],
-    worker :: pid() | undefined % pid of process responsible for handling build
-    % undefined means that currently there is no job running
+    worker :: pid() | undefined % pid of process responsible for handling build % undefined means that currently there is no job running
 }).
 
 -ifdef(TEST).
@@ -115,10 +114,18 @@ handle_cast(ping, #state{worker=P}=S) when is_pid(P) ->
 handle_cast(ping, #state{build_queue=[Item|_]}=S) ->
     Pid = spawn_link(
         fun() ->
-            Results = ?MODULE:run_build(Item),
-            % inform
             {Pid, _, #project_build{id=BuildID}} = Item,
-            ok = perforator_ci_project:build_finished(Pid, BuildID, Results),
+            {Success, Result} =
+                try
+                    {true, ?MODULE:run_build(Item)}
+                catch
+                    throw:R ->
+                        {false, R}
+                end,
+
+            % inform
+            ok = perforator_ci_project:build_finished(Pid, BuildID, Result,
+                Success),
             % exit
             exit('$work_is_done')
         end
@@ -186,8 +193,6 @@ pick_builder() ->
 get_builders() ->
     [B || {perforator_ci_builder, B} <- global:registered_names()].
 
-run_build(Item) -> ok.
-
 %% @doc Adds item to an queue if item with given build id doesn't exist.
 -spec enqueue(queue_item(), [queue_item()]) -> [queue_item()].
 enqueue({_, _, #project_build{id=BuildID}}=Item, Q) ->
@@ -203,3 +208,43 @@ enqueue({_, _, #project_build{id=BuildID}}=Item, Q) ->
         NotExists -> Q ++ [Item];
         true -> Q
     end.
+
+%% @doc Run a job.
+run_build({_Pid, #project{id=ProjectID, repo_url=RepoUrl,
+        repo_backend=Mod, build_instructions=Instructions},
+        #project_build{commit_id=CommitID}}) ->
+    % Check if repo exist. If not, clone it
+    RepoDir = repo_path(ProjectID),
+    case filelib:is_dir(RepoDir) of
+        true -> ok;
+        false ->
+            ok = Mod:clone(RepoUrl, RepoDir)
+    end,
+
+    % Fetch and checkout
+    ok = Mod:checkout(RepoDir, CommitID),
+
+    lists:foreach(
+        fun (C) ->
+            try
+                perforator_ci_utils:sh(C, [{cd, RepoDir}])
+            catch
+                throw:{exec_error, {_, _, Reason}} ->
+                    throw({C, Reason})
+            end
+        end,
+        Instructions
+    ),
+
+    % @todo Ignas: @return get_my_fking_results(RepoDir).
+
+    ok.
+
+%% @doc Returns builder repo_path.
+%% @todo DRY
+repo_path(ProjectID) ->
+    filename:join(
+        perforator_ci_utils:get_env(perforator_ci,
+            builder_repos_path, ?BUILDER_REPOS_DIR),
+        integer_to_list(ProjectID)
+    ).

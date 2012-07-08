@@ -25,7 +25,7 @@
     commit_id :: perorator_ci_types:commit_id(), % most likely unique
 
     info=[] :: list(), % @todo specify
-    finished=false :: boolean()
+    finished=false :: boolean() | failure
 }).
 
 %% ============================================================================
@@ -35,6 +35,7 @@
 -define(HTTP_PORT, 8080).
 -define(LIST_COUNT, 10).
 -define(REPOS_DIR, "priv/repos").
+-define(BUILDER_REPOS_DIR, "priv/builder_repos").
 
 %% ============================================================================
 %% Log utils

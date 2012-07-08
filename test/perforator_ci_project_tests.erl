@@ -86,7 +86,7 @@ test_ping_and_build() ->
     ),
 
     ok = gen_server:call(perforator_ci_project:get_pid(1),
-        {build_finished, 1, [omg]}),
+        {build_finished, 1, [omg], true}),
     timer:sleep(50),
 
     ?assertMatch([], perforator_ci_db:get_unfinished_builds(1)),

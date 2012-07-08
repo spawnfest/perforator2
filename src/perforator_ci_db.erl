@@ -17,7 +17,8 @@
     create_build/1,
     get_last_build/1,
     get_unfinished_builds/1,
-    finish_build/2,
+    finish_build/3,
+    get_build/1,
 
     wait_for_db/0,
     init/0,
@@ -109,9 +110,10 @@ update_project({ID, Name, RepoUrl, Branch, RepoBackend, Polling, BuildInstr,
 create_build({ProjectID, TS, CommitID, Info}) ->
     transaction(
         fun () ->
-            case mnesia:index_read(project_build, CommitID,
-                    #project_build.commit_id) of % In a perfect world
-                    % collisions don't exist
+            case mnesia:index_match_object(
+                    #project_build{commit_id=CommitID, project_id=ProjectID,
+                        _='_'},
+                    #project_build.commit_id) of
                 [#project_build{}=Build] -> Build;
                 [] ->
                     % Get next global and local id
@@ -172,15 +174,20 @@ get_last_build(ProjectID) ->
 
 %% @doc Updates build status to finished and appends info.
 %% @throws {build_not_found, BuildID}.
--spec finish_build(perforator_ci_types:build_id(), list()) -> ok.
-finish_build(BuildID, Info) ->
+-spec finish_build(perforator_ci_types:build_id(), list(), boolean()) -> ok.
+finish_build(BuildID, Info, Success) ->
     transaction(
         fun () ->
             case mnesia:read(project_build, BuildID) of
                 [#project_build{}=B] ->
+                    Finished =
+                        if
+                            Success -> true;
+                            true -> failure
+                        end,
                     ok = mnesia:write(
                         B#project_build{
-                            finished = true,
+                            finished = Finished,
                             info = Info
                         });
                 [_] ->
@@ -197,6 +204,18 @@ get_project(ID) ->
             case mnesia:read(project, ID) of
                 [] -> throw({project_not_found, ID});
                 [#project{}=P] -> P
+            end
+        end).
+
+%% @doc Returns #project_build.
+%% @throws {build_not_found, ID}.
+-spec get_build(perforator_ci_types:build_id()) -> #project_build{}.
+get_build(ID) ->
+    transaction(
+        fun () ->
+            case mnesia:read(project_build, ID) of
+                [] -> throw({build_not_found, ID});
+                [#project_build{}=B] -> B
             end
         end).
 
