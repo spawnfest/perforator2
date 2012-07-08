@@ -66,9 +66,6 @@ test_create_build() ->
         #project_build{id=1, local_id=1},
         perforator_ci_db:create_build({42, 123, <<"cid0">>, []})),
     ?assertMatch(
-        #project_build{id=1, local_id=1},
-        perforator_ci_db:create_build({42, 123, <<"cid0">>, []})),
-    ?assertMatch(
         #project_build{id=2, local_id=2},
         perforator_ci_db:create_build({42, 123, <<"cid1">>, []})),
     ?assertMatch(

@@ -113,40 +113,33 @@ update_project({ID, Name, RepoUrl, Branch, RepoBackend, Polling, BuildInstr,
 create_build({ProjectID, TS, CommitID, Info}) ->
     transaction(
         fun () ->
-            case mnesia:index_match_object(
-                    #project_build{commit_id=CommitID, project_id=ProjectID,
-                        _='_'},
-                    #project_build.commit_id) of
-                [#project_build{}=Build] -> Build;
-                [] ->
-                    % Get next global and local id
-                    ID =
-                        case mnesia:last(project_build) of
-                            '$end_of_table' -> 1;
-                            N when is_integer(N) -> N + 1
-                        end,
-                    LID =
-                        case mnesia:index_read(project_build, ProjectID,
-                                #project_build.project_id) of
-                            [] -> 1;
-                            Bs when is_list(Bs) ->
-                                #project_build{local_id=LN} = lists:last(Bs),
-                                LN + 1
-                        end,
-                    % Write
-                    Build =
-                        #project_build{
-                            id = ID,
-                            local_id = LID,
-                            project_id = ProjectID,
-                            timestamp = TS,
-                            commit_id = CommitID,
-                            info = Info
-                        },
-                    ok = mnesia:write(Build),
+            % Get next global and local id
+            ID =
+                case mnesia:last(project_build) of
+                    '$end_of_table' -> 1;
+                    N when is_integer(N) -> N + 1
+                end,
+            LID =
+                case mnesia:index_read(project_build, ProjectID,
+                        #project_build.project_id) of
+                    [] -> 1;
+                    Bs when is_list(Bs) ->
+                        #project_build{local_id=LN} = lists:last(Bs),
+                        LN + 1
+                end,
+            % Write
+            Build =
+                #project_build{
+                    id = ID,
+                    local_id = LID,
+                    project_id = ProjectID,
+                    timestamp = TS,
+                    commit_id = CommitID,
+                    info = Info
+                },
+            ok = mnesia:write(Build),
 
-                    Build
-            end
+            Build
         end).
 
 %% @doc Returns all unfinished (sorted) builds.
