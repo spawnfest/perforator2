@@ -191,7 +191,7 @@ step(function() {
                 var position = insertProject(projects, project);
                 var html = t.project.render(project);
                 if(position.after === null) {
-                    bonzo(qwery('#projects-header')).append(html);
+                    bonzo(qwery('#projects-header')).after(html);
                 } else {
                     if(position.after) {
                         bonzo(qwery('#project-' + position.project.id)).after(html);
