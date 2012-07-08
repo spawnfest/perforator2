@@ -111,10 +111,12 @@ to(builds, Builds) ->
     lists:map(
         fun (#project_build{id=ID, finished=Finished,
                 timestamp=TS, info=Info, commit_id=CID}) ->
-            Success = case Finished of
-                failure -> false;
-                true -> true
-            end,
+            {Finished, Success} =
+                case Finished of
+                    failure -> {true, false};
+                    true -> {true, true};
+                    false -> {false, false}
+                end,
 
             Info1 =
                 if
@@ -127,6 +129,7 @@ to(builds, Builds) ->
             {[
                 {id, ID},
                 {succeeded, Success},
+                {finished, Success},
                 {started, TS},
                 {time, proplists:get_value(duration, Info1, 0)},
                 {modules, proplists:get_value(suite_count, Info1, 0)},

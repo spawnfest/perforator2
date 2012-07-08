@@ -218,12 +218,11 @@ get_build(ID) ->
 %% @doc Returns project builds.
 get_builds(ProjectID) ->
     sort_builds(
-        [B || #project_build{finished=F}=B <-
-            transaction(
-                fun () ->
-                    mnesia:index_read(project_build, ProjectID,
-                            #project_build.project_id)
-                end), F =/= false], desc).
+        transaction(
+            fun () ->
+                mnesia:index_read(project_build, ProjectID,
+                        #project_build.project_id)
+            end), desc).
 
 %% @doc Returns #project's.
 -spec get_projects() -> [#project{}].
