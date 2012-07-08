@@ -99,6 +99,7 @@ handle_request([<<"projects">>], _Data, _Req) ->
             perforator_ci_db:get_projects()
         end);
 
+%% /builders
 handle_request([<<"builders">>], _Data, _Req) ->
     wrap_call(builders, fun () -> perforator_ci:get_builders() end);
 

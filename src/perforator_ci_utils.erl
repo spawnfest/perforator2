@@ -75,5 +75,7 @@ to_bin(X) when is_list(X) ->
     list_to_binary(X);
 to_bin(X) when is_atom(X) ->
     list_to_binary(atom_to_list(X));
+to_bin(X) when is_binary(X) ->
+    X;
 to_bin(X) ->
     list_to_binary(?FMT("~p", [X])).
