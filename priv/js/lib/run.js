@@ -35,7 +35,7 @@ exports.init = function(page, cb) {
                 return;
             }
             v.each(modules, function(module) {
-                v.each(module.tests, function(test) {
+                v.each(module.test_cases, function(test) {
                     test.id = 'test-' + module.name + '-' + test.name;
                 });
             });
@@ -54,7 +54,7 @@ exports.init = function(page, cb) {
             });
             var chart = w.nv.models.bulletChart();
             v.each(modules, function(module) {
-                v.each(module.tests, function(test) {
+                v.each(module.test_cases, function(test) {
                     bean.add(qwery('#' + test.id)[0].parentNode.parentNode, 'click', function() {
                         page.go('/' + page.projectId + '/test/' + module.name + '/' + test.name);
                     });
@@ -66,8 +66,8 @@ exports.init = function(page, cb) {
                 v.each(modules, function(module) {
                     var previousModule = previousModules ? common.findBy(previousModules, 'name', module.name) : null;
                     console.log('previousModule', module.name);
-                    v.each(module.tests, function(test) {
-                        var previousTest = previousModule ? common.findBy(previousModule.tests, 'name', test.name) : null;
+                    v.each(module.test_cases, function(test) {
+                        var previousTest = previousModule ? common.findBy(previousModule.test_cases, 'name', test.name) : null;
                         console.log('previousTest', test.name);
                         var id = 'test-' + module.name + '-' + test.name;
                         w.el(id).empty();
