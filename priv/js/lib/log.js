@@ -73,22 +73,6 @@ exports.init = function(page, cb) {
                     page.go('/' + project.id + '/run/' + bonzo(row).data('id'));
                 });
             });
-            setTimeout(function() {
-                page.emit('buildInit', null, {
-                    project_id : project.id,
-                    build_id : 232362,
-                    commit_id : '26246',
-                    timestamp : Math.floor(new Date().getTime() / 1000)
-                });
-                setTimeout(function() {
-                    page.emit('buildFinished', null, {
-                        project_id : project.id,
-                        build_id : 232362,
-                        success : true,
-                        timestamp : Math.floor(new Date().getTime() / 1000)
-                    });
-                }, 2000);
-            }, 2000);
         });
     });
     cb();
