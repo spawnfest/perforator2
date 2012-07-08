@@ -55,7 +55,6 @@ exports.init = function(page, cb) {
 
             runs.reverse();
             v.each(runs, function(run) {
-                run.finished = true;
                 if(runLag === null) {
                     run.timeDelta = null;
                 } else {
