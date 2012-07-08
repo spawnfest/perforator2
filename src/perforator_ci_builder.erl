@@ -241,9 +241,11 @@ run_build({_Pid, #project{id=ProjectID, repo_url=RepoUrl,
         Instructions
     ),
 
-    % @todo Ignas: @return get_my_fking_results(RepoDir).
-
-    ok.
+    case perforator_ci_results:read(RepoDir) of
+        [] -> % @todo Clean:
+            throw(perf_test_not_found);
+        Res -> Res
+    end.
 
 %% @doc Returns builder repo_path.
 %% @todo DRY

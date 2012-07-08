@@ -37,7 +37,7 @@ from_project_update_test() ->
             \"branch\" : \"branch\",
             \"repo_url\" : \"url\",
             \"build_instructions\" : [ \"one\", \"two\" ],
-            \"polling_strategy\": \"on_demand\"
+            \"polling_strategy\": \"ondemand\"
         }
     ">>,
 

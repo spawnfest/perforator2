@@ -121,6 +121,9 @@ test_real_workflow() ->
     application:set_env(perforator_ci, repo_path, ?REPOS),
     application:set_env(perforator_ci, builder_repos_path, ?BUILD_REPOS),
 
+    ok = meck:new(perforator_ci_results, [no_link, passthrough]),
+    meck:expect(perforator_ci_results, read, 1, ok),
+
     % @todo Clean
     perforator_ci_utils:sh(?FMT("rm -rf ~p", [?REPOS])),
     perforator_ci_utils:sh(?FMT("rm -rf ~p", [?REPO])),
@@ -164,4 +167,6 @@ test_real_workflow() ->
 
     ?assertMatch(
         #project_build{id=2, finished=failure, info={_, _}},
-        perforator_ci_db:get_build(2)).
+        perforator_ci_db:get_build(2)),
+
+    meck:unload(perforator_ci_results).
