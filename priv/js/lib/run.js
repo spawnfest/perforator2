@@ -10,14 +10,11 @@ series = series.series;
 
 exports.init = function(page, cb) {
     page.handle(/^\/(.+)\/build\/(.+)$/, function(from, to, params) {
-        var state = {
-            projectId : page.projectId,
-            id : params[0]
-        };
-        page.req('build', state, function(err, modules) {
+        var buildId = parseInt(params[0], 10);
+        page.req('build', buildId, function(err, modules) {
             if(err) {
                 page.body.html(t.error.render({
-                    title : 'Build #' + state.id + ' did not succeed',
+                    title : 'Build #' + buildId + ' did not succeed',
                     message : err.err,
                     details : err.msg
                 }));
@@ -35,7 +32,7 @@ exports.init = function(page, cb) {
             page.body.html(t.run.render({
                 modules : modules,
                 series : series,
-                id : state.id
+                id : buildId
             }));
             var select = bonzo(qwery('select'));
             bean.add(select[0], 'change', function() {
@@ -45,7 +42,7 @@ exports.init = function(page, cb) {
             v.each(modules, function(module) {
                 v.each(module.tests, function(test) {
                     bean.add(qwery('#' + test.id)[0].parentNode.parentNode, 'click', function() {
-                        page.go('/' + state.projectId + '/test/' + module.name + '/' + test.name);
+                        page.go('/' + page.projectId + '/test/' + module.name + '/' + test.name);
                     });
                 });
             });
