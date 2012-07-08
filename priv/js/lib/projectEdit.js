@@ -65,13 +65,11 @@ exports.init = function(page, cb) {
     page.handle(/^\/add$/, function() {
         page.body.html(t.projectEdit.render({
             project : adapt({
-                name : 'TEST',
-                repo_url : 'file:///home/tahu/test/repo',
+                name : 'Perforator',
+                repo_url : 'file:///home/tahu/Desktop/PERFORATOR/perforator',
                 branch : 'origin/master',
-                build_instructions : [ 'one', 'two' ],
-                polling_strategy : {
-                    time : 10000
-                }
+                build_instructions : [ './rebar get-deps', './rebar compile', './rebar perf' ],
+                polling_strategy : 'ondemand'
             }),
             action : 'Add project'
         }, t));
