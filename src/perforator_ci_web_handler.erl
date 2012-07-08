@@ -5,7 +5,7 @@
 %% Request with POST should send "data=JSON.stringify(Obj)"
 %% Each response (JSON) should be wrapped into:
 %% {
-%%      error: null | string()
+%%      err: null | string()
 %%      msg: {} | string() (in error case
 %% }.
 %% All calls to internal call can throw Error, or {Error, Details}. Otherwise
@@ -136,18 +136,18 @@ handle_request(_, _, _) ->
 wrap_call(Type, Fun) ->
     try
         {[
-            {error, null},
+            {err, null},
             {msg, perforator_ci_json:to(Type, Fun())}
         ]}
     catch
         throw:{Err, Details} ->
             {[
-                {error, ?BIN(Err)},
+                {err, ?BIN(Err)},
                 {msg, ?BIN(Details)}
             ]};
         throw:Err ->
             {[ 
-                {error, ?BIN(Err)},
+                {err, ?BIN(Err)},
                 {msg, <<"\"\"">>}
             ]}
     end.
