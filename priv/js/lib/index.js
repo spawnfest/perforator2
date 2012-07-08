@@ -1,4 +1,5 @@
 var t = require('./templates');
+var common = require('./common');
 var qwery = require('qwery');
 var v = require('valentine');
 var domready = require('domready');
@@ -117,18 +118,20 @@ step(function() {
             params.shift();
         }
     });
-    /*
-    bean.add(page.builders, 'refresh', function() {
+    bean.add(page.store.builders, 'refresh', function() {
         page.req('builders', null, function(_, builders) {
-            var changes = deep.update(page.builders, builders);
+            var changes = deep.update(page.store.builders, builders);
             if(changes.updated.length > 0 || changes.inserted.length > 0 || changes.deleted.length > 0) {
-                bean.fire(page.builders, 'change', changes);
+                bean.fire(page.store.builders, 'change', changes);
             }
         });
     });
-    // TODO finish the new style of organizing builders
-    // bean.fire(page.builders, 'refresh');
-    */
+    bean.fire(page.store.builders, 'refresh');
+    page.on('queue_size', function(_, queue_size) {
+        var q = common.findBy(page.store.builders, 'name', queue_size.name);
+        q.size = queue_size;
+        bean.fire(q, 'update');
+    });
 
     this.parallel()(null, page);
     run.init(page, this.parallel());
@@ -167,63 +170,67 @@ step(function() {
         }
     };
 
-    step(function() {
-        page.req('projects', null, this.parallel());
-        page.req('builders', null, this.parallel());
-    }, function(_, projects, workers) {
-        page.on('workerPoolChanged', function(_, w) {
-            workers = w;
+    page.req('projects', null, function(_, projects) {
+        console.log('projects', arguments);
+        var updateSidebar = function() {
+            v.each(projects, function(p) {
+                if(page.projectId === p.id) {
+                    p.opened = true;
+                } else {
+                    p.opened = false;
+                }
+            });
+            bonzo(qwery('#sidebar')).html(t.sidebar.render({
+                projectId : page.projectId,
+                projects : projects,
+                workers : page.store.builders
+            }, t));
+        };
+        bean.add(page.store.builders, 'change', function(changes) {
             bonzo(qwery('.app-worker')).remove();
             var html = '';
-            v.each(w, function(worker) {
-                html += t.worker.render(worker);
+            v.each(page.store.builders, function(builder) {
+                html += t.worker.render(builder);
+            });
+            v.each(changes.inserted, function(builder) {
+                var onUpdate = function() {
+                };
+                var onDelete = function() {
+                    bean.remove(builder, 'update', onUpdate);
+                    bean.remove(builder, 'delete', onDelete);
+                };
+                bean.add(builder, 'update', onUpdate);
+                bean.add(builder, 'delete', onDelete);
             });
             bonzo(qwery('#sidebar')).append(html);
         });
-        page.req('projects', null, function(_, projects) {
-            console.log('projects', arguments);
-            var updateSidebar = function() {
-                v.each(projects, function(p) {
-                    if(page.projectId === p.id) {
-                        p.opened = true;
-                    } else {
-                        p.opened = false;
-                    }
-                });
-                bonzo(qwery('#sidebar')).html(t.sidebar.render({
-                    projectId : page.projectId,
-                    projects : projects,
-                    workers : workers
-                }, t));
-            };
-            bean.add(page, 'projectId', updateSidebar);
-            updateSidebar();
-            cb(null);
-            bean.add(page, 'projectUpdated', function(project) {
-                console.log('projectUpdated', project);
-                replaceProject(projects, project);
-                if(project.id === page.projectId) {
-                    project.opened = true;
-                }
-                bonzo(qwery('#project-' + project.id)).replaceWith(t.project.render(project));
-            });
-            bean.add(page, 'projectAdded', function(project) {
-                console.log('projectAdded', project);
-                if(project.id === page.projectId) {
-                    project.opened = true;
-                }
-                var position = insertProject(projects, project);
-                var html = t.project.render(project);
-                if(position.after === null) {
-                    bonzo(qwery('#projects-header')).after(html);
+        bean.add(page, 'projectId', updateSidebar);
+        updateSidebar();
+        cb(null);
+        bean.add(page, 'projectUpdated', function(project) {
+            console.log('projectUpdated', project);
+            replaceProject(projects, project);
+            if(project.id === page.projectId) {
+                project.opened = true;
+            }
+            bonzo(qwery('#project-' + project.id)).replaceWith(t.project.render(project));
+        });
+        bean.add(page, 'projectAdded', function(project) {
+            console.log('projectAdded', project);
+            if(project.id === page.projectId) {
+                project.opened = true;
+            }
+            var position = insertProject(projects, project);
+            var html = t.project.render(project);
+            if(position.after === null) {
+                bonzo(qwery('#projects-header')).after(html);
+            } else {
+                if(position.after) {
+                    bonzo(qwery('#project-' + position.project.id)).after(html);
                 } else {
-                    if(position.after) {
-                        bonzo(qwery('#project-' + position.project.id)).after(html);
-                    } else {
-                        bonzo(qwery('#project-' + position.project.id)).before(html);
-                    }
+                    bonzo(qwery('#project-' + position.project.id)).before(html);
                 }
-            });
+            }
         });
     });
     p({
