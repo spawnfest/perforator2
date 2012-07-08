@@ -32,7 +32,7 @@ exports.init = function(page, cb) {
                         previous : runs[0],
                         buildInit : buildInit,
                         id : buildInit.build_id,
-                        started : moment(new Date(buildInit.timestamp * 1000)).fromNow(),
+                        started : moment(new Date(buildInit.timestamp * 1000)).format('LLLL'),
                         finished : false,
                         modules : '',
                         tests : ''
@@ -61,7 +61,7 @@ exports.init = function(page, cb) {
             runs.reverse();
 
             v.each(runs, function(run) {
-                run.started = moment(new Date(run.started)).fromNow();
+                run.started = moment(new Date(run.started)).format('LLLL');
             });
             page.body.html(t.log.render({
                 runs : runs,
