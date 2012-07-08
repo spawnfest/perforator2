@@ -182,13 +182,13 @@ step(function() {
                 projects : projects,
                 workers : page.store.builders
             }, t));
+            bean.add(w.el('build-now')[0], 'click', function(e) {
+                page.req('build_now', page.projectId);
+                e.preventDefault();
+            });
         };
         bean.add(page, 'projectId', updateSidebar);
         updateSidebar();
-        bean.add(w.el('build-now')[0], 'click', function(e) {
-            page.req('build_now', page.projectId);
-            e.preventDefault();
-        });
         var addBuilderListener = function(builder) {
             var onUpdate = function() {
                 w.el('builder-li-' + builder.name).replaceWith(t.worker.render(builder));
