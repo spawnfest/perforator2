@@ -145,7 +145,7 @@ step(function() {
     var insertProject = function(projects, project) {
         for(var i = 0; i < projects.length; i += 1) {
             if(projects[i].name > project.name) {
-                projects[i].splice(i, 0, project);
+                projects.splice(i, 0, project);
                 return {
                     after : false,
                     project : projects[i + 1]
