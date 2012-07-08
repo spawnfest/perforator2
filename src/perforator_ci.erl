@@ -16,6 +16,7 @@
 %% ============================================================================
 
 %% @doc Creates project (in DB) and starts project handler process.
+%% @todo Throw
 -spec create_and_start_project({
         perforator_ci_types:project_name(), perforator_ci_types:repo_url(),
         perforator_ci_types:branch(), perforator_ci_types:repo_backend(),
