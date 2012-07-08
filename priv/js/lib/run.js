@@ -1,6 +1,8 @@
 var t = require('./templates');
+var common = require('./common');
 var moment = require('moment');
 var bean = require('bean');
+var step = require('step');
 var bonzo = require('bonzo');
 var qwery = require('qwery');
 var w = require('./window');
@@ -11,7 +13,19 @@ series = series.series;
 exports.init = function(page, cb) {
     page.handle(/^\/(.+)\/build\/(.+)$/, function(from, to, params) {
         var buildId = parseInt(params[0], 10);
-        page.req('build', buildId, function(err, modules) {
+        step(function() {
+            page.req('previous_build', buildId, this);
+        }, function(err, previousBuildId) {
+            if(previousBuildId) {
+                page.req('build', previousBuildId, this);
+            } else {
+                this(null, null);
+            }
+        }, function(err, previousBuild) {
+            page.req('build', buildId, this.parallel());
+            this.parallel()(null, previousBuild);
+        }, function(err, modules, previousModules) {
+            console.log('rendering build', modules, previousModules);
             if(err) {
                 page.body.html(t.error.render({
                     title : 'Build #' + buildId + ' did not succeed',
@@ -50,27 +64,35 @@ exports.init = function(page, cb) {
             var setSeries = function(key) {
                 currentSeries = key;
                 v.each(modules, function(module) {
+                    var previousModule = previousModules ? common.findBy(previousModules, 'name', module.name) : null;
+                    console.log('previousModule', module.name);
                     v.each(module.tests, function(test) {
-                        bonzo(qwery('#' + test.id)).empty();
-                        var data = test.series[key];
-                        var ranges = [];
-                        ranges.push(typeof data.min === 'undefined' ? 0 : data.min);
-                        if(typeof data.mean !== 'undefined') {
-                            ranges.push(data.mean);
+                        var previousTest = previousModule ? common.findBy(previousModule.tests, 'name', test.name) : null;
+                        console.log('previousTest', test.name);
+                        var id = 'test-' + module.name + '-' + test.name;
+                        w.el(id).empty();
+                        if(!test.successful) {
+                            bonzo(w.el(id)[0].parentNode).html('<p>' + test.name + ' did not succeed.</p>');
+                            return;
                         }
-                        ranges.push(typeof data.max === 'undefined' ? Math.max(data.current, data.previous) : data.max);
-                        w.d3.select('#' + test.id).datum({
+                        var data = test.result[key];
+
+                        // TODO make it real
+                        data.previous = previousTest && previousTest.successful ? previousTest.result[key] : data;
+
+                        var ranges = [data.min, data.max];
+                        w.d3.select('#' + id).datum({
                             title: test.name,
                             subtitle: seriesMap[key].units,
                             ranges: ranges,
-                            measures: [data.current],
-                            markers: [data.previous]
+                            measures: [data.mean],
+                            markers: [data.previous.mean]
                         }).call(chart);
-                        bonzo(qwery('#' + test.id + ' .measure')).css('fill', test.series[key].current > test.series[key].previous ? (seriesMap[key].higherBetter ? '#0f0' : '#f00') : (seriesMap[key].higherBetter ? '#f00' : '#0f0'));
+                        bonzo(qwery('#' + id + ' .measure')).css('fill', data.mean > data.previous.mean ? (seriesMap[key].higherBetter ? '#0f0' : '#f00') : (seriesMap[key].higherBetter ? '#f00' : '#0f0'));
                     });
                 });
             };
-            setSeries('time');
+            setSeries(series[0].key);
             w.nv.utils.windowResize(function() {
                 setSeries(currentSeries);
             });

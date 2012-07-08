@@ -55,32 +55,32 @@ exports.post = function(page, req, cb) {
             tests : [
                 {
                     name : 'testA',
-                    series : {
-                        memutil : {
-                            previous : 100,
+                    successful : true,
+                    result : {
+                        used_memory : {
                             mean : 90,
-                            current : 110,
                             max : 200,
                             min : 50
                         },
-                        time : {
-                            previous : 311,
-                            current : 300
+                        duration : {
+                            mean : 90,
+                            max : 200,
+                            min : 50
                         }
                     }
                 }, {
                     name : 'testB',
-                    series : {
-                        memutil : {
-                            previous : 150,
+                    successful : true,
+                    result : {
+                        used_memory : {
                             mean : 90,
-                            current : 130,
                             max : 200,
                             min : 50
                         },
-                        time : {
-                            previous : 250,
-                            current : 330
+                        duration : {
+                            mean : 90,
+                            max : 200,
+                            min : 50
                         }
                     }
                 }
@@ -90,32 +90,21 @@ exports.post = function(page, req, cb) {
             tests : [
                 {
                     name : 'testA',
-                    series : {
-                        memutil : {
-                            previous : 100,
-                            mean : 120,
-                            current : 130,
-                            max : 250,
-                            min : 100
-                        },
-                        time : {
-                            previous : 211,
-                            current : 300
-                        }
-                    }
+                    successful : false,
+                    result : null
                 }, {
                     name : 'testB',
-                    series : {
-                        memutil : {
-                            previous : 120,
+                    successful : true,
+                    result : {
+                        used_memory : {
                             mean : 140,
-                            current : 130,
                             max : 190,
                             min : 70
                         },
-                        time : {
-                            previous : 350,
-                            current : 330
+                        duration : {
+                            mean : 140,
+                            max : 190,
+                            min : 70
                         }
                     }
                 }
@@ -170,6 +159,8 @@ exports.post = function(page, req, cb) {
             name : 'WorkWork',
             queue_size : 0
         }]);
+    } else if(page === 'previous_build') {
+        cb(null, req);
     } else if(page === 'projects') {
         cb(null, [ {
             id : 1,

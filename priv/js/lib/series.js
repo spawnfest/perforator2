@@ -1,28 +1,28 @@
 var series = [
     {
         name : 'Time',
-        key : 'time',
+        key : 'duration',
         units : 'milliseconds',
         unitsShort : 'ms',
         precision : 0,
         higherBetter : false
     }, {
         name : 'Average Memory Utilization',
-        key : 'memutil',
+        key : 'used_memory',
         units : 'bytes',
         unitsShort : 'b',
         precision : 0,
         higherBetter : false
     }, {
         name : 'Average CPU Load',
-        key : 'load',
+        key : 'cpu_load',
         units : 'TODO',
         unitsShort : '?',
         precision : 2,
         higherBetter : false
     }, {
         name : 'Average CPU Utilization',
-        key : 'cpuutil',
+        key : 'cpu_util',
         units : 'TODO',
         unitsShort : '?',
         precision : 2,
