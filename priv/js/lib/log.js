@@ -1,4 +1,5 @@
 var t = require('./templates');
+var w = require('./window');
 var v = require('valentine');
 var qwery = require('qwery');
 var step = require('step');
@@ -24,8 +25,8 @@ exports.init = function(page, cb) {
                     run.succeeded = buildFinished.success;
                     run.time = (buildFinished.timestamp - run.buildInit.timestamp) * 1000;
                     run.timeDelta = run.time - run.previous.time;
-                    bonzo(qwery('#run-' + buildFinished.build_id)).replaceWith(t.logRun.render(run, t));
-                    attachClickHandler(qwery('#run-' + buildFinished.build_id));
+                    w.el('run-' + run.id).replaceWith(t.logRun.render(run, t));
+                    attachClickHandler(w.el('run-' + run.id)[0]);
                 }
             }));
             offs.push(page.on('build_init', function(_, buildInit) {
@@ -41,7 +42,7 @@ exports.init = function(page, cb) {
                         tests : ''
                     };
                     runsEl.prepend(t.logRun.render(run, t));
-                    attachClickHandler(qwery('#run-' + buildInit.build_id));
+                    attachClickHandler(w.el('run-' + run.id)[0]);
                     runs.unshift(run);
                 }
             }));
@@ -73,6 +74,9 @@ exports.init = function(page, cb) {
             }, t));
             var runsEl = bonzo(qwery('#runs'));
             var attachClickHandler = function(row) {
+                if(row.parentNode.nodeName.toLowerCase() === 'thead') {
+                    return;
+                }
                 bean.add(row, 'click', function() {
                     page.go('/' + project.id + '/run/' + bonzo(row).data('id'));
                 });

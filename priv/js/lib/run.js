@@ -14,7 +14,15 @@ exports.init = function(page, cb) {
             projectId : page.projectId,
             id : params[0]
         };
-        page.req('run', state, function(_, modules) {
+        page.req('build', state, function(err, modules) {
+            if(err) {
+                page.body.html(t.error.render({
+                    title : 'Build #' + state.id + ' did not succeed',
+                    message : err.err,
+                    details : err.msg
+                }));
+                return;
+            }
             v.each(modules, function(module) {
                 v.each(module.tests, function(test) {
                     test.id = 'test-' + module.name + '-' + test.name;

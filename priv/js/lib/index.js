@@ -59,7 +59,7 @@ step(function() {
         req : function(resource, msg, cb) {
             console.log('page.req', resource, msg);
             cb = cb || function(){};
-            if(['build_now', 'project/new', 'project/update', 'project', 'projects', 'builders'].indexOf(resource) >= 0) {
+            if(['build_now', 'project/new', 'project/update', 'project', 'projects', 'builders', 'build'].indexOf(resource) >= 0) {
                 reqwest({
                     url : '/api/1/' + resource,
                     method : 'post',
@@ -72,10 +72,7 @@ step(function() {
                     success : function(resp) {
                         console.log('resp', resp);
                         if(resp.err) {
-                            cb({
-                                err : resp.err,
-                                msg : resp.msg
-                            }, null);
+                            cb(resp, null);
                         } else {
                             cb(null, resp.msg);
                         }
@@ -188,7 +185,9 @@ step(function() {
         };
         bean.add(page, 'projectId', updateSidebar);
         updateSidebar();
+        console.log(w.el('build-now')[0]);
         bean.add(w.el('build-now')[0], 'click', function(e) {
+            console.log('BUILD', page.projectId);
             page.req('build_now', page.projectId);
             e.preventDefault();
         });

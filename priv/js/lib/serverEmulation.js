@@ -49,7 +49,7 @@ exports.post = function(page, req, cb) {
                 cpuutil : 1.0
             }
         ]);
-    } else if(page === 'run') {
+    } else if(page === 'build') {
         cb(null, [{
             name : 'moduleA',
             tests : [
