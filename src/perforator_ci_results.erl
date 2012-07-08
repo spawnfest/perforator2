@@ -75,7 +75,7 @@ replace_older_results(NewRes={Suite, Filename}, Results) ->
                 true -> %% the date timestamp of Filename2 is newer
                     Results;
                 false ->
-                    [NewRes|Results -- {Suite, Filename2}]
+                    [NewRes|Results -- [{Suite, Filename2}]]
             end
     end.
 
