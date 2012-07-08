@@ -124,7 +124,7 @@ exports.post = function(page, req, cb) {
     } else if(page === 'project/update') {
         cb(null, null);
     } else if(page === 'project/new') {
-        cb(null, '8888');
+        cb(null, Math.floor(Math.random() * 1000000));
     } else if(page === 'runs') {
         cb(null, [
             {
@@ -149,7 +149,7 @@ exports.post = function(page, req, cb) {
         ]);
     } else if(page === 'project') {
         cb(null, {
-            id : req.id,
+            id : req,
             name : 'Project omg #1',
             repo_url : 'git://github.com/linus/linux',
             branch : 'master',
@@ -158,14 +158,14 @@ exports.post = function(page, req, cb) {
         });
     } else if(page === 'projects') {
         cb(null, [ {
-            id : '8888',
+            id : 1,
             name : 'Project omg #1',
             repo_url : 'git://github.com/linus/linux',
             branch : 'master',
             build_instructions : [],
             polling_strategy : 'ondemand'
         }, {
-            id : '8008',
+            id : 2000,
             name : 'Project omg #2000',
             repo_url : 'git://github.com/linus/linux',
             branch : 'master',
