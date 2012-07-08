@@ -145,7 +145,8 @@ to(builds, Builds) ->
 
 to(build, #project_build{finished=failure, info=Info}) ->
     throw(Info);
-to(build, PB=#project_build{info=TestInfo}) ->
+to(build, #project_build{info=TestInfo}) ->
+    Suites = proplists:get_value(suites, TestInfo),
     lists:map(fun ({SuiteName, SuiteData}) ->
         TestCases = proplists:get_value(test_cases, SuiteData),
         {[
@@ -156,7 +157,7 @@ to(build, PB=#project_build{info=TestInfo}) ->
                 end,
                 TestCases)}
         ]}
-    end, TestInfo);
+    end, Suites);
 
 to(previous_build, Data) ->
     case Data of

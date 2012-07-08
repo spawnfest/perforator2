@@ -48,7 +48,7 @@ from_project_update_test() ->
 
 to_build_test() ->
     try
-        Data = [{<<"test_suite_1">>, [{test_cases,
+        Data = [{suites, [{<<"test_suite_1">>, [{test_cases,
             [{<<"test_case_1">>, [
                 {successful, true},
                 {result, [
@@ -60,7 +60,7 @@ to_build_test() ->
                     ]}
                 ]}
             ]}]
-        }]}],
+        }]}]}],
         JSON = perforator_ci_json:to(build, #project_build{info=Data}),
         %?info("JSONBLE:", [JSON]),
         Enc = jiffy:encode(JSON)
