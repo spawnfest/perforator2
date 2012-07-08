@@ -23,7 +23,13 @@
 %% @doc Subscribes to a given group.
 -spec subscribe(perforator_ci_types:pubsub_group()) -> ok.
 subscribe(Group) ->
-    pg2:join(Group, self()).
+    try
+        pg2:join(Group, self())
+    catch
+        _:_ ->
+            pg2:create(Group)
+    end,
+    ok.
 
 %% @doc Sends message to group members.
 -spec broadcast(perforator_ci_types:pubsub_group(), Msg :: term()) -> ok.

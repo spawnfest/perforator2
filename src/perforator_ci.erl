@@ -72,6 +72,7 @@ start() ->
         application:start(lager)
     end),
     ?silent(error, begin
+        pg2:start(),
         application:start(mnesia),
         application:start(gproc),
         application:start(cowboy),
@@ -93,5 +94,4 @@ stop() ->
 
 %% @doc See perforator_ci_db:init/0 for more info.
 init() ->
-    perforator_ci_db:init(),
-    perforator_ci_pubsub:init().
+    perforator_ci_db:init().
