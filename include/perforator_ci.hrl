@@ -85,3 +85,4 @@
 %% ============================================================================
 
 -define(FMT(Msg, Args), lists:flatten(io_lib:format(Msg, Args))).
+-define(BIN(X), perforator_ci_utils:to_bin(X)).

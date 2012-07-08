@@ -11,8 +11,7 @@
 %% All calls to internal call can throw Error, or {Error, Details}. Otherwise
 %% whole exception will be serialized and returned as response to a request.
 %%
-%% @author Martynas <martynasp@gmail.com>
-
+%% @author Martynas <martynasp@gmail.com> 
 -module(perforator_ci_web_handler).
 
 -include("perforator_ci.hrl").
@@ -68,6 +67,14 @@ terminate(_Req, _State) ->
 %% ============================================================================
 
 %% /project/new
+handle_request([<<"project">>], Data, _Req) ->
+    wrap_call(project,
+        fun () ->
+            perforator_ci_db:get_project(
+                perforator_ci_json:from(project, Data))
+        end);
+
+%% /project/new
 handle_request([<<"project">>, <<"new">>], Data, _Req) ->
     wrap_call(project_new,
         fun () ->
@@ -75,6 +82,7 @@ handle_request([<<"project">>, <<"new">>], Data, _Req) ->
                 perforator_ci_json:from(project_new, Data))
         end);
 
+%% /project/update
 handle_request([<<"project">>, <<"update">>], Data, _Req) ->
     wrap_call(project_update,
         fun () ->
@@ -100,22 +108,12 @@ wrap_call(Type, Fun) ->
     catch
         throw:{Err, Details} ->
             {[
-                {error, to_bin(Err)},
-                {msg, to_bin(Details)}
+                {error, ?BIN(Err)},
+                {msg, ?BIN(Details)}
             ]};
         throw:Err ->
             {[ 
-                {error, to_bin(Err)},
+                {error, ?BIN(Err)},
                 {msg, <<"\"\"">>}
             ]}
     end.
-
-%% @doc No comments.
-to_bin(X) when is_integer(X) ->
-    list_to_binary(integer_to_list(X));
-to_bin(X) when is_list(X) ->
-    list_to_binary(X);
-to_bin(X) when is_atom(X) ->
-    list_to_binary(atom_to_list(X));
-to_bin(X) ->
-    list_to_binary(?FMT("~p", [X])).

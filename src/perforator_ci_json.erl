@@ -38,7 +38,10 @@ from(project_update, {Data}) ->
     list_to_tuple(
         [proplists:get_value(<<"id">>, Data) |
             tuple_to_list(from(project_new, {Data}))]
-    ).
+    );
+
+from(project, ProjectID) ->
+    ProjectID.
 
 %% ============================================================================
 %% To jiffy intermediate from Erlang term()
@@ -48,4 +51,25 @@ to(project_new, ProjectID) ->
     ProjectID;
 
 to(project_update, _) ->
-    null.
+    null;
+
+to(project, #project{id=ID, name=Name, repo_url=RepoURL, branch=Branch,
+        polling=Polling, build_instructions=BuildInstr}) ->
+    Polling1 = case Polling of
+        on_demand -> ?BIN(on_demand);
+        {time, N} -> {[{time, N}]}
+    end,
+    BuildInstr1 = [?BIN(I) || I <- BuildInstr],
+
+    {[
+        {id, ID},
+        {name, ?BIN(Name)},
+        {repo_url, ?BIN(RepoURL)},
+        {branch, ?BIN(Branch)},
+        {polling_strategy, Polling1},
+        {build_instructions, BuildInstr1}
+    ]}.
+
+%% ============================================================================
+
+

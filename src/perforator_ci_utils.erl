@@ -11,7 +11,8 @@
     get_env/3,
     sh/1,
     sh/2,
-    repo_path/1
+    repo_path/1,
+    to_bin/1
 ]).
 
 %% ============================================================================
@@ -66,3 +67,13 @@ repo_path(ProjectID) ->
         perforator_ci_utils:get_env(perforator_ci, repos_path, ?REPOS_DIR),
         integer_to_list(ProjectID)
     ).
+
+%% @doc No comments.
+to_bin(X) when is_integer(X) ->
+    list_to_binary(integer_to_list(X));
+to_bin(X) when is_list(X) ->
+    list_to_binary(X);
+to_bin(X) when is_atom(X) ->
+    list_to_binary(atom_to_list(X));
+to_bin(X) ->
+    list_to_binary(?FMT("~p", [X])).
