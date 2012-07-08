@@ -53,7 +53,7 @@ step(function() {
         },
         req : function(resource, msg, cb) {
             cb = cb || function(){};
-            if(['project/new', 'projects', 'builders'].indexOf(resource) >= 0) {
+            if(['project/new', 'project', 'projects', 'builders'].indexOf(resource) >= 0) {
                 reqwest({
                     url : '/api/1/' + resource,
                     method : 'post',
@@ -154,7 +154,6 @@ step(function() {
             bonzo(qwery('#sidebar')).append(html);
         });
         page.req('projects', null, function(_, projects) {
-            console.log(projects);
             var updateSidebar = function() {
                 v.each(projects, function(p) {
                     if(page.projectId === p.id) {
