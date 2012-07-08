@@ -12,7 +12,6 @@ var log = require('./log');
 var run = require('./run');
 var test = require('./test');
 var projectEdit = require('./projectEdit');
-var serverEmulation = require('./serverEmulation');
 var compare = require('./compare');
 var bean = require('bean');
 var w = require('./window');
@@ -59,28 +58,24 @@ step(function() {
         req : function(resource, msg, cb) {
             console.log('page.req', resource, msg);
             cb = cb || function(){};
-            if(['build_now', 'project/new', 'project/update', 'project', 'projects', 'builders', 'build', 'builds', 'previous_build', 'test_runs'].indexOf(resource) >= 0) {
-                reqwest({
-                    url : '/api/1/' + resource,
-                    method : 'post',
-                    type : 'json',
-                    data : JSON.stringify(msg),
-                    contentType: 'application/json',
-                    error : function() {
-                        console.log('req error', resource, msg, arguments);
-                    },
-                    success : function(resp) {
-                        console.log('resp', resp);
-                        if(resp.err) {
-                            cb(resp, null);
-                        } else {
-                            cb(null, resp.msg);
-                        }
+            reqwest({
+                url : '/api/1/' + resource,
+                method : 'post',
+                type : 'json',
+                data : JSON.stringify(msg),
+                contentType: 'application/json',
+                error : function() {
+                    console.log('req error', resource, msg, arguments);
+                },
+                success : function(resp) {
+                    console.log('resp', resp);
+                    if(resp.err) {
+                        cb(resp, null);
+                    } else {
+                        cb(null, resp.msg);
                     }
-                });
-            } else {
-                serverEmulation.post(resource, msg, cb);
-            }
+                }
+            });
         },
         body : w.el('body'),
         projectId : null,
@@ -142,7 +137,6 @@ step(function() {
     // log should be initialized last, otherwise it could take over /project/*
     // url from projectEdit (/project/add)
     log.init(page, this.parallel());
-    serverEmulation.init(page, this.parallel());
     var cb = this.parallel();
 
     var insertProject = function(projects, project) {
