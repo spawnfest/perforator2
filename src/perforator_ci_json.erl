@@ -68,7 +68,10 @@ to(project, #project{id=ID, name=Name, repo_url=RepoURL, branch=Branch,
         {branch, ?BIN(Branch)},
         {polling_strategy, Polling1},
         {build_instructions, BuildInstr1}
-    ]}.
+    ]};
+
+to(projects, Projects) ->
+    [to(project, P) || P <- Projects].
 
 %% ============================================================================
 

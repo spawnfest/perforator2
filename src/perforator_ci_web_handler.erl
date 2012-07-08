@@ -90,6 +90,13 @@ handle_request([<<"project">>, <<"update">>], Data, _Req) ->
                 perforator_ci_json:from(project_update, Data))
         end);
 
+%% /projects
+handle_request([<<"projects">>], _Data, _Req) ->
+    wrap_call(projects,
+        fun () ->
+            perforator_ci_db:get_projects()
+        end);
+
 %% 404
 handle_request(_, Data, _) ->
     ?info("DATA", [{data, Data}]),
