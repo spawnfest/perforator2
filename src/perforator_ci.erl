@@ -8,7 +8,8 @@
 %% API
 -export([
     create_and_start_project/1,
-    update_project/1
+    update_project/1,
+    get_builders/0
 ]).
 
 -export([start/0, stop/0, init/0]).
@@ -55,6 +56,12 @@ update_project({ID, Name, RepoUrl, Branch, RepoBackend, Polling,
     exit(perforator_ci_project:get_pid(ID), '$restart'),
 
     ok.
+
+%% @doc Returns builders list with their queue size.
+-spec get_builders() -> [{node(), integer()}].
+get_builders() ->
+    [{B, perforator_ci_builder:get_queue_size(B)} ||
+        B <-perforator_ci_builder:get_builders()].
 
 %% ============================================================================
 

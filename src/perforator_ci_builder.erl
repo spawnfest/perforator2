@@ -13,6 +13,8 @@
 -export([
     start_link/0,
     build/2,
+    get_queue_size/1,
+    get_builders/0,
 
     run_build/1
 ]).
@@ -68,6 +70,10 @@ get_queue() ->
 %% @doc Used for testing.
 get_worker() ->
     gen_server:call(?SERV_NAME, get_worker).
+
+%% @doc Returns builder queue size.
+get_queue_size(Node) ->
+    length(gen_server:call({global, {perforator_ci_builder, Node}}, get_queue)).
 
 %% =============================================================================
 %% gen_server callbacks
@@ -175,6 +181,10 @@ pick_builder() ->
         {perforator_ci_builder, _X}=B <- global:registered_names()],
 
     lists:nth(random:uniform(length(Builders)), Builders).
+
+%% @doc Returns nodes that run builders.
+get_builders() ->
+    [B || {perforator_ci_builder, B} <- global:registered_names()].
 
 run_build(Item) -> ok.
 

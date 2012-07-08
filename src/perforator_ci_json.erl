@@ -71,8 +71,7 @@ to(project, #project{id=ID, name=Name, repo_url=RepoURL, branch=Branch,
     ]};
 
 to(projects, Projects) ->
-    [to(project, P) || P <- Projects].
+    [to(project, P) || P <- Projects];
 
-%% ============================================================================
-
-
+to(builders, Builders) ->
+[{[{name, ?BIN(N)}, {queue_size, Q}]} || {N, Q} <- Builders].
