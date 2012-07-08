@@ -1,4 +1,5 @@
-%% @doc JSON intermediate format (jiffy) (de)serializer to Erlang terms.
+%% @doc JSON intermediate format (jiffy) (de)serializer to Erlang terms used
+%% for converting web requests/responses.
 
 %% @author Martynas <martynasp@gmail.com>
 %% @author Ignas <i.vysniauskas@gmail.com>

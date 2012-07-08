@@ -2,7 +2,7 @@
 %% REST API (v1) of Perforator CI.
 %% See handle_request/2 for possible API calls.
 %%
-%% Request with POST should send "data=JSON.stringify(Obj)"
+%% Request with POST should send JSON.stringify(Obj)
 %% Each response (JSON) should be wrapped into:
 %% {
 %%      err: null | string()
@@ -12,6 +12,7 @@
 %% whole exception will be serialized and returned as response to a request.
 %%
 %% @author Martynas <martynasp@gmail.com> 
+
 -module(perforator_ci_web_handler).
 
 -include("perforator_ci.hrl").
@@ -21,8 +22,6 @@
     handle/2,
     terminate/2
 ]).
-
--define(INPUT_KEY, <<"data">>).
 
 %% ===========================================================================
 
@@ -111,6 +110,7 @@ handle_request([<<"builds">>], Data, _Req) ->
                 perforator_ci_json:from(builds, Data))
         end);
 
+%% /build_now
 handle_request([<<"build_now">>], Data, _Req) ->
     wrap_call(build_now,
         fun () ->
@@ -118,6 +118,7 @@ handle_request([<<"build_now">>], Data, _Req) ->
                 perforator_ci_json:from(build_now, Data))
         end);
 
+%% /build
 handle_request([<<"build">>], Data, _Req) ->
     wrap_call(build,
         fun () ->
@@ -125,6 +126,7 @@ handle_request([<<"build">>], Data, _Req) ->
                 perforator_ci_json:from(build, Data))
         end);
 
+%% /previous_build
 handle_request([<<"previous_build">>], Data, _Req) ->
     wrap_call(previous_build,
         fun () ->
@@ -148,6 +150,7 @@ handle_request(_, _, _) ->
 %% Helpers
 %% ============================================================================
 
+%% Execs and wraps result.
 wrap_call(Type, Fun) ->
     try
         {[

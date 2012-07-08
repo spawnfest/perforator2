@@ -1,5 +1,13 @@
-%% @doc Projects builder. Only one per app because of obvious reasons (would be
-%% non-sense to share some system resources between performance tests).
+%% @doc Projects builder. 
+%% The builder stores (non persistent) build requests in its queue
+%% and executes (FIFO) only one at a time in spawned process.
+%% If builder (not spawned process) dies, all projects resend build requests.
+%%
+%%
+%% There could be more than one builder instance, but it should run on
+%% different node %% (and preferable on different host),
+%% but there is no auto node discovery. So either put in kernel app
+%% `sync_nodes_optional` or do manually net_adm:ping/1.
 
 %% @author Martynas <martynasp@gmail.com>
 
@@ -16,7 +24,7 @@
     get_queue_size/1,
     get_builders/0,
 
-    run_build/1
+    run_build/1 % used for mocking
 ]).
 
 %% gen_server callbacks
@@ -29,11 +37,12 @@
     code_change/3
 ]).
 
--type queue_item() :: {pid(), #project{}, #project_build{}}.
+-type queue_item() :: {ProjectPid :: pid(), #project{}, #project_build{}}.
 
 -record(state, {
     build_queue=[] :: [queue_item()],
-    worker :: pid() | undefined % pid of process responsible for handling build % undefined means that currently there is no job running
+    worker :: pid() | undefined % pid of process responsible for handling build
+    % undefined means that currently there is no job running
 }).
 
 -ifdef(TEST).
@@ -41,7 +50,7 @@
 -endif.
 
 -define(SERV_NAME, {global, {perforator_ci_builder, node()}}).
--define(BUILD_REQUEST_TIMEOUT, 15000).
+-define(BUILD_REQUEST_TIMEOUT, 15000). % @todo put it into config
 
 %% ============================================================================
 %% API
@@ -56,23 +65,25 @@ start_link() ->
 %% @doc Adds build request (which will be eventually handled) to builder queue.
 -spec build(#project{}, #project_build{}) -> ok.
 build(Project, Build) ->
+    % Pick randomly a builder
     Builder = pick_builder(),
     true = link(global:whereis_name(Builder)), % link for request,
     % all persistent part is built at perforator_ci_project side
     gen_server:call({global, Builder},
         {build, Project, Build}, ?BUILD_REQUEST_TIMEOUT).
 
-%% @doc Used for testing.
+%% @doc Returns builder queue size.
+-spec get_queue_size(node()) -> integer().
+get_queue_size(Node) ->
+    length(gen_server:call({global, {perforator_ci_builder, Node}}, get_queue)).
+
+%% @doc Used only for testing.
 get_queue() ->
     gen_server:call(?SERV_NAME, get_queue).
 
-%% @doc Used for testing.
+%% @doc Used only for testing.
 get_worker() ->
     gen_server:call(?SERV_NAME, get_worker).
-
-%% @doc Returns builder queue size.
-get_queue_size(Node) ->
-    length(gen_server:call({global, {perforator_ci_builder, Node}}, get_queue)).
 
 %% =============================================================================
 %% gen_server callbacks
@@ -85,15 +96,20 @@ init([]) ->
 
     {ok, #state{}}.
 
+%% for testing
 handle_call(get_queue, _, #state{build_queue=Q}=S) ->
     {reply, Q, S};
 
+%% for testing
 handle_call(get_worker, _, #state{worker=P}=S) ->
     {reply, P, S};
 
+% Ask to build
 handle_call({build, Project, Build}, {Pid, _},
         #state{build_queue=Q}=State) ->
+    % Inserts request to the queue (safe for duplicates):
     Q1 = enqueue({Pid, Project, Build}, Q),
+
     ok = perforator_ci_pubsub:broadcast(perforator_ci_builder,
         {queue_size, {node(), length(Q1)}}),
 
@@ -217,6 +233,7 @@ enqueue({_, _, #project_build{id=BuildID}}=Item, Q) ->
     end.
 
 %% @doc Run a job.
+%% @throws perf_test_not_found.
 run_build({_Pid, #project{id=ProjectID, repo_url=RepoUrl,
         repo_backend=Mod, build_instructions=Instructions},
         #project_build{commit_id=CommitID}}) ->
@@ -231,6 +248,7 @@ run_build({_Pid, #project{id=ProjectID, repo_url=RepoUrl,
     % Fetch and checkout
     ok = Mod:checkout(RepoDir, CommitID),
 
+    % Try to exec project build instructions:
     lists:foreach(
         fun (C) ->
             try
@@ -247,6 +265,7 @@ run_build({_Pid, #project{id=ProjectID, repo_url=RepoUrl,
         Instructions
     ),
 
+    % Find and return `perforator` statistics.
     case perforator_ci_results:read(RepoDir) of
         [] -> % @todo Clean:
             throw(perf_test_not_found);
