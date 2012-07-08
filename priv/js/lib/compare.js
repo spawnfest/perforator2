@@ -30,6 +30,22 @@ exports.init = function(page, cb) {
             page.req('builds', state.projectId, group());
             v.each(runs, function(run) {
                 page.req('test_run', run, group());
+                var modulesCb = group();
+                var testsCb = group();
+                page.req('build', run.runId, function(modules) {
+                    console.log('modules', modules);
+                    modulesCb(null, modules);
+
+                    var tests = null;
+                    v.each(modules, function(module) {
+                        if(module.name === run.moduleName) {
+                            tests = module.test_cases;
+                        }
+                    });
+                    console.log('tests', tests);
+                    testsCb(null, tests);
+                });
+                /*
                 page.req('modules', {
                     projectId : state.projectId,
                     runId : run.runId
@@ -39,6 +55,7 @@ exports.init = function(page, cb) {
                     runId : run.runId,
                     moduleName : run.moduleName
                 }, group());
+                */
             });
         }, function(_, group) {
             var runA = group[1];
