@@ -34,6 +34,7 @@ exports.init = function(page, cb) {
                         previous : runs[0],
                         buildInit : buildInit,
                         id : buildInit.build_id,
+                        commit_id : buildInit.commit_id,
                         started : moment(new Date(buildInit.timestamp * 1000)).format('LLLL'),
                         finished : false,
                         modules : '',

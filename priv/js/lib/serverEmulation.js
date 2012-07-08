@@ -130,6 +130,7 @@ exports.post = function(page, req, cb) {
             {
                 id : '8888',
                 started : new Date().getTime(),
+                commit_id : '23523623',
                 succeeded : true,
                 time : 1000,
                 modules : 2,
@@ -137,6 +138,7 @@ exports.post = function(page, req, cb) {
             }, {
                 id : '8008',
                 started : new Date().getTime(),
+                commit_id : '23523623',
                 succeeded : false,
                 time : 800,
                 modules : 2,
@@ -144,6 +146,7 @@ exports.post = function(page, req, cb) {
             }, {
                 id : '8808',
                 started : new Date().getTime(),
+                commit_id : '23523623',
                 succeeded : true,
                 time : 900,
                 modules : 2,
