@@ -185,9 +185,7 @@ step(function() {
         };
         bean.add(page, 'projectId', updateSidebar);
         updateSidebar();
-        console.log(w.el('build-now')[0]);
         bean.add(w.el('build-now')[0], 'click', function(e) {
-            console.log('BUILD', page.projectId);
             page.req('build_now', page.projectId);
             e.preventDefault();
         });
