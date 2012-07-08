@@ -23,7 +23,7 @@ test_simple_single_file(SetupOpts) ->
     fun () ->
         TempDir = get_temp_dir(SetupOpts),
         Results = perforator_ci_results:read(TempDir),
-        ?assertEqual([[{foo, bar}]], Results)
+        ?assertMatch([{totals, _}, {suites, [{foo, bar}]}], Results)
     end.
 
 

@@ -1,4 +1,4 @@
-%% @doc Reads test results.
+%% @doc Reads and parses test results.
 %%
 %% @author Ignas <i.vysniauskas@gmail.com>
 
@@ -29,11 +29,15 @@ read(Path) ->
 -spec parse_result_files([file:filename()]) ->
     [perforator_ci_types:test_result()].
 parse_result_files(ResultFiles) ->
-    lists:map(fun parse_result_file/1, ResultFiles).
+    SuitesRes = lists:map(fun parse_result_file/1, ResultFiles),
+    [
+        {totals, calculate_totals(SuitesRes)},
+        {suites, SuitesRes}
+    ].
 
 -spec parse_result_file(file:filename()) -> perforator_ci_types:test_result().
 parse_result_file(Filepath) ->
-    {ok, Resultdata} = file:consult(Filepath),
+    {ok, [Resultdata]} = file:consult(Filepath),
     Resultdata.
 
 -spec find_result_files(Path :: file:filename()) -> [file:filename()].
@@ -75,5 +79,11 @@ replace_older_results(NewRes={Suite, Filename}, Results) ->
             end
     end.
 
-
-
+calculate_totals(_SuitesRes) ->
+    %% :-)
+    [
+        {duration, 0},
+        {suite_count, 0},
+        {test_count, 0},
+        {success, true},
+    ].
