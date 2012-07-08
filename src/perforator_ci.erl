@@ -1,3 +1,4 @@
+%% API
 %% @author Martynas <martynasp@gmail.com>
 
 -module(perforator_ci).
@@ -6,7 +7,8 @@
 
 %% API
 -export([
-    create_and_start_project/1
+    create_and_start_project/1,
+    update_project/1
 ]).
 
 -export([start/0, stop/0, init/0]).
@@ -22,10 +24,8 @@
         perforator_ci_types:polling_strategy(),
         perforator_ci_types:build_instructions(), list()}) ->
             perforator_ci_types:project_id().
-
 create_and_start_project({Name, RepoUrl, Branch, RepoBackend, Polling,
         BuildInstr, Info}) ->
-
     ID = perforator_ci_db:create_project({Name, RepoUrl, Branch, RepoBackend,
         Polling, BuildInstr, Info}),
 
@@ -37,6 +37,24 @@ create_and_start_project({Name, RepoUrl, Branch, RepoBackend, Polling,
     end,
 
     ID.
+
+%% @doc Updates project and corresponding process by pushing new data to DB and
+%% restarting the process.
+-spec update_project({
+        perforator_ci_types:project_id(),
+        perforator_ci_types:project_name(), perforator_ci_types:repo_url(),
+        perforator_ci_types:branch(), perforator_ci_types:repo_backend(),
+        perforator_ci_types:polling_strategy(),
+        perforator_ci_types:build_instructions(), list()}) ->
+            ok.
+update_project({ID, Name, RepoUrl, Branch, RepoBackend, Polling,
+        BuildInstr, Info}) ->
+    ok = perforator_ci_db:update_project({ID, Name, RepoUrl, Branch,
+        RepoBackend, Polling, BuildInstr, Info}),
+
+    exit(perforator_ci_project:get_pid(ID), '$restart'),
+
+    ok.
 
 %% ============================================================================
 

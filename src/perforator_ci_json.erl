@@ -38,14 +38,14 @@ from(project_update, {Data}) ->
     list_to_tuple(
         [proplists:get_value(<<"id">>, Data) |
             tuple_to_list(from(project_new, {Data}))]
-    );
+    ).
 
-from(Schema, Data) ->
-    ok.
+%% ============================================================================
+%% To jiffy intermediate from Erlang term()
+%% ============================================================================
 
-to(project_new, Data) ->
-    Data;
+to(project_new, ProjectID) ->
+    ProjectID;
 
-to(Scema, Data) ->
-    ok.
-
+to(project_update, _) ->
+    null.

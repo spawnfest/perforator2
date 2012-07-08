@@ -15,7 +15,8 @@
 -export([
     is_project_running/1,
     start_link/1,
-    build_finished/3
+    build_finished/3,
+    get_pid/1
 ]).
 
 %% gen_server callbacks
