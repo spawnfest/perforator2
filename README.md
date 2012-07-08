@@ -12,6 +12,7 @@ Dependencies
 
 * git
 * tested only on Linux, sorry
+* [npm](http://npmjs.org)
 
 Quick tutorial
 -----
