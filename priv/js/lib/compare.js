@@ -27,7 +27,7 @@ exports.init = function(page, cb) {
         });
         step(function() {
             var group = this.group();
-            page.req('runs', state.projectId, group());
+            page.req('builds', state.projectId, group());
             v.each(runs, function(run) {
                 page.req('testRun', run, group());
                 page.req('modules', {
