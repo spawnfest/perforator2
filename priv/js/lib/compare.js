@@ -67,6 +67,7 @@ exports.init = function(page, cb) {
             v.each(series, function(series) {
                 numbers.push({
                     series : series.name,
+                    units : series.unitsShort,
                     A : runA[series.key],
                     B : runB[series.key],
                     delta : runB[series.key] - runA[series.key]
