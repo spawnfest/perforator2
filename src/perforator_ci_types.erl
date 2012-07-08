@@ -37,3 +37,5 @@
 -type timestamp() :: integer().
 
 -type pubsub_group() :: perforator_ci_project | perforator_ci_builder.
+
+-type test_results() :: term(). %% @todo
