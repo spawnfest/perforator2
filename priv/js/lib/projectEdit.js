@@ -1,4 +1,5 @@
 var t = require('./templates');
+var w = require('./window');
 var v = require('valentine');
 var qwery = require('qwery');
 var bean = require('bean');
@@ -7,7 +8,7 @@ var moment = require('moment');
 
 exports.init = function(page, cb) {
     var gather = function() {
-        var ondemand = bonzo(qwery('#ondemand')).attr('checked');
+        var ondemand = w.el('ondemand').attr('checked');
         return {
             name : bonzo(qwery('#name')).val(),
             repo_url : bonzo(qwery('#repo_url')).val(),
@@ -32,11 +33,12 @@ exports.init = function(page, cb) {
         v.each(qwery('.app-remove'), function(remove) {
             augment.bindRemove(remove);
         });
-        bean.add(qwery('#ondemand')[0], 'click', function() {
-            if(gather().ondemand) {
-                bonzo(qwery('#time')).attr('disabled', 'disabled');
+        bean.add(w.el('ondemand')[0], 'click', function() {
+            console.log('click', gather());
+            if(gather().polling_strategy === 'ondemand') {
+                w.el('time').attr('disabled', 'disabled');
             } else {
-                bonzo(qwery('#time')).removeAttr('disabled');
+                w.el('time').removeAttr('disabled');
             }
         });
     };
@@ -92,7 +94,6 @@ exports.init = function(page, cb) {
             }, t));
             augment();
             bean.add(qwery('form')[0], 'submit', function(e) {
-            var ondemand = bonzo(qwery('#ondemand')).attr('checked');
                 var p = gather();
                 p.id = project.id;
                 page.req('project/update', p);
