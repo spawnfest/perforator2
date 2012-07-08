@@ -24,7 +24,9 @@ exports.init = function(page, cb) {
                     run.finished = true;
                     run.succeeded = buildFinished.success;
                     run.time = (buildFinished.timestamp - run.buildInit.timestamp) * 1000;
-                    run.timeDelta = run.time - run.previous.time;
+                    if(run.previous) {
+                        run.timeDelta = run.time - run.previous.time;
+                    }
                     w.el('run-' + run.id).replaceWith(t.logRun.render(run, t));
                     attachClickHandler(w.el('run-' + run.id)[0]);
                 }
@@ -32,7 +34,7 @@ exports.init = function(page, cb) {
             offs.push(page.on('build_init', function(_, buildInit) {
                 if(buildInit.project_id === project.id) {
                     var run = {
-                        previous : runs[0],
+                        previous : runs[0] || null,
                         buildInit : buildInit,
                         id : buildInit.build_id,
                         commit_id : buildInit.commit_id,
