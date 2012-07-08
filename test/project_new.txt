@@ -1,0 +1,3 @@
+data={"name": "name", "branch" : "origin/master", "repo_url" :
+"file:///tmp/omg.git", "build_instructions" : [ "one", "two" ],
+"polling_strategy": {"time": 100000} }

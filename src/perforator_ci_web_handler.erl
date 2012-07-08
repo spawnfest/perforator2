@@ -44,7 +44,7 @@ handle(Req, State) ->
                     cowboy_http_req:reply(
                         200,
                         [{<<"Content-Type">>, <<"application/json">>}],
-                        handle_request(Path, Data, Req),
+                        jiffy:encode(handle_request(Path, Data, Req)),
                         Req
                     )
                 catch
@@ -76,7 +76,9 @@ handle_request([<<"project">>, <<"new">>], Data, _Req) ->
         end);
 
 %% 404
-handle_request(_, _, __) -> throw(404).
+handle_request(_, Data, _) ->
+    ?info("DATA", [{data, Data}]),
+    throw(404).
 
 %% ============================================================================
 %% Helpers
