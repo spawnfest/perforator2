@@ -104,4 +104,33 @@ to(queue_size, {Node, Size}) ->
         {size, Size}
     ]};
 
+to(builds, Builds) ->
+    lists:map(
+        fun (#project_build{id=ID, finished=Finished,
+                timestamp=TS, info=Info, commit_id=CID}) ->
+            Success = case Finished of
+                failure -> false;
+                true -> true
+            end,
+
+            Info1 =
+                if
+                    is_list(Info) ->
+                        proplists:get_value(totals, Info, []);
+                    true ->
+                        []
+                end,
+
+            {[
+                {id, ID},
+                {succeeded, Success},
+                {started, TS},
+                {time, proplists:get_value(duration, Info1, 0)},
+                {modules, proplists:get_value(suite_count, Info1, 0)},
+                {tests, proplists:get_value(test_count, Info1, 0)},
+                {commit_id, CID}
+            ]}
+        end,
+        Builds);
+
 to(build_now, _) -> null.
