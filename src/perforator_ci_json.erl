@@ -34,6 +34,12 @@ from(project_new, {Data}) ->
         []
     };
 
+from(project_update, {Data}) ->
+    list_to_tuple(
+        [proplists:get_value(<<"id">>, Data) |
+            tuple_to_list(from(project_new, {Data}))]
+    );
+
 from(Schema, Data) ->
     ok.
 

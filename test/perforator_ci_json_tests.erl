@@ -28,3 +28,20 @@ from_project_new_test() ->
         {<<"name">>, "url", "branch", perforator_ci_git, {time, 10},
             ["one", "two"], []},
         ?FROM(project_new, ?DEC(JSON))).
+
+from_project_update_test() ->
+    JSON = <<"
+        {
+            \"id\": \"id\",
+            \"name\": \"name\",
+            \"branch\" : \"branch\",
+            \"repo_url\" : \"url\",
+            \"build_instructions\" : [ \"one\", \"two\" ],
+            \"polling_strategy\": \"on_demand\"
+        }
+    ">>,
+
+    ?assertEqual(
+        {<<"id">>, <<"name">>, "url", "branch", perforator_ci_git, on_demand,
+            ["one", "two"], []},
+        ?FROM(project_update, ?DEC(JSON))).
