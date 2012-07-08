@@ -20,7 +20,13 @@ exports.init = function(page, cb) {
         step(function() {
             page.req('builds', page.projectId, this.parallel());
             page.req('project', page.projectId, this.parallel());
-        }, function(_, runs, project) {
+        }, function(err, runs, project) {
+            if(err) {
+                page.body.html(t.error.render({
+                    title : 'No projects found'
+                }));
+                return;
+            }
             var offs = [];
             offs.push(page.on('build_finished', function(_, buildFinished) {
                 if(buildFinished.project_id === project.id) {
