@@ -29,7 +29,7 @@ exports.init = function(page, cb) {
             var group = this.group();
             page.req('builds', state.projectId, group());
             v.each(runs, function(run) {
-                page.req('testRun', run, group());
+                page.req('test_run', run, group());
                 page.req('modules', {
                     projectId : state.projectId,
                     runId : run.runId
