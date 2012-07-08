@@ -107,6 +107,9 @@ step(function() {
         }
     });
 }, function(_, page) {
+    page.handle('/static/COPYING', function() {
+        window.location.href = '/static/COPYING';
+    });
     bean.add(page, 'page', function(from, to, params) {
         if(params.length > 0) {
             var projectId = parseInt(params[0], 10);
