@@ -53,7 +53,7 @@ step(function() {
         },
         req : function(resource, msg, cb) {
             cb = cb || function(){};
-            if(['project/new', 'project', 'projects', 'builders'].indexOf(resource) >= 0) {
+            if(['project/new', 'project/update', 'project', 'projects', 'builders'].indexOf(resource) >= 0) {
                 reqwest({
                     url : '/api/1/' + resource,
                     method : 'post',
@@ -183,10 +183,16 @@ step(function() {
             bean.add(page, 'projectUpdated', function(project) {
                 console.log('projectUpdated', project);
                 replaceProject(projects, project);
+                if(project.id === page.projectId) {
+                    project.opened = true;
+                }
                 bonzo(qwery('#project-' + project.id)).replaceWith(t.project.render(project));
             });
             bean.add(page, 'projectAdded', function(project) {
                 console.log('projectAdded', project);
+                if(project.id === page.projectId) {
+                    project.opened = true;
+                }
                 var position = insertProject(projects, project);
                 var html = t.project.render(project);
                 if(position.after === null) {

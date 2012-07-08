@@ -12,19 +12,37 @@ exports.init = function(page, cb) {
             name : bonzo(qwery('#name')).val(),
             repo_url : bonzo(qwery('#repo_url')).val(),
             branch : bonzo(qwery('#branch')).val(),
-            build_instructions : ['one', 'two'],
+            build_instructions : v.map(qwery('.app-build_instruction'), function(bi) {
+                return bonzo(bi).val();
+            }),
             polling_strategy : (ondemand ? 'ondemand' : {
                 time : parseInt(bonzo(qwery('#time')).val(), 10)
             })
         };
     };
     var augment = function() {
+        var add = qwery('.app-add')[0];
+        bean.add(add, 'click', function() {
+            var removes = qwery('.app-remove');
+            var r = bonzo(add).before(t.build_instruction.render({
+                instruction : ''
+            }));
+            augment.bindRemove(qwery('.app-remove', r.previous())[0]);
+        });
+        v.each(qwery('.app-remove'), function(remove) {
+            augment.bindRemove(remove);
+        });
         bean.add(qwery('#ondemand')[0], 'click', function() {
             if(gather().ondemand) {
                 bonzo(qwery('#time')).attr('disabled', 'disabled');
             } else {
                 bonzo(qwery('#time')).removeAttr('disabled');
             }
+        });
+    };
+    augment.bindRemove = function(remove) {
+        bean.add(remove, 'click', function() {
+            bonzo(remove.parentNode).remove();
         });
     };
     var adapt = function(project) {
@@ -75,10 +93,11 @@ exports.init = function(page, cb) {
             augment();
             bean.add(qwery('form')[0], 'submit', function(e) {
             var ondemand = bonzo(qwery('#ondemand')).attr('checked');
-                project = gather();
-                page.req('project/update', project);
-                bean.fire(page, 'projectUpdated', [project]);
-                page.go('/' + project.id);
+                var p = gather();
+                p.id = project.id;
+                page.req('project/update', p);
+                bean.fire(page, 'projectUpdated', [p]);
+                page.go('/' + p.id);
                 e.preventDefault();
             });
         });
