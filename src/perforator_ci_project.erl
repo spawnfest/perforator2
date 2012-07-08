@@ -71,7 +71,7 @@ build_finished(Pid, BuildID, Results, Success) ->
 
 %% @doc Asks to make request to build a project.
 build_now(ProjectID) ->
-    gen_server:cast(get_pid(ProjectID), ping).
+    gen_server:cast(get_pid(ProjectID), build_now).
 
 %% @doc Used for tests only.
 get_pid(ProjectID) ->
@@ -157,6 +157,19 @@ handle_cast({build, CommitID}, #state{project_id=ID}=State) ->
     ok = perforator_ci_builder:build(Project, Build),
     
     {noreply, State#state{last_commit_id=CommitID, last_build_id=BuildID}};
+
+handle_cast(build_now, 
+    #state{project_id=ID, repo_backend=Mod, branch=B,
+            last_commit_id=CID}=State) ->
+    CID1 = case Mod:check_for_updates(
+            perforator_ci_utils:repo_path(ID), B, CID) of
+        undefined -> CID ;
+        NewCID when is_binary(NewCID) -> NewCID
+    end,
+
+    gen_server:cast(self(), {build, CID1}),
+
+    {noreply, State};
 
 handle_cast(_, State) ->
     {noreply, State}.
