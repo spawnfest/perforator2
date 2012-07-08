@@ -190,13 +190,5 @@ exports.post = function(page, req, cb) {
 };
 
 exports.init = function(page, cb) {
-    /* TODO
-    setTimeout(function() {
-        page.emit('queue_size', null, {
-            name : 'perforator_ci@laptop',
-            queue_size : 10
-        });
-        }, 2000);
-    */
     cb(null);
 };
