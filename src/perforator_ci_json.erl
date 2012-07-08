@@ -129,7 +129,7 @@ to(builds, Builds) ->
             {[
                 {id, ID},
                 {succeeded, Success},
-                {finished, Success},
+                {finished, Finished},
                 {started, TS},
                 {time, proplists:get_value(duration, Info1, 0)},
                 {modules, proplists:get_value(suite_count, Info1, 0)},
