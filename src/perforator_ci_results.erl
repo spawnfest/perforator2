@@ -79,11 +79,17 @@ replace_older_results(NewRes={Suite, Filename}, Results) ->
             end
     end.
 
-calculate_totals(_SuitesRes) ->
-    %% :-)
-    [
-        {duration, 0},
-        {suite_count, 0},
-        {test_count, 0},
-        {success, true},
-    ].
+calculate_totals(SuitesRes) ->
+    GenericTotals = lists:foldl(
+        fun ({_, SuiteData}, AccTotals) ->
+            Totals = proplists:get_value(totals, SuiteData, []),
+            sum_properties(Totals, AccTotals)
+        end,
+        [],
+        SuitesRes),
+    [{suite_count, length(SuitesRes)}|GenericTotals].
+
+sum_properties(A, B) ->
+    MetricTags = proplists:get_keys(A) ++ proplists:get_keys(B),
+    [{MetricTag, proplists:get_value(MetricTag, A, 0) +
+        proplists:get_value(MetricTag, B, 0)} || MetricTag <- MetricTags].
