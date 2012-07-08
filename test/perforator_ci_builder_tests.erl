@@ -12,6 +12,7 @@
 -define(REPOS, "repos").
 -define(BUILD_REPOS, "build_repos").
 
+
 %% ============================================================================
 
 builder_test_() ->
@@ -131,9 +132,22 @@ test_real_workflow() ->
     perforator_ci_utils:sh("git add t.txt", [{cd, ?REPO}]),
     perforator_ci_utils:sh("git commit -am \"o\"", [{cd, ?REPO}]),
 
+    ok = perforator_ci_pubsub:subscribe(perforator_ci_project),
+    ok = perforator_ci_pubsub:subscribe(perforator_ci_builder),
+
     1 = perforator_ci:create_and_start_project({<<"1">>, ?REPO, "origin/master",
         perforator_ci_git, {time, 50}, ["echo omg"], []}),
     timer:sleep(200),
+
+    receive M0 ->
+        ?assertMatch({perforator_ci_event, perforator_ci_project,
+            {build_init, {1, 1, _}}}, M0)
+    end,
+
+    receive M1 ->
+        ?assertMatch({perforator_ci_event, perforator_ci_project,
+        {build_finished, {1, 1, true}}}, M1)
+    end,
 
     ?assertMatch(
         #project_build{id=1, finished=true, info=ok},
