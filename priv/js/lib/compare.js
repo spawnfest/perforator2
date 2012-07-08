@@ -44,6 +44,7 @@ exports.init = function(page, cb) {
                                     v.each(test.result, function(key, value) {
                                         test.result[key] = value.mean;
                                     });
+                                    test.result.build_id = run.runId;
                                     runCb(null, test.result);
                                 }
                             });
@@ -53,6 +54,7 @@ exports.init = function(page, cb) {
                 });
             });
         }, function(_, group) {
+            console.log('compare', group);
             var runA = group[1];
             var modulesA = group[2];
             var testsA = group[3];
@@ -81,8 +83,8 @@ exports.init = function(page, cb) {
                 commits : [],// TODO fill with real data
                 numbers : numbers
             }));
-            bonzo(qwery('#runA')).val(runs[0].runId);
-            bonzo(qwery('#runB')).val(runs[1].runId);
+            bonzo(qwery('#runA')).val(String(runs[0].runId));
+            bonzo(qwery('#runB')).val(String(runs[1].runId));
             bonzo(qwery('#moduleA')).val(runs[0].moduleName);
             bonzo(qwery('#moduleB')).val(runs[1].moduleName);
             bonzo(qwery('#testA')).val(runs[0].testName);
