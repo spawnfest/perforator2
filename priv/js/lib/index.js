@@ -59,7 +59,7 @@ step(function() {
         req : function(resource, msg, cb) {
             console.log('page.req', resource, msg);
             cb = cb || function(){};
-            if(['build_now', 'project/new', 'project/update', 'project', 'projects', 'builders', 'build', 'builds', 'previous_build'].indexOf(resource) >= 0) {
+            if(['build_now', 'project/new', 'project/update', 'project', 'projects', 'builders', 'build', 'builds', 'previous_build', 'test_runs'].indexOf(resource) >= 0) {
                 reqwest({
                     url : '/api/1/' + resource,
                     method : 'post',

@@ -27,7 +27,7 @@ exports.init = function(page, cb) {
                     var run = common.findById(runs, buildFinished.build_id);
                     run.finished = true;
                     run.succeeded = buildFinished.success;
-                    run.time = (buildFinished.timestamp - run.buildInit.timestamp) * 1000;
+                    run.time = (buildFinished.timestamp - (run.buildInit ? run.buildInit.timestamp : 0)) * 1000; // TODO this is fishy - when is run.buildInit undefined?
                     if(run.previous) {
                         run.timeDelta = run.time - run.previous.time;
                     }

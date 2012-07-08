@@ -19,6 +19,7 @@ exports.init = function(page, cb) {
                 var lag = null;
                 var key = series.key;
                 v.each(runs, function(run) {
+                    run[key] = run[key].mean;
                     if(lag === null || run[key] === null) {
                         if(run[key] === null) {
                             run[key + '_label'] = '-';
@@ -44,7 +45,7 @@ exports.init = function(page, cb) {
                     var key = series.key;
                     var chart = w.nv.models.lineChart();
                     chart.tooltipContent(function(_, x, y, e, graph) {
-                        return '<h3>' + runs[x].name + '</h3>' + '<p>' + runs[x][key] + ' ' + series.units + '</p>';
+                        return '<h3>' + runs[x].build_id + '</h3>' + '<p>' + runs[x][key] + ' ' + series.units + '</p>';
                     });
                     chart.yAxis.axisLabel(series.name + ' (' + series.unitsShort + ')');
                     chart.showLegend(false);
@@ -67,7 +68,7 @@ exports.init = function(page, cb) {
                     var point = null;
                     sel.on('click', function() {
                         if(point !== null) {
-                            page.go('/' + state.projectId + '/compare/' + runs[point - 1].name + '-' + runs[point].name + '/' + state.moduleName + '-' + state.moduleName + '/' + state.testName + '-' + state.testName);
+                            page.go('/' + state.projectId + '/compare/' + (runs[point - 1] ? runs[point - 1].build_id : '') + '-' + runs[point].build_id + '/' + state.moduleName + '-' + state.moduleName + '/' + state.testName + '-' + state.testName);
                         }
                     });
                     sel.selectAll('.x').selectAll('.axis').remove();
