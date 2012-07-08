@@ -156,6 +156,14 @@ exports.post = function(page, req, cb) {
             build_instructions : [],
             polling_strategy : 'ondemand'
         });
+    } else if(page === 'builders') {
+        cb(null, [{
+            name : 'Wo00t',
+            queue_size : 10
+        }, {
+            name : 'WorkWork',
+            queue_size : 0
+        }]);
     } else if(page === 'projects') {
         cb(null, [ {
             id : 1,
@@ -177,11 +185,11 @@ exports.post = function(page, req, cb) {
 
 exports.init = function(page, cb) {
     page.emit('workerPoolChanged', null, [{
-        id : 1,
-        active : true
+        name : 'Wo00t',
+        queue_size : 10
     }, {
-        id : 12,
-        active : false
+        name : 'WorkWork',
+        queue_size : 0
     }]);
     cb(null);
 };

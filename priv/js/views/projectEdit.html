@@ -19,6 +19,28 @@
                     <input type="text" id="branch" value="{{project.branch}}">
                 </div>
             </div>
+            <div class="control-group">
+                <label class="control-label" for="ondemand">On demand</label>
+                <div class="controls">
+                    {{#project.ondemand}}
+                    <input type="checkbox" id="ondemand" checked="checked">
+                    {{/project.ondemand}}
+                    {{^project.ondemand}}
+                    <input type="checkbox" id="ondemand">
+                    {{/project.ondemand}}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="time">Polling interval</label>
+                <div class="controls">
+                    {{#project.ondemand}}
+                    <input disabled="disabled" type="text" id="time" value="{{project.polling_strategy.time}}">
+                    {{/project.ondemand}}
+                    {{^project.ondemand}}
+                    <input type="text" id="time" value="{{project.polling_strategy.time}}">
+                    {{/project.ondemand}}
+                </div>
+            </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">{{action}}</button>
             </div>

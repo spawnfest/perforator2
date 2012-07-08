@@ -1,6 +1,6 @@
-{{#active}}
-<li class="app-worker"><a>Worker #{{id}} <i class="icon-time"></i></a></li>
-{{/active}}
-{{^active}}
-<li class="app-worker"><a>Worker #{{id}}</a></li>
-{{/active}}
+{{#queue_size}}
+<li class="app-worker"><a>{{name}} <span class="badge">{{queue_size}}</span></a></li>
+{{/queue_size}}
+{{^queue_size}}
+<li class="app-worker"><a>{{name}}</a></li>
+{{/queue_size}}
