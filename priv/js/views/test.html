@@ -22,7 +22,7 @@
         <table class="table table-bordered table-striped table-condensed">
             <thead>
                 <tr>
-                    <th>Build #</th>
+                    <th>Build</th>
                     <th>Duration</th>
                     <th>CPU load</th>
                     <th>Memory utilization</th>
@@ -32,7 +32,7 @@
             <tbody>
                 {{#runs}}
                 <tr>
-                    <td>{{build_id}}</td>
+                    <td>#{{build_id}}</td>
                     <td class="{{duration_class}}">{{duration_label}}</td>
                     <td class="{{cpu_load_class}}">{{cpu_load_label}}</td>
                     <td class="{{used_memory_class}}">{{used_memory_label}}</td>
