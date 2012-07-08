@@ -32,6 +32,11 @@ git_test_() ->
 %% ============================================================================
 
 test_workflow() ->
+    ?assertThrow(
+        {unable_to_clone, _},
+        perforator_ci_git:clone("fail", "fail")
+    ),
+
     Repo = "omg.git",
     ?assertEqual(
         ok, perforator_ci_git:clone(?REPO, Repo)

@@ -17,11 +17,17 @@
 
 %% ============================================================================
 
+%% @throws {unable_to_clone, Reason :: list()}>
 -spec clone(list(), list()) -> ok.
 clone(RepoURL, RepoPath) ->
     perforator_ci_utils:sh(?FMT("rm -rf ~p", [RepoPath])), % dirty hack
-    perforator_ci_utils:sh(?FMT("git clone ~p ~p", [RepoURL, RepoPath])),
-    ok.
+    try
+        perforator_ci_utils:sh(?FMT("git clone ~p ~p", [RepoURL, RepoPath])),
+        ok
+    catch
+        {exec_error, {_, _, Reason}} ->
+            throw({unable_to_clone, Reason})
+    end.
 
 %% @doc Checks if for given repo's branch there exists a "newer" commit than
 %% given commit.
