@@ -25,6 +25,11 @@ start(_, _) ->
             {[<<"websocket">>], perforator_ci_ws, []},
             % /api/1/*
             {[<<"api">>, <<"1">>, '...'], perforator_ci_web_handler, []},
+            % /COPYING
+            {[<<"COPYING">>], cowboy_http_static, [
+                {directory, {priv_dir, perforator_ci, [<<"www">>]}},
+                {file, <<"COPYING">>}
+            ]},
             % /*
             {'_', cowboy_http_static, [
                 {directory, {priv_dir, perforator_ci, [<<"www">>]}},
