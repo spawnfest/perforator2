@@ -105,15 +105,14 @@ update_project({ID, Name, RepoUrl, Branch, RepoBackend, Polling, BuildInstr,
 -spec create_build({
         perforator_ci_types:project_id(), perforator_ci_types:timestamp(),
         perforator_ci_types:commit_id(), list()}) ->
-            {perforator_ci_types:build_id(),
-            perforator_ci_types:build_local_id()}.
+            #project_build{}.
 create_build({ProjectID, TS, CommitID, Info}) ->
     transaction(
         fun () ->
             case mnesia:index_read(project_build, CommitID,
                     #project_build.commit_id) of % In a perfect world
                     % collisions don't exist
-                [#project_build{id=ID, local_id=LID}] -> {ID, LID};
+                [#project_build{}=Build] -> Build;
                 [] ->
                     % Get next global and local id
                     ID =
@@ -130,7 +129,7 @@ create_build({ProjectID, TS, CommitID, Info}) ->
                                 LN + 1
                         end,
                     % Write
-                    ok = mnesia:write(
+                    Build =
                         #project_build{
                             id = ID,
                             local_id = LID,
@@ -138,9 +137,10 @@ create_build({ProjectID, TS, CommitID, Info}) ->
                             timestamp = TS,
                             commit_id = CommitID,
                             info = Info
-                        }),
+                        },
+                    ok = mnesia:write(Build),
 
-                    {ID, LID}
+                    Build
             end
         end).
 

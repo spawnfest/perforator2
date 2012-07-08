@@ -71,7 +71,7 @@ test_ping_and_build() ->
             (_, _, _) -> <<"random_commit_id">>
         end),
     ok = meck:new(perforator_ci_builder, [no_link, passthrough]),
-    ok = meck:expect(perforator_ci_builder, build, 3, ok),
+    ok = meck:expect(perforator_ci_builder, build, 2, ok),
 
     1 = perforator_ci:create_and_start_project({<<"1">>, ?REPO, "b",
         perforator_ci_git, {time, 50}, [], []}),

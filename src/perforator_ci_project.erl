@@ -136,13 +136,14 @@ handle_call(_, _, State) ->
 handle_cast({build, CommitID}, #state{project_id=ID}=State) ->
     lager:info("Project (~p): request for build commit ~p~n",
         [ID, CommitID]),
-    {BuildID, _} = perforator_ci_db:create_build({ID,
+    #project_build{id=BuildID}=Build = perforator_ci_db:create_build({ID,
         perforator_ci_utils:timestamp(), CommitID, []}),
 
+    Project = perforator_ci_db:get_project(ID), % ehh, could create from #state
     % @todo pubsub
 
     % Create job for a builder
-    ok = perforator_ci_builder:build(ID, CommitID, BuildID),
+    ok = perforator_ci_builder:build(Project, Build),
     
     {noreply, State#state{last_commit_id=CommitID, last_build_id=BuildID}};
 

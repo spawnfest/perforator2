@@ -62,20 +62,20 @@ test_create_project() ->
     ).
 
 test_create_build() ->
-    ?assertEqual(
-        {1, 1},
+    ?assertMatch(
+        #project_build{id=1, local_id=1},
         perforator_ci_db:create_build({42, 123, <<"cid0">>, []})),
-    ?assertEqual(
-        {1, 1},
+    ?assertMatch(
+        #project_build{id=1, local_id=1},
         perforator_ci_db:create_build({42, 123, <<"cid0">>, []})),
-    ?assertEqual(
-        {2, 2},
+    ?assertMatch(
+        #project_build{id=2, local_id=2},
         perforator_ci_db:create_build({42, 123, <<"cid1">>, []})),
-    ?assertEqual(
-        {3, 1},
+    ?assertMatch(
+        #project_build{id=3, local_id=1},
         perforator_ci_db:create_build({666, 123, <<"cid2">>, []})),
-    ?assertEqual(
-        {4, 2},
+    ?assertMatch(
+        #project_build{id=4, local_id=2},
         perforator_ci_db:create_build({666, 123, <<"cid3">>, []})),
 
     ?assertMatch(
