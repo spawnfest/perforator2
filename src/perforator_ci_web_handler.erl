@@ -37,8 +37,10 @@ handle(Req, State) ->
                 try
                     % Get POST param (stringified JSON)
                     {QS, _} = cowboy_http_req:body_qs(Req),
-                    Data = jiffy:decode(
-                        proplists:get_value(?INPUT_KEY, QS, <<"null">>)),
+                    Data = case QS of
+                        [] -> null;
+                        [{D, true}] -> jiffy:decode(D)
+                    end,
                     
                     cowboy_http_req:reply(
                         200,
