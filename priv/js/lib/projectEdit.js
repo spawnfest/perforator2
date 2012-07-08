@@ -27,7 +27,7 @@ exports.init = function(page, cb) {
         });
     });
     page.handle(/^\/(.+)\/edit$/, function(from, to, params) {
-        page.req('project', params[0], function(_, project) {
+        page.req('project', parseInt(params[0], 10), function(_, project) {
             page.body.html(t.projectEdit.render({
                 project : project,
                 action : 'Save'

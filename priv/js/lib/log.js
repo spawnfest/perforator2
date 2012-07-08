@@ -8,7 +8,7 @@ var moment = require('moment');
 
 var insertProject = function(projects, project) {
     for(var i = 0; i < projects.length; i += 1) {
-        if(projects[i].title > project.title) {
+        if(projects[i].name > project.name) {
             projects[i].splice(i, 0, project);
             return {
                 after : false,
@@ -37,11 +37,12 @@ exports.init = function(page, cb) {
         page.req('projects', null, this);
     }, function(_, projects) {
         bean.add(page, 'projectUpdated', function(project) {
+            console.log('projectUpdated', project);
             replaceProject(projects, project);
             bonzo(qwery('#project-' + project.id)).replaceWith(t.project.render(project));
         });
         bean.add(page, 'projectAdded', function(project) {
-            console.log(project);
+            console.log('projectAdded', project);
             var position = insertProject(projects, project);
             var html = t.project.render(project);
             if(position.after === null) {
@@ -55,15 +56,16 @@ exports.init = function(page, cb) {
             }
         });
         page.handle('/', function() {
-            page.go('/8888');
+            page.go('/1');
         });
         page.handle(/^\/(.+)$/, function(from, to, params) {
+            var projectId = parseInt(params[0], 10);
             step(function() {
-                page.req('runs', params[0], this);
+                page.req('runs', projectId, this);
             }, function(_, runs) {
                 var offProjectUpdated = page.on('projectUpdated', function(_, p) {
                     if(p.id === project.id) {
-                        bonzo(qwery('#project-header')).text(project.title);
+                        bonzo(qwery('#project-header')).text(project.name);
                     }
                 });
                 page.beforego(function(from, to) {
@@ -84,7 +86,7 @@ exports.init = function(page, cb) {
                 runs.reverse();
 
                 v.each(projects, function(p) {
-                    if(p.id === params[0]) {
+                    if(p.id === projectId) {
                         project = p;
                         p.opened = true;
                     } else {
