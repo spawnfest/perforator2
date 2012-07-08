@@ -80,7 +80,7 @@ exports.init = function(page, cb) {
                         // TODO make it real
                         data.previous = previousTest && previousTest.successful ? previousTest.result[key] : data;
 
-                        var ranges = [data.min, data.max];
+                        var ranges = [data.min, data.mean, data.max];
                         w.d3.select('#' + id).datum({
                             title: test.name,
                             subtitle: seriesMap[key].units,

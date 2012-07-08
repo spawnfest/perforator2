@@ -16,15 +16,15 @@ var series = [
     }, {
         name : 'Average CPU Load',
         key : 'cpu_load',
-        units : 'TODO',
-        unitsShort : '?',
+        units : '',
+        unitsShort : '',
         precision : 2,
         higherBetter : false
     }, {
         name : 'Average CPU Utilization',
         key : 'cpu_util',
-        units : 'TODO',
-        unitsShort : '?',
+        units : 'percent',
+        unitsShort : '%',
         precision : 2,
         higherBetter : false
     }
