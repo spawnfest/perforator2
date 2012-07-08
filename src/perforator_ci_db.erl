@@ -26,9 +26,7 @@
     wait_for_db/0,
     init/0,
     create_tables/0,
-    dump/1,
-
-    init_data/0
+    dump/1
 ]).
 
 %% ============================================================================
@@ -340,16 +338,9 @@ sort_builds(Builds, Order) ->
 
     lists:sort(Fun, Builds).
 
+%% @doc dump table
 dump(Table) ->
     Fun = fun() ->
         qlc:eval(qlc:q([R || R <- mnesia:table(Table)]))
     end,
     transaction(Fun).
-
-init_data() ->
-    Data = [
-        {project,1,<<"name">>,"file:///tmp/omg.git", "origin/master",perforator_ci_git, {time,100000}, ["one","two"], []},
-        {project,2,<<"name2">>,"file:///tmp/omg.git", "origin/master",perforator_ci_git,on_demand, ["one","two"], []}
-    ],
-
-    [mnesia:dirty_write(D) || D <- Data].
