@@ -19,8 +19,8 @@ exports.init = function(page, cb) {
         var runs = [];
         v.each(state.runIds, function(_, i) {
             runs.push({
-                projectId : state.projectId,
-                runId : state.runIds[i],
+                projectId : parseInt(state.projectId, 10),
+                runId : parseInt(state.runIds[i], 10),
                 moduleName : state.moduleNames[i],
                 testName : state.testNames[i]
             });
@@ -29,33 +29,28 @@ exports.init = function(page, cb) {
             var group = this.group();
             page.req('builds', state.projectId, group());
             v.each(runs, function(run) {
-                page.req('test_run', run, group());
+                var runCb = group();
                 var modulesCb = group();
                 var testsCb = group();
-                page.req('build', run.runId, function(modules) {
-                    console.log('modules', modules);
+                page.req('build', run.runId, function(_, modules) {
                     modulesCb(null, modules);
 
                     var tests = null;
                     v.each(modules, function(module) {
                         if(module.name === run.moduleName) {
                             tests = module.test_cases;
+                            v.each(tests, function(test) {
+                                if(test.name === run.testName) {
+                                    v.each(test.result, function(key, value) {
+                                        test.result[key] = value.mean;
+                                    });
+                                    runCb(null, test.result);
+                                }
+                            });
                         }
                     });
-                    console.log('tests', tests);
                     testsCb(null, tests);
                 });
-                /*
-                page.req('modules', {
-                    projectId : state.projectId,
-                    runId : run.runId
-                }, group());
-                page.req('tests', {
-                    projectId : state.projectId,
-                    runId : run.runId,
-                    moduleName : run.moduleName
-                }, group());
-                */
             });
         }, function(_, group) {
             var runA = group[1];
@@ -83,16 +78,7 @@ exports.init = function(page, cb) {
                 runs : group[0],
                 testsA : testsA,
                 testsB : testsB,
-                commits : [
-                    {
-                        id : 'a8a7d85c8c',
-                        shortDescription : 'implementing awesomeness'
-                    },
-                    {
-                        id : 'a8a7d85c8c',
-                        shortDescription : 'implementing awesomeness'
-                    }
-                ],
+                commits : [],// TODO fill with real data
                 numbers : numbers
             }));
             bonzo(qwery('#runA')).val(runs[0].runId);
