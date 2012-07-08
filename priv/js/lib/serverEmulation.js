@@ -129,7 +129,7 @@ exports.post = function(page, req, cb) {
         cb(null, [
             {
                 id : '8888',
-                started : new Date().getTime(),
+                started : Math.floor(new Date().getTime() / 1000),
                 commit_id : '23523623',
                 succeeded : true,
                 time : 1000,
@@ -137,7 +137,7 @@ exports.post = function(page, req, cb) {
                 tests : 4
             }, {
                 id : '8008',
-                started : new Date().getTime(),
+                started : Math.floor(new Date().getTime() / 1000),
                 commit_id : '23523623',
                 succeeded : false,
                 time : 800,
@@ -145,7 +145,7 @@ exports.post = function(page, req, cb) {
                 tests : 4
             }, {
                 id : '8808',
-                started : new Date().getTime(),
+                started : Math.floor(new Date().getTime() / 1000),
                 commit_id : '23523623',
                 succeeded : true,
                 time : 900,

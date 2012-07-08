@@ -65,7 +65,7 @@ exports.init = function(page, cb) {
             runs.reverse();
 
             v.each(runs, function(run) {
-                run.started = moment(new Date(run.started)).format('LLLL');
+                run.started = moment(new Date(run.started * 1000)).format('LLLL');
             });
             page.body.html(t.log.render({
                 runs : runs,
