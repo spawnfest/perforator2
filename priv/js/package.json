@@ -5,7 +5,7 @@
     "version": "0.0.1",
     "dependencies": {
         "deep-equal" : "0.0.x",
-        "moment" : "1.6.x",
+        "moment" : "~2.29.1",
         "reqwest" : "0.4.x",
         "scopify" : "0.2.x",
         "step" : "0.0.x",
