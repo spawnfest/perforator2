@@ -4,7 +4,6 @@ var v = require('valentine');
 var qwery = require('qwery');
 var bean = require('bean');
 var bonzo = require('bonzo');
-var moment = require('moment');
 
 exports.init = function(page, cb) {
     var gather = function() {

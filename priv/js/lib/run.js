@@ -1,6 +1,5 @@
 var t = require('./templates');
 var common = require('./common');
-var moment = require('moment');
 var bean = require('bean');
 var step = require('step');
 var bonzo = require('bonzo');

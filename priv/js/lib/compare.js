@@ -4,7 +4,6 @@ var qwery = require('qwery');
 var bean = require('bean');
 var step = require('step');
 var bonzo = require('bonzo');
-var moment = require('moment');
 var series = require('./series');
 series = series.series;
 
